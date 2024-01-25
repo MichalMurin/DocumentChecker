@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DocumentChecker</title>
+    <base href="/" />
+    <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/app.css" />
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <link href="DocumentChecker.styles.css" rel="stylesheet" />
+
+    <script type="text/javascript">
+        // Office js deletes window.history.pushState and window.history.replaceState. Cache them and restore them
+        window._historyCache = {
+            replaceState: window.history.replaceState,
+            pushState: window.history.pushState
+        };
+    </script>
+    <script type="text/javascript" src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+    <script type="text/javascript">
+        // Office js deletes window.history.pushState and window.history.replaceState. Restore them
+        window.history.replaceState = window._historyCache.replaceState;
+        window.history.pushState = window._historyCache.pushState;
+    </script>
+</head>
+
+<body>
+    <div id="app">
+        <svg class="loading-progress">
+            <circle r="40%" cx="50%" cy="50%" />
+            <circle r="40%" cx="50%" cy="50%" />
+        </svg>
+        <div class="loading-progress-text"></div>
+    </div>
+
+    <div id="blazor-error-ui">
+        An unhandled error has occurred.
+        <a href="" class="reload">Reload</a>
+        <a class="dismiss">🗙</a>
+    </div>
+    <script src="_framework/blazor.webassembly.js"></script>
+</body>
+
+</html>
