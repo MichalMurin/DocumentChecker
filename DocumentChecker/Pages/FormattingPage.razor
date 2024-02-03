@@ -2,8 +2,15 @@
 @inherits BaseJsPage;
 <PageTitle>Formatting</PageTitle>
 
-<h1>Formátovanie</h1>
-Kontrola formátovania dokumentu podľa zvolených štandardov
-<p role="status">Current word count: @_currentCount</p>
-
-<button class="btn btn-primary" @onclick="GetWordInfo">Check number of words</button>
+<div class="flex flex-col gap-6 py-8 ">
+    <DocumentChecker.Components.MyTextBox Header="Formátovanie" Description="Kontrola formátovania dokumentu podľa zvolených štandardov" Path="formatting" />
+    <div class="flex-row gap-16 flex justify-between">
+        <DocumentChecker.Components.MyButton ButtonContent="Import" Icon="fa-solid fa-file-import" />
+        <DocumentChecker.Components.MyButton ButtonContent="Export" Icon="fa-solid fa-file-export" />
+    </div>
+    <DocumentChecker.Components.MyInput Text="Veľkosť textu" InputType="number" Placeholder="12" />
+    <DocumentChecker.Components.MyInput Text="Riadkovanie" InputType="number" Placeholder="1.5" />
+    <DocumentChecker.Components.MyInput Text="Okraj" InputType="number" Placeholder="4" />
+    <DocumentChecker.Components.MyInput Text="Font" InputType="text" Placeholder="Times New Roman" />
+    <DocumentChecker.Components.MyButton ButtonContent="ŠTART" Icon="fa-solid fa-play" Classes="w-48" />
+</div>

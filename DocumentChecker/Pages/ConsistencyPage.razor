@@ -2,10 +2,16 @@
 @inherits BaseJsPage;
 
 <PageTitle>ConsistencyPage</PageTitle>
-
-<h1>Konzistencia</h1>
-
-Kontrola konzistencie textu, prítomnosť dvojitých medzier, nadväznosť nadpisov, funkčnosť krížových odkazov...
-@code {
-
-}
+<div class="flex flex-col gap-6 py-8 ">
+    <DocumentChecker.Components.MyTextBox Header="Konzistencia" Description="Kontrola konzistencie textu, prítomnosť dvojitých medzier, nadväznosť nadpisov, funkčnosť krížových odkazov..." Path="consistency" />
+    <DocumentChecker.Components.MyCheckbox Text="Nadväznosť nadpisov" />
+    <DocumentChecker.Components.MyCheckbox Text="Funkčnosť krížových odkazov" />
+    <DocumentChecker.Components.MyCheckbox Text="Zarovnanie dokumentu" />
+    <DocumentChecker.Components.MyCheckbox Text="Kontrola popisov" />
+    <DocumentChecker.Components.MyCheckbox Text="Kontrola zoznamov" />
+    <DocumentChecker.Components.MyCheckbox Text="Kontrola nekonzistentnosti slov" />
+    <DocumentChecker.Components.MyCheckbox Text="Kontrola čísloviek" />
+    <DocumentChecker.Components.MyCheckbox Text="Kontrola zátvoriek" />
+    <DocumentChecker.Components.MyCheckbox Text="Kontrola bodiek na konci viet" />
+    <DocumentChecker.Components.MyButton ButtonContent="ŠTART" Icon="fa-solid fa-play" Classes="w-48" />
+</div>

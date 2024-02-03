@@ -1,0 +1,16 @@
+﻿<a class="block bg-pallette-secondary-black rounded-lg" href="@Path">
+    <div class="w-[95%] mx-auto text-white py-6">
+        <h3 class="text-2xl pb-2 border-b-2 border-black">@Header</h3>
+        <p class="mt-4 ">@Description</p>
+    </div>
+</a>
+
+@code
+{
+    [Parameter]
+    public string Header { get; set; } = "Nadpis";
+    [Parameter]
+    public string Description { get; set; } = "Popis";
+    [Parameter]
+    public string Path { get; set; } = "link";
+}

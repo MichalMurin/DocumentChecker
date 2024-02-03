@@ -1,0 +1,21 @@
+﻿
+<button class="block  rounded-lg text-white hover:bg-pallette-hover-black bg-black transition duration-300 text-white text-center py-2 @Classes">
+    <div class="flex flex-row items-center justify-center py-2 px-1 gap-4">
+        <span class="text-2xl">@ButtonContent</span>
+        <i class="text-2xl @Icon"></i>
+    </div>
+</button>
+
+@code {
+    [Parameter]
+    public string ButtonContent { get; set; }
+
+    [Parameter]
+    public string Icon { get; set; }
+
+    [Parameter]
+    public string Classes { get; set; } = string.Empty;
+
+    [Parameter]
+    public EventCallback OnClick { get; set; }
+}

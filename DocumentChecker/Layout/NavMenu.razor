@@ -1,49 +1,46 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">Kontrola dokuemntu</a>
-        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-    </div>
-</div>
-
-<div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
-    <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Domov
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="formatting">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Formátovanie
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="consistency">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Konzistencia
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="spelling">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Pravopis
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="report">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Report
-            </NavLink>
-        </div>
+﻿<div class="bg-pallette-primary-black">
+    <nav class="w-full bg-pallette-secondary-black rounded-md">
+        <ul class="w-full flex justify-between h-20 items-center page-wrapper">
+            <li class="h-full rounded-lg hover:bg-black transition duration-300 text-white w-28 text-center">
+                <a class="flex items-center justify-center" href="/">
+                    <div class="flex flex-col items-center justify-center py-2 px-1">
+                        <i class="fa-solid fa-house-chimney text-2xl"></i>
+                        <span class="text-lg">Domov</span>
+                    </div>
+                </a>
+            </li>
+            <li class="h-full rounded-lg hover:bg-black transition duration-300 text-white w-28 text-center">
+                <a class="flex items-center justify-center" href="formatting">
+                    <div class="flex flex-col items-center justify-center py-2 px-1">
+                        <i class="fa-solid fa-text-height text-2xl"></i>
+                        <span>Formátovanie</span>
+                    </div>
+                </a>
+            </li>
+            <li class="h-full rounded-lg hover:bg-black transition duration-300 text-white w-28 text-center">
+                <a class="flex items-center justify-center" href="consistency">
+                    <div class="flex flex-col items-center justify-center py-2 px-1">
+                        <i class="fa-solid fa-clipboard-check text-2xl"></i>
+                        <span>Konzistencia</span>
+                    </div>
+                </a>
+            </li>
+            <li class="h-full rounded-lg hover:bg-black transition duration-300 text-white w-28 text-center">
+                <a class="flex items-center justify-center" href="spelling">
+                    <div class="flex flex-col items-center justify-center py-2 px-1">
+                        <i class="fa-solid fa-spell-check text-2xl"></i>
+                        <span>Pravopis</span>
+                    </div>
+                </a>
+            </li>
+            <li class="h-full rounded-lg hover:bg-black transition duration-300 text-white w-28 text-center">
+                <a class="flex items-center justify-center" href="report">
+                    <div class="flex flex-col items-center justify-center py-2 px-1">
+                        <i class="fa-solid fa-chart-simple text-2xl"></i>
+                        <span>Report</span>
+                    </div>
+                </a>
+            </li>
+        </ul>
     </nav>
 </div>
-
-@code {
-    private bool collapseNavMenu = true;
-
-    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
-
-    private void ToggleNavMenu()
-    {
-        collapseNavMenu = !collapseNavMenu;
-    }
-}

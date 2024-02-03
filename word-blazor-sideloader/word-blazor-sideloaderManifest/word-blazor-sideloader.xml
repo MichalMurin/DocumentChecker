@@ -17,8 +17,8 @@
   <ProviderName>Contoso</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
   <!-- The display name of your add-in. Used on the store and various places of the Office UI such as the add-ins dialog. -->
-  <DisplayName DefaultValue="Blazor add-in" />
-  <Description DefaultValue="Office Add-in using Blazor."/>
+  <DisplayName DefaultValue="KONTROLA" />
+  <Description DefaultValue="Office Add-in using Blazor for document checking."/>
   <!-- Icon for your add-in. Used on installation screens and the add-ins dialog. -->
   <IconUrl DefaultValue="~remoteAppUrl/Images/Button32x32.png" />
 

@@ -1,0 +1,7 @@
+﻿@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.page-wrapper {
+    @apply w-[90%] mx-auto;
+}
