@@ -6,5 +6,10 @@
         {
             
         }
+
+        public override void OnStartClick()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

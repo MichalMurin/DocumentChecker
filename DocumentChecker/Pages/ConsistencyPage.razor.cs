@@ -5,5 +5,10 @@
         public ConsistencyPage() : base("./Pages/ConsistencyPage.razor.js")
         {            
         }
+
+        public override void OnStartClick()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -17,10 +17,10 @@
   <ProviderName>Contoso</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
   <!-- The display name of your add-in. Used on the store and various places of the Office UI such as the add-ins dialog. -->
-  <DisplayName DefaultValue="KONTROLA" />
+  <DisplayName DefaultValue="Kontrola dokumentu" />
   <Description DefaultValue="Office Add-in using Blazor for document checking."/>
   <!-- Icon for your add-in. Used on installation screens and the add-ins dialog. -->
-  <IconUrl DefaultValue="~remoteAppUrl/Images/Button32x32.png" />
+  <IconUrl DefaultValue="~remoteAppUrl/Images/buttonLogo48x48.png" />
 
   <SupportUrl DefaultValue="https://www.contoso.com" />
   <!-- Domains that will be allowed when navigating. For example, if you use ShowTaskpane and then have an href link, navigation will only be allowed if the domain is on this list. -->
@@ -123,14 +123,14 @@
       </bt:Urls>
       <!-- ShortStrings max characters==125. -->
       <bt:ShortStrings>
-        <bt:String id="Contoso.TaskpaneButton.Label" DefaultValue="Show DocChecker Taskpane" />
+        <bt:String id="Contoso.TaskpaneButton.Label" DefaultValue="Kontrola dokumentu" />
         <bt:String id="Contoso.Group1Label" DefaultValue="Commands Group" />
-        <bt:String id="Contoso.GetStarted.Title" DefaultValue="Get started with your sample add-in!" />
+        <bt:String id="Contoso.GetStarted.Title" DefaultValue="Spusti kontrolu dokumentu!" />
       </bt:ShortStrings>
       <!-- LongStrings max characters==250. -->
       <bt:LongStrings>
-        <bt:String id="Contoso.TaskpaneButton.Tooltip" DefaultValue="Click to Show a Taskpane" />
-        <bt:String id="Contoso.GetStarted.Description" DefaultValue="Your sample add-in loaded succesfully. Go to the HOME tab and click the 'Show Taskpane' button to get started." />
+        <bt:String id="Contoso.TaskpaneButton.Tooltip" DefaultValue="Klikni pre zobrazenie doplnku" />
+        <bt:String id="Contoso.GetStarted.Description" DefaultValue="Doplnok na kontrolu dokumentu sa úspešne načítal. Pre spustenie choď na kartu DOMOV a klikni na tlačidlo 'Kontrola dokumentu'." />
       </bt:LongStrings>
     </Resources>
   </VersionOverrides>

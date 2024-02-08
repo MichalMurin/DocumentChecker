@@ -16,4 +16,8 @@
     <Folder Include="wwwroot\css\tailwind\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="wwwroot\JavaScriptFiles\BaseJsFunctions.js" />
+  </ItemGroup>
+
 </Project>

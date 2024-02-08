@@ -1,0 +1,11 @@
+﻿@page "/newrule"
+<div class="flex flex-col gap-6 py-8 ">
+    <DocumentChecker.Components.MyInputTextBox Header="Vlastné pravidlo" Description="Vložte vlastné RegEx pravidlo, ktoré sa bude vyhľadávať v texte a nájdená zhoda sa bude považovať za chybu." InputType="text" Placeholder="//[^\r\n]*[\r\n]" />
+    <div class="flex-row gap-16 flex justify-between ite">
+        <DocumentChecker.Components.MyButton ButtonContent="Zrušiť" Icon="" />
+        <DocumentChecker.Components.MyButton ButtonContent="Uložiť" Icon="" />
+    </div>
+</div>
+@code {
+
+}

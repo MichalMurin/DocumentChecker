@@ -15,6 +15,8 @@ namespace DocumentChecker.Pages
             JsModulePath = jsModulePath;
         }
 
+        public abstract void OnStartClick();
+
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
             if (firstRender)
