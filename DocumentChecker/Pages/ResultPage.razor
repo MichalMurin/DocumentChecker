@@ -1,0 +1,22 @@
+﻿@page "/result"
+<PageTitle>Formatting</PageTitle>
+
+<div class="flex flex-col gap-6 py-8 ">
+    <DocumentChecker.Components.MyTextBox Header="Výsledok" Description=@Result Path="formatting" />
+    <div class="flex-row gap-16 flex justify-between">
+        <DocumentChecker.Components.MyButton ButtonContent="Ignoruj" Icon="fa-solid fa-file-import" OnClick=OnIgnoreClick />
+        <DocumentChecker.Components.MyButton ButtonContent="Oprav" Icon="fa-solid fa-file-export" OnClick="OnCorrectClick" />
+    </div>
+</div>
+
+@code   {
+    public string Result { get; set; } = "Kontroluje sa dokument...";
+    public void OnIgnoreClick()
+    {
+        Result = "Chyba bola ignorovaná";
+    }
+public void OnCorrectClick()
+    {
+        Result = "Chyba bola opravená";
+    }
+}

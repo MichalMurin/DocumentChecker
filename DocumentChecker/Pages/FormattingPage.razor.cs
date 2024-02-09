@@ -9,7 +9,13 @@ namespace DocumentChecker.Pages
 {
     public partial class FormattingPage
     {
-        private int _currentCount = 0;
+        private List<string> _ignoredParagraphsIds = new List<string>();
+        private int _font_size;
+        private string _font_name = string.Empty;
+        private string _alligment = string.Empty;
+        private double _lineSpacing;
+        private int _leftIndent;
+        private int _rightIndent;
 
         public FormattingPage(): base("./Pages/FormattingPage.razor.js")
         {            
@@ -18,13 +24,11 @@ namespace DocumentChecker.Pages
         {
             Console.WriteLine("Import clicked - triggering file import");
             await JSRuntime.InvokeVoidAsync("TriggerImport", "filePicker");
-            //await JSModule.InvokeVoidAsync("InsertText", $"halo halo halo zlata rybicka kde si");
         }
         private async Task ImportFile(InputFileChangeEventArgs e)
         {
             var file = e.File;
             long maxsize = 512000;
-
             var buffer = new byte[file.Size];
             await file.OpenReadStream(maxsize).ReadAsync(buffer);
             var fileContent = System.Text.Encoding.UTF8.GetString(buffer);
@@ -45,16 +49,27 @@ namespace DocumentChecker.Pages
 
             await JSRuntime.InvokeVoidAsync("saveAsFile", url, filename);
         }
-        public override void OnStartClick()
+        public override async void OnStartClick()
         {
-
+            // skontrolovat paragrafy
+            // potom skontorlovat hlavicky a paty
+            // riakdovanie musime nastavit ako: velkost fontu * riadkovanie =  pocet bodov pre vysku riadke (12* 1.5 = 18)
+            NavigationManager.NavigateTo("/result");
+            await JSModule.InvokeVoidAsync("checkParagraphs", _ignoredParagraphsIds, _font_name, _font_size, _alligment, _lineSpacing * _font_size, _leftIndent, _rightIndent);
         }
+
+
+
+
+
+
+
 
         private async Task GetNumberOfWords()
         {
             ReturnValue<string> ret = await JSModule.InvokeAsync<ReturnValue<string>>("GetAllText");
             var words = ret.Value.Trim().Split(" ");
-            _currentCount = words.Count();
+            //_currentCount = words.Count();
             //await JSModule.InvokeVoidAsync($"InsertText", $"Current count is {_currentCount}");
         }
 

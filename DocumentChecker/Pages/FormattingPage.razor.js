@@ -1,4 +1,36 @@
 ﻿
+export async function checkParagraphs(ignoredIds, fontName, fontSize, alligment, lineSpacing, leftIndent, rightIndent) {
+    console.log("retireved args: ", ignoredIds, fontName, fontSize, alligment, lineSpacing, leftIndent, rightIndent);
+    await Word.run(async (context) => {
+        const paragraphs = context.document.body.paragraphs;
+        paragraphs.load("text, font, alignment, lineSpacing, style, uniqueLocalId, leftIndent, rightIndent");
+        await context.sync();
+        paragraphs.items.every((paragraph) => {
+            console.log("Checking: ", paragraph.text);
+            if (ignoredIds.includes(paragraph.uniqueLocalId)) {
+                return true;
+            }
+            if (paragraph.text !== "" &&
+               (paragraph.font.name !== fontName ||
+                    paragraph.alignment !== alligment ||
+                    paragraph.font.size !== fontSize ||
+                    paragraph.lineSpacing !== lineSpacing ||
+                    paragraph.leftIndent !== leftIndent ||
+                    paragraph.rightIndent !== rightIndent)                    
+            ) {
+                console.log("This paragraph is wrong: ", paragraph.text, " style: ", paragraph.style, " ID: ", paragraph.uniqueLocalId, "right indent ", paragraph.rightIndent, "left indent " , paragraph.leftIndent);
+                paragraph.select();
+                return false;
+            }
+            return true;
+        });
+        await context.sync();
+    });
+}
+
+
+
+
 export async function InsertText(text) {
     await Word.run(async (context) => {
         
@@ -41,6 +73,11 @@ export async function GetAllText() {
     return { Value: text };
 }
 
+
+
+
+
+// Funkcia na ziskanie informácií o slovách v dokumente - velmi pomala
 export async function GetWordInfos() {
     const wordInfoArray = [];
     await Word.run(async (context) => {

@@ -1,4 +1,5 @@
 ﻿@page "/formatting"
+@inject NavigationManager NavigationManager
 @inherits BaseJsPage;
 <PageTitle>Formatting</PageTitle>
 
@@ -9,9 +10,11 @@
         <InputFile id="filePicker" OnChange="ImportFile" hidden accept=".txt" />
         <DocumentChecker.Components.MyButton ButtonContent="Export" Icon="fa-solid fa-file-export" OnClick="OnExportClick" />
     </div>
-    <DocumentChecker.Components.MyInput Text="Veľkosť textu" InputType="number" Placeholder="12" />
-    <DocumentChecker.Components.MyInput Text="Riadkovanie" InputType="number" Placeholder="1.5" />
-    <DocumentChecker.Components.MyInput Text="Okraj" InputType="number" Placeholder="4" />
-    <DocumentChecker.Components.MyInput Text="Font" InputType="text" Placeholder="Times New Roman" />
+    <DocumentChecker.Components.MyInput Text="Veľkosť textu" InputType="number" Placeholder="12" @bind-Value="_font_size" T="int"/>
+    <DocumentChecker.Components.MyInput Text="Riadkovanie" InputType="number" Placeholder="1.5" @bind-Value="_lineSpacing" T="double" />
+    <DocumentChecker.Components.MyInput Text="Ľavý okraj" InputType="number" Placeholder="4" @bind-Value="_leftIndent" T="int" />
+    <DocumentChecker.Components.MyInput Text="Pravý okraj" InputType="number" Placeholder="4" @bind-Value="_rightIndent" T="int" />
+    <DocumentChecker.Components.MyInput Text="Font" InputType="text" Placeholder="Times New Roman" @bind-Value="_font_name" T="string" />
+    <DocumentChecker.Components.MyInput Text="Zarovnanie" InputType="text" Placeholder="Justified" @bind-Value="_alligment" T="string" />
     <DocumentChecker.Components.MyButton ButtonContent="ŠTART" Icon="fa-solid fa-play" Classes="w-48" OnClick="OnStartClick" />
 </div>
