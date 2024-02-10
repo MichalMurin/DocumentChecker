@@ -2,20 +2,24 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.JSInterop;
+using CommonCode.Extensions;
 using System.Reflection.Metadata;
 using System.Text.Json;
+using CommonCode.DataServices;
 
 namespace DocumentChecker.Pages
 {
     public partial class FormattingPage
     {
-        private List<string> _ignoredParagraphsIds = new List<string>();
-        private int _font_size;
-        private string _font_name = string.Empty;
-        private string _alligment = string.Empty;
-        private double _lineSpacing;
-        private int _leftIndent;
-        private int _rightIndent;
+        [Inject]
+        private FormattingPageDataService FormattingPageDataService { get; set; } = default!;
+        //private List<string> _ignoredParagraphsIds = new List<string>();
+        //private double _font_size;
+        //private string _font_name = string.Empty;
+        //private string _alligment = string.Empty;
+        //private double _lineSpacing;
+        //private double _leftIndent;
+        //private double _rightIndent;
 
         public FormattingPage(): base("./Pages/FormattingPage.razor.js")
         {            
@@ -52,10 +56,15 @@ namespace DocumentChecker.Pages
         public override async void OnStartClick()
         {
             // skontrolovat paragrafy
-            // potom skontorlovat hlavicky a paty
-            // riakdovanie musime nastavit ako: velkost fontu * riadkovanie =  pocet bodov pre vysku riadke (12* 1.5 = 18)
             NavigationManager.NavigateTo("/result");
-            await JSModule.InvokeVoidAsync("checkParagraphs", _ignoredParagraphsIds, _font_name, _font_size, _alligment, _lineSpacing * _font_size, _leftIndent, _rightIndent);
+            await JSModule.InvokeVoidAsync("checkParagraphs", FormattingPageDataService.IgnoredParagraphs,
+                                                              FormattingPageDataService.FontName,
+                                                              FormattingPageDataService.FontSize,
+                                                              FormattingPageDataService.Alligment,
+                                                              FormattingPageDataService.LineSpacing.GetLineSpacingInPoints(FormattingPageDataService.FontSize),
+                                                              FormattingPageDataService.LeftIndent.ConvertCmToPoints(),
+                                                              FormattingPageDataService.RightIndent.ConvertCmToPoints());
+            // TODO: check headers and footers
         }
 
 

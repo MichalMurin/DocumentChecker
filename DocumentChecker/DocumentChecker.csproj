@@ -20,4 +20,8 @@
     <None Include="wwwroot\JavaScriptFiles\BaseJsFunctions.js" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\CommonCode\CommonCode.csproj" />
+  </ItemGroup>
+
 </Project>

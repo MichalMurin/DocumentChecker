@@ -1,7 +1,7 @@
 ﻿@page "/formatting"
 @inject NavigationManager NavigationManager
 @inherits BaseJsPage;
-<PageTitle>Formatting</PageTitle>
+<PageTitle>Formatting</PageTitle> 
 
 <div class="flex flex-col gap-6 py-8 ">
     <DocumentChecker.Components.MyTextBox Header="Formátovanie" Description="Kontrola formátovania dokumentu podľa zvolených štandardov" Path="formatting" />
@@ -10,11 +10,11 @@
         <InputFile id="filePicker" OnChange="ImportFile" hidden accept=".txt" />
         <DocumentChecker.Components.MyButton ButtonContent="Export" Icon="fa-solid fa-file-export" OnClick="OnExportClick" />
     </div>
-    <DocumentChecker.Components.MyInput Text="Veľkosť textu" InputType="number" Placeholder="12" @bind-Value="_font_size" T="int"/>
-    <DocumentChecker.Components.MyInput Text="Riadkovanie" InputType="number" Placeholder="1.5" @bind-Value="_lineSpacing" T="double" />
-    <DocumentChecker.Components.MyInput Text="Ľavý okraj" InputType="number" Placeholder="4" @bind-Value="_leftIndent" T="int" />
-    <DocumentChecker.Components.MyInput Text="Pravý okraj" InputType="number" Placeholder="4" @bind-Value="_rightIndent" T="int" />
-    <DocumentChecker.Components.MyInput Text="Font" InputType="text" Placeholder="Times New Roman" @bind-Value="_font_name" T="string" />
-    <DocumentChecker.Components.MyInput Text="Zarovnanie" InputType="text" Placeholder="Justified" @bind-Value="_alligment" T="string" />
+    <DocumentChecker.Components.MyInput Text="Veľkosť textu" InputType="number" Placeholder="12" @bind-Value="@FormattingPageDataService.FontSize" T="double"/>
+    <DocumentChecker.Components.MyInput Text="Riadkovanie" InputType="number" Placeholder="1.5" @bind-Value="@FormattingPageDataService.LineSpacing" T="double" />
+    <DocumentChecker.Components.MyInput Text="Ľavý okraj" InputType="number" Placeholder="0" @bind-Value="@FormattingPageDataService.LeftIndent" T="double" />
+    <DocumentChecker.Components.MyInput Text="Pravý okraj" InputType="number" Placeholder="0" @bind-Value="@FormattingPageDataService.RightIndent" T="double" />
+    <DocumentChecker.Components.MyInput Text="Font" InputType="text" Placeholder="Times New Roman" @bind-Value="@FormattingPageDataService.FontName" T="string" />
+    <DocumentChecker.Components.MyInput Text="Zarovnanie" InputType="text" Placeholder="Justified" @bind-Value="@FormattingPageDataService.Alligment" T="string" />
     <DocumentChecker.Components.MyButton ButtonContent="ŠTART" Icon="fa-solid fa-play" Classes="w-48" OnClick="OnStartClick" />
 </div>

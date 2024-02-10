@@ -8,15 +8,3 @@
         <DocumentChecker.Components.MyButton ButtonContent="Oprav" Icon="fa-solid fa-file-export" OnClick="OnCorrectClick" />
     </div>
 </div>
-
-@code   {
-    public string Result { get; set; } = "Kontroluje sa dokument...";
-    public void OnIgnoreClick()
-    {
-        Result = "Chyba bola ignorovaná";
-    }
-public void OnCorrectClick()
-    {
-        Result = "Chyba bola opravená";
-    }
-}
