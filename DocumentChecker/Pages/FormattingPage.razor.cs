@@ -2,9 +2,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.JSInterop;
-using CommonCode.Extensions;
-using System.Reflection.Metadata;
-using System.Text.Json;
 using CommonCode.DataServices;
 
 namespace DocumentChecker.Pages
@@ -13,16 +10,9 @@ namespace DocumentChecker.Pages
     {
         [Inject]
         private FormattingPageDataService FormattingPageDataService { get; set; } = default!;
-        //private List<string> _ignoredParagraphsIds = new List<string>();
-        //private double _font_size;
-        //private string _font_name = string.Empty;
-        //private string _alligment = string.Empty;
-        //private double _lineSpacing;
-        //private double _leftIndent;
-        //private double _rightIndent;
 
         public FormattingPage(): base("./Pages/FormattingPage.razor.js")
-        {            
+        {
         }
         private async Task OnImportClick()
         {
@@ -53,18 +43,10 @@ namespace DocumentChecker.Pages
 
             await JSRuntime.InvokeVoidAsync("saveAsFile", url, filename);
         }
-        public override async void OnStartClick()
+        public override void OnStartClick()
         {
             // skontrolovat paragrafy
-            NavigationManager.NavigateTo("/result");
-            await JSModule.InvokeVoidAsync("checkParagraphs", FormattingPageDataService.IgnoredParagraphs,
-                                                              FormattingPageDataService.FontName,
-                                                              FormattingPageDataService.FontSize,
-                                                              FormattingPageDataService.Alligment,
-                                                              FormattingPageDataService.LineSpacing.GetLineSpacingInPoints(FormattingPageDataService.FontSize),
-                                                              FormattingPageDataService.LeftIndent.ConvertCmToPoints(),
-                                                              FormattingPageDataService.RightIndent.ConvertCmToPoints());
-            // TODO: check headers and footers
+            NavigationManager.NavigateTo($"/formattingResult/{true}");
         }
 
 

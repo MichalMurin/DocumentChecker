@@ -9,4 +9,4 @@
 
 window.TriggerImport = (elemntId) => {
     document.getElementById(elemntId).click();
-};
+}
