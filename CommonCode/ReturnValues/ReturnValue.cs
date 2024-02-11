@@ -1,4 +1,4 @@
-﻿namespace DocumentChecker.ReturnValues
+﻿namespace CommonCode.ReturnValues
 {
     public class ReturnValue<T>
     {

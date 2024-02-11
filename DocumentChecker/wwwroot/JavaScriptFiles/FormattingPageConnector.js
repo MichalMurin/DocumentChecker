@@ -31,6 +31,7 @@ window.formattingConnector = {
             await context.sync();
             paragraphs.items.every((paragraph) =>
             {
+                console.log("Checking: ", paragraph.text);
                 if (paragraph.uniqueLocalId === idToCorrect)
                 {
                     paragraph.font.name = fontName;
@@ -45,7 +46,6 @@ window.formattingConnector = {
                 {
                     return true;
                 }
-                console.log("Checking: ", paragraph.text);
                 const styleChecks = [
                     { condition: paragraph.font.name !== fontName, errorType: 'IncorrectFontName' },
                     { condition: paragraph.font.size !== fontSize, errorType: 'IncorrectFontSize' },

@@ -2,10 +2,6 @@
 {
     public partial class SpellingPage
     {
-        public SpellingPage(): base("./Pages/SpellingPage.razor.js")
-        {
-            
-        }
         private void OpenNewRulePage()
         {
             NavigationManager.NavigateTo("/newrule");

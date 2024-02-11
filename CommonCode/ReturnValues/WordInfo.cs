@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace DocumentChecker.ReturnValues
+namespace CommonCode.ReturnValues
 {
     public class Font
     {

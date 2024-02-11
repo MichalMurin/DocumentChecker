@@ -1,8 +1,26 @@
 ﻿<label class="block bg-pallette-secondary-black rounded-lg w-[95%] mx-auto text-white py-2 pl-6 flex justify-between">
     <span class="text-2xl" >@Text</span>
-    <input type="checkbox" name="myCheckbox" class="mr-2 form-checkbox-lg">
+    <input type="checkbox" name="myCheckbox" class="mr-2 form-checkbox-lg" @bind="Checked" @bind:event="oninput">
 </label>
 @code {
     [Parameter]
     public string Text { get; set; } = "Text";
+
+    private bool _checked = false;
+    [Parameter]
+    public bool Checked
+    {
+        get => _checked;
+        set
+        {
+            if (value != _checked)
+            {
+                _checked = value;
+                CheckedChanged.InvokeAsync(value);
+            }
+        }
+    }
+
+    [Parameter]
+    public EventCallback<bool> CheckedChanged { get; set; }
 }

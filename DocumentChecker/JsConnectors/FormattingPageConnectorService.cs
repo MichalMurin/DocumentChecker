@@ -1,13 +1,13 @@
-﻿using DocumentChecker.ReturnValues;
+﻿using CommonCode.ReturnValues;
 using Microsoft.JSInterop;
 
 namespace DocumentChecker.JsConnectors
 {
-    public class FormattingPageConnector
+    public class FormattingPageConnectorService
     {
         private readonly IJSRuntime _jsRuntime;
 
-        public FormattingPageConnector(IJSRuntime jsRuntime)
+        public FormattingPageConnectorService(IJSRuntime jsRuntime)
         {
             _jsRuntime = jsRuntime;
         }
@@ -21,6 +21,5 @@ namespace DocumentChecker.JsConnectors
         {
            return await _jsRuntime.InvokeAsync<FormattingReturnValue>("formattingConnector.checkParagraphs", ignoredParagraphs, fontName, fontSize, alligment, lineSpacing, leftIndent, rightIndent, paraIdToCorrect);
         }
-
     }
 }

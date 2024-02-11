@@ -4,7 +4,7 @@ using Microsoft.JSInterop;
 using CommonCode.Extensions;
 using System.Reflection;
 using DocumentChecker.JsConnectors;
-using DocumentChecker.ReturnValues;
+using CommonCode.ReturnValues;
 
 namespace DocumentChecker.Pages.ResultPages
 {
@@ -14,12 +14,14 @@ namespace DocumentChecker.Pages.ResultPages
     // TODO: Dorobit Import a export nastaveni
     // TODO: Dropdown na vyber zarovnania
     // TODO: rednastavenen hodnoty napisat tabulatorom
+    // TODO: Urobit kontrolu podla stylov, cize pre jeden styl kontrolovat vsetko .. atd??
+    //      - dalo by sa to urobit tak ze si potiahnem vsetky styly z wordu a uzivatel si nastavi kazdy jeden? ... alebo budem kontrolovat len to co uz je nastavene pre tie styly
     public partial class FormattingResultPage
     {
         [Inject]
         public FormattingPageDataService FormattingPageDataService { get; set; } = default!;
         [Inject]
-        public FormattingPageConnector JsConnector { get; set; } = default!;
+        public FormattingPageConnectorService JsConnector { get; set; } = default!;
         [Parameter]
         public bool StartScan { get; set; } = false;
         public override string TextResult { get; set; } = "Kontroluje sa dokument...";

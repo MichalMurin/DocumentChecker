@@ -2,7 +2,7 @@
 
 <div class="block bg-pallette-secondary-black rounded-lg flex items-center justify-between text-white py-2 pl-6">
     <p class="text-white text-2xl mr-4">@Text</p>
-    <input type=@InputType class="form-control bg-pallette-primary-black hover:bg-gray rounded-md mr-8" @bind="@InputValue" placeholder=@Placeholder />
+    <input type=@InputType class="form-control bg-pallette-primary-black hover:bg-gray rounded-md mr-8" @bind="@InputValue" placeholder=@Placeholder @onkeydown="HandleKeyDown" />
 </div>
 
 @code {
@@ -11,7 +11,7 @@
     [Parameter]
     public string InputType { get; set; } = "text";
     [Parameter]
-    public string Placeholder { get; set; } = string.Empty;
+    public T Placeholder { get; set; } = default!;
     [Parameter]
     public T Value { get; set; } = default!;
     [Parameter]
@@ -27,6 +27,16 @@
                 Value = value;
                 ValueChanged.InvokeAsync(value);
             }
+        }
+    }
+
+    private void HandleKeyDown(KeyboardEventArgs e)
+    {
+        Console.WriteLine($"Key pressed: {e.Key}");
+        if (e.Key == "Tab")
+        {
+            if (InputValue is string tmpValue && tmpValue == "")
+                InputValue = Placeholder;
         }
     }
 }
