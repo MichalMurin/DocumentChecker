@@ -9,6 +9,7 @@
 
 window.TriggerImport = (elemntId) => {
     document.getElementById(elemntId).click();
+}
 
 window.InsertText = async (text) => {
     await Word.run(async (context) => {
