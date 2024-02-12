@@ -13,7 +13,12 @@ namespace DocumentChecker.JsConnectors
 
         public async Task InsertTextToWord(string text)
         {
-            await _jsRuntime.InvokeVoidAsync("consisntencyConnector.insertTextTest", text);
+            await _jsRuntime.InvokeVoidAsync("consistencyConnector.insertTextTest", text);
+        }
+
+        public async Task ScanDocumentConsistency()
+        {
+            await _jsRuntime.InvokeVoidAsync("consistencyConnector.checkConsistency");
         }
     }
 }

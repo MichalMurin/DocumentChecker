@@ -13,5 +13,27 @@ namespace DocumentChecker.Pages.ResultPages
         [Parameter]
         public bool StartScan { get; set; } = false;
         public override string TextResult { get; set; } = "Kontroluje sa dokument...";
+
+        protected async override Task OnInitializedAsync()
+        {
+            base.OnInitialized();
+            if (StartScan)
+            {
+                SetHeaderAndResult();
+                Console.WriteLine("Page initialized, starting scan");
+                await ScanDocumentFormatting();
+            }
+        }
+
+        private async Task ScanDocumentFormatting(string paraIdToCorrect = "")
+        {
+            await JsConnector.ScanDocumentConsistency();
+        }
+
+        private void SetHeaderAndResult()
+        {
+            Header = "Kontrola konzistnentnosti dokumentu...";
+            TextResult = "Prebieha kontrola konzistnentnosti dokumentu...";
+        }
     }
 }
