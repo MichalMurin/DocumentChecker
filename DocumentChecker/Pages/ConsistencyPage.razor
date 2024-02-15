@@ -5,14 +5,14 @@
 <PageTitle>ConsistencyPage</PageTitle>
 <div class="flex flex-col gap-6 py-8 ">
     <DocumentChecker.Components.MyTextBox Header="Konzistencia" Description="Kontrola konzistencie textu, prítomnosť dvojitých medzier, nadväznosť nadpisov, funkčnosť krížových odkazov..." Path="consistency" />
-    <DocumentChecker.Components.MyCheckbox Text="Nadväznosť nadpisov" @bind-Checked="@ConsistencyPageDataService.TitleConsistency" />
+    <DocumentChecker.Components.MyCheckbox Text="Kontorla nadpisov" @bind-Checked="@ConsistencyPageDataService.TitleConsistency" />
+    <DocumentChecker.Components.MyCheckbox Text="Dvojité medzery" @bind-Checked="@ConsistencyPageDataService.DoubleSpaces" />
+    <DocumentChecker.Components.MyCheckbox Text="Prázdne riadky" @bind-Checked="@ConsistencyPageDataService.EmptyLines" />
     <DocumentChecker.Components.MyCheckbox Text="Funkčnosť krížových odkazov" @bind-Checked="@ConsistencyPageDataService.CrossReferenceFunctionality" />
-    <DocumentChecker.Components.MyCheckbox Text="Zarovnanie dokumentu" @bind-Checked="@ConsistencyPageDataService.DocumentAlignment" />
-    <DocumentChecker.Components.MyCheckbox Text="Kontrola popisov" @bind-Checked="@ConsistencyPageDataService.DescriptionValidation" />
-    <DocumentChecker.Components.MyCheckbox Text="Kontrola zoznamov" @bind-Checked="@ConsistencyPageDataService.ListValidation" />
-    <DocumentChecker.Components.MyCheckbox Text="Kontrola nekonzistentnosti slov" @bind-Checked="@ConsistencyPageDataService.InconsistentWordValidation" />
-    <DocumentChecker.Components.MyCheckbox Text="Kontrola čísloviek" @bind-Checked="@ConsistencyPageDataService.NumericalValidation" />
-    <DocumentChecker.Components.MyCheckbox Text="Kontrola zátvoriek" @bind-Checked="@ConsistencyPageDataService.ParenthesesValidation" />
-    <DocumentChecker.Components.MyCheckbox Text="Kontrola bodiek na konci viet" @bind-Checked="@ConsistencyPageDataService.SentenceEndingValidation" />
+    <DocumentChecker.Components.MyCheckbox Text="Zarovnanie dokumentu" @bind-Checked="@ConsistencyPageDataService.DocumentAlignment" Disabled=true />
+    <DocumentChecker.Components.MyCheckbox Text="Kontrola popisov" @bind-Checked="@ConsistencyPageDataService.DescriptionValidation" Disabled=true/>
+    <DocumentChecker.Components.MyCheckbox Text="Kontrola zoznamov" @bind-Checked="@ConsistencyPageDataService.ListValidation" Disabled=true/>
+    <DocumentChecker.Components.MyCheckbox Text="Kontrola zátvoriek a úvodzoviek" @bind-Checked="@ConsistencyPageDataService.ParenthesesValidation" />
+    <DocumentChecker.Components.MyCheckbox Text="Kontrola bodiek, čiarok, dvojbodok" @bind-Checked="@ConsistencyPageDataService.DotsComasColonsValidation" />
     <DocumentChecker.Components.MyButton ButtonContent="ŠTART" Icon="fa-solid fa-play" Classes="w-48" OnClick="OnStartClick" />
 </div>

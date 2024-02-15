@@ -9,7 +9,8 @@ module.exports = {
               pallette: {
                   "primary-black": "#5b595a",
                   "secondary-black": "#3e3838",
-                  "hover-black": "#151313"
+                  "hover-black": "#151313",
+                  "disabled-black": "#484848"
               },
           },
       },

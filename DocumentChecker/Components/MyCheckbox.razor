@@ -1,12 +1,13 @@
-﻿<label class="block bg-pallette-secondary-black rounded-lg w-[95%] mx-auto text-white py-2 pl-6 flex justify-between">
+﻿<label class="@color rounded-lg w-[95%] mx-auto text-white py-2 pl-6 flex justify-between">
     <span class="text-2xl" >@Text</span>
-    <input type="checkbox" name="myCheckbox" class="mr-2 form-checkbox-lg" @bind="Checked" @bind:event="oninput">
+    <input type="checkbox" name="myCheckbox" class="mr-2 form-checkbox-lg" @bind="Checked" @bind:event="oninput" disabled=@Disabled>
 </label>
 @code {
+    private string color = "bg-pallette-secondary-black";
     [Parameter]
     public string Text { get; set; } = "Text";
 
-    private bool _checked = false;
+    private bool _checked = true;
     [Parameter]
     public bool Checked
     {
@@ -23,4 +24,23 @@
 
     [Parameter]
     public EventCallback<bool> CheckedChanged { get; set; }
+
+    private bool _disabled = false;
+
+    [Parameter]
+    public bool Disabled 
+    { get => _disabled;
+        set
+        {
+            if (value)
+            {
+                color = "bg-pallette-disabled";
+            }
+            else
+            {
+                color = "bg-pallette-secondary-black";
+            }
+            _disabled = value;
+        }
+    }
 }

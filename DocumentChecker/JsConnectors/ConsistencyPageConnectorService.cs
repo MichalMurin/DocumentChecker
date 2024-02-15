@@ -1,4 +1,5 @@
-﻿using Microsoft.JSInterop;
+﻿using CommonCode.DataServices;
+using Microsoft.JSInterop;
 
 namespace DocumentChecker.JsConnectors
 {
@@ -16,9 +17,9 @@ namespace DocumentChecker.JsConnectors
             await _jsRuntime.InvokeVoidAsync("consistencyConnector.insertTextTest", text);
         }
 
-        public async Task ScanDocumentConsistency()
+        public async Task ScanDocumentConsistency(bool start, ConsistencyPageDataService data)
         {
-            await _jsRuntime.InvokeVoidAsync("consistencyConnector.checkConsistency");
+            await _jsRuntime.InvokeVoidAsync("consistencyConnector.checkConsistency", start, data);
         }
     }
 }

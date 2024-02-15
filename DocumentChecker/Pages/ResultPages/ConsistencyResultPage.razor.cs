@@ -25,9 +25,19 @@ namespace DocumentChecker.Pages.ResultPages
             }
         }
 
-        private async Task ScanDocumentFormatting(string paraIdToCorrect = "")
+        public override async Task OnCorrectClick()
         {
-            await JsConnector.ScanDocumentConsistency();
+            await JsConnector.ScanDocumentConsistency(false, ConsistencyPageDataService);
+        }
+
+        public override async Task OnIgnoreClick()
+        {
+            await JsConnector.ScanDocumentConsistency(false, ConsistencyPageDataService);
+        }
+
+        private async Task ScanDocumentFormatting()
+        {
+            await JsConnector.ScanDocumentConsistency(true, ConsistencyPageDataService);
         }
 
         private void SetHeaderAndResult()

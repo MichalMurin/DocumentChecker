@@ -30,3 +30,32 @@ window.InsertText = async (text) => {
             }
         });
 }
+
+GLOBAL_PARAGRAPHS = undefined;
+CURRENT_PARAGRAPG_INDEX = 0;
+async function getAllParagraphs(atributesToLoad) {
+    console.log("Getting all paragraphs");
+    retParagraphs = undefined;
+    await Word.run(async (context) => {
+        const paragraphs = context.document.body.paragraphs;
+        paragraphs.load(atributesToLoad);
+        await context.sync();
+        retParagraphs = paragraphs;
+    });
+    GLOBAL_PARAGRAPHS = retParagraphs;
+    CURRENT_PARAGRAPG_INDEX = 0;
+    return retParagraphs;
+}
+
+async function selectParagraph(index) {
+    console.log("Selecting paragraph at index " + index);
+    await Word.run(async (context) => {
+        const paragraphs = context.document.body.paragraphs;
+        paragraphs.load();
+        await context.sync();
+        paragraphs.items[index].select();
+        await context.sync();
+    });
+}
+
+

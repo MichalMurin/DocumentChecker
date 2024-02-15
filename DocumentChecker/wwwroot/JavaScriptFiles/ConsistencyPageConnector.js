@@ -1,4 +1,8 @@
-﻿window.consistencyConnector = {
+﻿// variable to store previous heading, for heading continuity check
+var previousHeading = { text: undefined, number: undefined };
+var dataService = undefined;
+
+window.consistencyConnector = {
     insertTextTest: async (text) => {
         await Word.run(async (context) => {
             // Create a proxy object for the document body.
@@ -18,53 +22,64 @@
                 }
             });
     },
-    checkConsistency: async () => {
-        await refresshAllRefFields();
-        const errors = [];
-        let previousHeading = { text: undefined, number: undefined };
-        // Define checks
-        return Word.run(async (context) => {
-            const paragraphs = context.document.body.paragraphs;
-            paragraphs.load("text, font, alignment, lineSpacing, style, fields, listItemOrNullObject");
-
-            await context.sync();
-            paragraphs.items.every((paragraph) => {
-                console.log("Checking: ", paragraph.text);
-                const styleChecks = [
-                    { condition: checkDoubleSpaces(paragraph), errorType: "Double spaces" },
-                    { condition: checkInvalidCrossReference(paragraph), errorType: "Invalid Cross ref" },
-                    { condition: !checkHeadingContinuity(paragraph, previousHeading), errorType: "Invalid Heading Continuity" },
-                    { condition: !isValidParenthesis(paragraph), errorType: "Invalid Parenthesis" },
-                    { condition: !checkSentenceFormat(paragraph), errorType: "Invalid Sentence Format" },
-                    // Add more checks as needed
-                ];
-
-                // Iterate over checks
-                styleChecks.forEach((check) => {
-                    if (check.condition) {
-                        errors.push(check.errorType);
-                    }
-                });
-                if (errors.length > 0) {
-                    console.log(
-                        "This paragraph is wrong: ",
-                        paragraph.text,
-                        paragraph.style,
-                        paragraph.font.size,
-                        paragraph.font.name,
-                        paragraph.alignment,
-                        paragraph.lineSpacing
-                    );
-                    paragraph.select();
-                    console.log(errors);
-                    return false;
-                }
-                return true;
-            });
-            await context.sync();
-        });
-    },
+    checkConsistency: async (start, data) => {
+        console.log(data);        
+        if (start) {
+            // if we are starting the scan, we load all paragraphs and refresh all ref fields
+            console.log("Starting consistency scan");
+            dataService = data;
+            previousHeading = { text: undefined, number: undefined };
+            await refresshAllRefFields();
+            await getAllParagraphs("text, font, alignment, lineSpacing, style, fields, listItemOrNullObject");
+        }
+        else {
+            CURRENT_PARAGRAPG_INDEX++;
+        }
+        await startConsistencyScan();
+    }
 }
+
+async function startConsistencyScan() {
+    // list of found errors
+    const errors = [];
+    for (var i = CURRENT_PARAGRAPG_INDEX; i < GLOBAL_PARAGRAPHS.items.length; i++) {
+        paragraph = GLOBAL_PARAGRAPHS.items[i];
+        CURRENT_PARAGRAPG_INDEX = i;
+        console.log("Checking: ", paragraph.text);
+        const styleChecks = prepareChecks(paragraph);
+        console.log("Style checks: ", styleChecks);
+        // Iterate over checks
+        styleChecks.forEach((check) => {
+            console.log("Checking: ", check.errorType);
+            console.log("Result: ", check.condition);
+            if (check.condition) {
+                errors.push(check.errorType);
+            }
+        });
+        if (errors.length > 0) {
+            console.log("This paragraph is wrong: ", paragraph.text);
+            await selectParagraph(CURRENT_PARAGRAPG_INDEX);
+            console.log(errors);
+            return false;
+        }
+    }
+    return true;
+}
+
+function prepareChecks(paragraph) {
+    console.log("Preparing checks: ", dataService.doubleSpaces);
+    console.log(typeof dataService.doubleSpaces);
+    const styleChecks = [
+        { condition: dataService.doubleSpaces && checkDoubleSpaces(paragraph), errorType: "Double spaces" },
+        { condition: dataService.crossReferenceFunctionality && checkInvalidCrossReference(paragraph), errorType: "Invalid Cross ref" },
+        { condition: dataService.titleConsistency && !checkHeadingContinuity(paragraph, previousHeading), errorType: "Invalid Heading Continuity" },
+        { condition: dataService.parenthesesValidation && !isValidParenthesis(paragraph), errorType: "Invalid Parenthesis" },
+        { condition: dataService.dotsComasColonsValidation && !checkSentenceFormat(paragraph), errorType: "Invalid Sentence Format" },
+        // Add more checks as needed
+    ];
+    return styleChecks;
+}
+
 
 async function refresshAllRefFields() {
     return Word.run(async (context) => {
@@ -87,6 +102,8 @@ function checkInvalidCrossReference(paragraph) {
 }
 
 function checkHeadingContinuity(paragraph, previousHeading) {
+    // TODO: kontrola ci nadpis pred tym mal rovnake formatovanie .. tzn (velke pismeno na zaciatku, bodka na konci)
+    // ak je nadpis prvej urovne .. je na novej strane??
     console.log("Checking heading continuity, previous heading: ", previousHeading.text, previousHeading.number);
     let currentNumber = undefined;
     if (!paragraph.listItemOrNullObject.isNullObject) {
@@ -129,17 +146,20 @@ function isValidParenthesis(paragraph) {
 
     for (let i = 0; i < text.length; i++) {
         const char = text[i];
-        if (char === '(' || char === '[' || char === '{') {
+        if (char === '(' || char === '[' || char === '{' || char === '“' || char === '„') {
             stack.push(char);
-        } else if (char === ')' || char === ']' || char === '}') {
+            console.log("Pushed: ", char, "Stack: ", stack)
+        } else if (char === ')' || char === ']' || char === '}' || char === '”') {
             if (stack.length === 0) {
                 return false;
             }
             const top = stack.pop();
+            console.log("Popped: ", top, "Stack: ", stack)
             if (
                 (char === ')' && top !== '(') ||
                 (char === ']' && top !== '[') ||
-                (char === '}' && top !== '{')
+                (char === '}' && top !== '{') ||
+                (char === '”' && (top !== '„' && top !== '“'))
             ) {
                 return false;
             }
