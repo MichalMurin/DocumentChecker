@@ -13,14 +13,14 @@ namespace DocumentChecker.JsConnectors
             _jsRuntime = jsRuntime;
         }
 
-        public async Task<FormattingReturnValue> CheckParagraphs(bool start, FormattingPageDataService data)
+        public async Task<ScanReturnValue> CheckParagraphs(bool start, FormattingPageDataService data)
         {
-           return await _jsRuntime.InvokeAsync<FormattingReturnValue>("formattingConnector.checkFormatting", start, data);
+           return await _jsRuntime.InvokeAsync<ScanReturnValue>("formattingConnector.checkFormatting", start, data);
         }
 
-        public async Task<FormattingReturnValue> CorrectParagraph(string paraIdToCorrect)
+        public async Task CorrectParagraph(string paraIdToCorrect)
         {
-            return await _jsRuntime.InvokeAsync<FormattingReturnValue>("formattingConnector.correctFormatting", paraIdToCorrect);
+            await _jsRuntime.InvokeVoidAsync("formattingConnector.correctFormatting", paraIdToCorrect);
         }
     }
 }

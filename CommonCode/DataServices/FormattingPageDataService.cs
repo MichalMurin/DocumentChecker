@@ -10,9 +10,8 @@ using System.Threading.Tasks;
 
 namespace CommonCode.DataServices
 {
-    public class FormattingPageDataService
+    public class FormattingPageDataService: BaseDataService
     {
-        public HashSet<string> IgnoredParagraphs { get; set; } = new HashSet<string>();
         public double FontSize { get; set; } = 12;
         public string FontName { get; set; } = string.Empty;
         public string Alligment { get; set; } = string.Empty;

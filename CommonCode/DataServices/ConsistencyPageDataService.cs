@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CommonCode.DataServices
 {
-    public class ConsistencyPageDataService
+    public class ConsistencyPageDataService: BaseDataService
     {
         public bool TitleConsistency { get; set; } = true;
         public bool DoubleSpaces { get; set; } = true;

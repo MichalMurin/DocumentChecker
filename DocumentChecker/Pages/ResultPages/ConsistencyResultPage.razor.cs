@@ -1,6 +1,8 @@
 ﻿using CommonCode.DataServices;
+using CommonCode.ReturnValues;
 using DocumentChecker.JsConnectors;
 using Microsoft.AspNetCore.Components;
+using System.Diagnostics;
 
 namespace DocumentChecker.Pages.ResultPages
 {
@@ -13,6 +15,7 @@ namespace DocumentChecker.Pages.ResultPages
         [Parameter]
         public bool StartScan { get; set; } = false;
         public override string TextResult { get; set; } = "Kontroluje sa dokument...";
+        public ScanReturnValue? ScanResult { get; set; }
 
         protected async override Task OnInitializedAsync()
         {
@@ -21,29 +24,56 @@ namespace DocumentChecker.Pages.ResultPages
             {
                 SetHeaderAndResult();
                 Console.WriteLine("Page initialized, starting scan");
-                await ScanDocumentFormatting();
+                await ScanDocumentConsistency(true);
             }
         }
 
         public override async Task OnCorrectClick()
         {
-            await JsConnector.ScanDocumentConsistency(false, ConsistencyPageDataService);
+            // perform a correction on a paragraph and run a scan again
+            if (ScanResult is not null)
+            {
+                Console.WriteLine($"Correcting paragraph: {ScanResult.ParagraphId}");
+                SetHeaderAndResult();
+                await JsConnector.CorrectParagraph(ScanResult.ParagraphId, ScanResult.ErrorTypes);
+                await ScanDocumentConsistency();
+            }
         }
 
         public override async Task OnIgnoreClick()
         {
-            await JsConnector.ScanDocumentConsistency(false, ConsistencyPageDataService);
+            if (ScanResult is not null)
+            {
+                Console.WriteLine($"Ignoring paragraph: {ScanResult.ParagraphId}");
+                ConsistencyPageDataService.IgnoredParagraphs.Add(ScanResult.ParagraphId);
+                SetHeaderAndResult();
+                await ScanDocumentConsistency();
+            }
         }
 
-        private async Task ScanDocumentFormatting()
+        private async Task ScanDocumentConsistency(bool start = false)
         {
-            await JsConnector.ScanDocumentConsistency(true, ConsistencyPageDataService);
+            ScanResult = await JsConnector.ScanDocumentConsistency(start, ConsistencyPageDataService);
+            if (ScanResult.FoundError)
+            {
+                Header = "Chyba!";
+                TextResult = $"Boli zistené chyby v konzistnentnosti dokumentu";
+                foreach (var error in ScanResult.ErrorTypes)
+                {
+                    TextResult += $"\n{error}";
+                }
+            }
+            else
+            {
+                Header = "Kontrola prebehla";
+                TextResult = $"V dokumente sa nenašli žiadne formátovacie chyby.";
+            }
         }
 
         private void SetHeaderAndResult()
         {
             Header = "Kontrola konzistnentnosti dokumentu...";
-            TextResult = "Prebieha kontrola konzistnentnosti dokumentu...";
+            TextResult = "Prebieha kontrola konzistnentnosti dokumentu, prosím neupravujte dokument počas prebiehajúcej kontroly...";
         }
     }
 }

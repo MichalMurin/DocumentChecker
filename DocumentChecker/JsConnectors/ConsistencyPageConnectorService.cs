@@ -1,4 +1,5 @@
 ﻿using CommonCode.DataServices;
+using CommonCode.ReturnValues;
 using Microsoft.JSInterop;
 
 namespace DocumentChecker.JsConnectors
@@ -12,9 +13,14 @@ namespace DocumentChecker.JsConnectors
             _jsRuntime = jsRuntime;
         }
 
-        public async Task ScanDocumentConsistency(bool start, ConsistencyPageDataService data)
+        public async Task<ScanReturnValue> ScanDocumentConsistency(bool start, ConsistencyPageDataService data)
         {
-            await _jsRuntime.InvokeVoidAsync("consistencyConnector.checkConsistency", start, data);
+            return await _jsRuntime.InvokeAsync<ScanReturnValue>("consistencyConnector.checkConsistency", start, data);
+        }
+
+        public async Task CorrectParagraph(string paraIdToCorrect, List<string> errorList)
+        {
+            await _jsRuntime.InvokeVoidAsync("consistencyConnector.corectParagraph", paraIdToCorrect, errorList);
         }
     }
 }

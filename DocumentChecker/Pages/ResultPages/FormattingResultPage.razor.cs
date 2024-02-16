@@ -24,7 +24,7 @@ namespace DocumentChecker.Pages.ResultPages
         [Parameter]
         public bool StartScan { get; set; } = false;
         public override string TextResult { get; set; } = "Kontroluje sa dokument...";
-        public FormattingReturnValue? ScanResult { get; set; }
+        public ScanReturnValue? ScanResult { get; set; }
 
         protected async override Task OnInitializedAsync()
         {
@@ -85,7 +85,7 @@ namespace DocumentChecker.Pages.ResultPages
         private void SetHeaderAndResult()
         {
             Header = "Kontrola formátovania dokumentu...";
-            TextResult = "Prebieha kontrola formátovania dokumentu...";
+            TextResult = "Prebieha kontrola formátovania dokumentu, prosím neupravujte dokument počas prebiehajúcej kontroly...";
         }
     }
 }
