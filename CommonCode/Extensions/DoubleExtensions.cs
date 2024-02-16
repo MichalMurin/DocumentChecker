@@ -15,6 +15,12 @@ namespace CommonCode.Extensions
             return points;
         }
 
+        public static double ConvertPointsToCm(this double points)
+        {
+            double cm = points / 28.3464567;
+            return Math.Round(cm, 2);
+        }
+
         public static double GetLineSpacingInPoints(this double lineSpacing, double fontSize)
         {
             return lineSpacing * fontSize;

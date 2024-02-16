@@ -1,4 +1,5 @@
-﻿using CommonCode.ReturnValues;
+﻿using CommonCode.DataServices;
+using CommonCode.ReturnValues;
 using Microsoft.JSInterop;
 
 namespace DocumentChecker.JsConnectors
@@ -12,14 +13,14 @@ namespace DocumentChecker.JsConnectors
             _jsRuntime = jsRuntime;
         }
 
-        public async Task InsertTextToWord(string text)
+        public async Task<FormattingReturnValue> CheckParagraphs(bool start, FormattingPageDataService data)
         {
-            await _jsRuntime.InvokeVoidAsync("formattingConnector.insertText", text);
+           return await _jsRuntime.InvokeAsync<FormattingReturnValue>("formattingConnector.checkFormatting", start, data);
         }
 
-        public async Task<FormattingReturnValue> CheckParagraphs(List<string> ignoredParagraphs, string fontName, double fontSize, string alligment, double lineSpacing, double leftIndent, double rightIndent, string paraIdToCorrect = "")
+        public async Task<FormattingReturnValue> CorrectParagraph(string paraIdToCorrect)
         {
-           return await _jsRuntime.InvokeAsync<FormattingReturnValue>("formattingConnector.checkParagraphs", ignoredParagraphs, fontName, fontSize, alligment, lineSpacing, leftIndent, rightIndent, paraIdToCorrect);
+            return await _jsRuntime.InvokeAsync<FormattingReturnValue>("formattingConnector.correctFormatting", paraIdToCorrect);
         }
     }
 }

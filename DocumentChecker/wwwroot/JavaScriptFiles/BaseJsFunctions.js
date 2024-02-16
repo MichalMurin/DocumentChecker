@@ -1,4 +1,10 @@
-﻿window.saveAsFile = (uri, filename) => {
+﻿
+// Global parameter, where are stored curently loaded paragraphs
+GLOBAL_PARAGRAPHS = undefined; 
+// Index of curently checked paragraph
+CURRENT_PARAGRAPG_INDEX = 0;
+
+window.saveAsFile = (uri, filename) => {
     var link = document.createElement('a');
     link.href = uri;
     link.download = filename;
@@ -30,11 +36,11 @@ window.InsertText = async (text) => {
             }
         });
 }
-
-GLOBAL_PARAGRAPHS = undefined;
-CURRENT_PARAGRAPG_INDEX = 0;
 async function getAllParagraphs(atributesToLoad) {
-    console.log("Getting all paragraphs");
+    console.log('Getting all paragraphs');
+    if (!atributesToLoad.includes('uniqueLocalId')) {
+        atributesToLoad += ', uniqueLocalId';
+    }
     retParagraphs = undefined;
     await Word.run(async (context) => {
         const paragraphs = context.document.body.paragraphs;
@@ -43,7 +49,7 @@ async function getAllParagraphs(atributesToLoad) {
         retParagraphs = paragraphs;
     });
     GLOBAL_PARAGRAPHS = retParagraphs;
-    CURRENT_PARAGRAPG_INDEX = 0;
+    //CURRENT_PARAGRAPG_INDEX = 0;
     return retParagraphs;
 }
 

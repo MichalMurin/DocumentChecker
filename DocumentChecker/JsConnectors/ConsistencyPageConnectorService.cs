@@ -12,11 +12,6 @@ namespace DocumentChecker.JsConnectors
             _jsRuntime = jsRuntime;
         }
 
-        public async Task InsertTextToWord(string text)
-        {
-            await _jsRuntime.InvokeVoidAsync("consistencyConnector.insertTextTest", text);
-        }
-
         public async Task ScanDocumentConsistency(bool start, ConsistencyPageDataService data)
         {
             await _jsRuntime.InvokeVoidAsync("consistencyConnector.checkConsistency", start, data);

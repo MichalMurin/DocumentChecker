@@ -3,25 +3,6 @@ var previousHeading = { text: undefined, number: undefined };
 var dataService = undefined;
 
 window.consistencyConnector = {
-    insertTextTest: async (text) => {
-        await Word.run(async (context) => {
-            // Create a proxy object for the document body.
-            const body = context.document.body;
-            // Queue a command to insert text at the end of the document body.
-            body.insertText(text, Word.InsertLocation.end);
-            // Queue a command to get the current selection.
-            // Synchronize the document state by executing the queued commands,
-            // and return a promise to indicate task completion.
-            await context.sync();
-            console.log('Inserted text ');
-        })
-            .catch(function (error) {
-                console.log('Error: ' + JSON.stringify(error));
-                if (error instanceof OfficeExtension.Error) {
-                    console.log('Debug info: ' + JSON.stringify(error.debugInfo));
-                }
-            });
-    },
     checkConsistency: async (start, data) => {
         console.log(data);        
         if (start) {
@@ -31,8 +12,15 @@ window.consistencyConnector = {
             previousHeading = { text: undefined, number: undefined };
             await refresshAllRefFields();
             await getAllParagraphs("text, font, alignment, lineSpacing, style, fields, listItemOrNullObject");
+            CURRENT_PARAGRAPG_INDEX = 0;
         }
         else {
+            // if we are continuing with scan, we just continue from the last paragraph
+            if (CURRENT_PARAGRAPG_INDEX == GLOBAL_PARAGRAPHS.items.length - 1) {
+                // if current paragraph was the last one, we cannot continue
+                return;
+            }
+            // we increase the paragraph index to continue from the next one
             CURRENT_PARAGRAPG_INDEX++;
         }
         await startConsistencyScan();
@@ -70,11 +58,11 @@ function prepareChecks(paragraph) {
     console.log("Preparing checks: ", dataService.doubleSpaces);
     console.log(typeof dataService.doubleSpaces);
     const styleChecks = [
-        { condition: dataService.doubleSpaces && checkDoubleSpaces(paragraph), errorType: "Double spaces" },
-        { condition: dataService.crossReferenceFunctionality && checkInvalidCrossReference(paragraph), errorType: "Invalid Cross ref" },
-        { condition: dataService.titleConsistency && !checkHeadingContinuity(paragraph, previousHeading), errorType: "Invalid Heading Continuity" },
-        { condition: dataService.parenthesesValidation && !isValidParenthesis(paragraph), errorType: "Invalid Parenthesis" },
-        { condition: dataService.dotsComasColonsValidation && !checkSentenceFormat(paragraph), errorType: "Invalid Sentence Format" },
+        { condition: dataService.doubleSpaces && checkDoubleSpaces(paragraph), errorType: "DoubleSpaces" },
+        { condition: dataService.crossReferenceFunctionality && checkInvalidCrossReference(paragraph), errorType: "InvalidCrossRef" },
+        { condition: dataService.titleConsistency && !checkHeadingContinuity(paragraph, previousHeading), errorType: "InvalidHeadingContinuity" },
+        { condition: dataService.parenthesesValidation && !isValidParenthesis(paragraph), errorType: "InvalidParenthesis" },
+        { condition: dataService.dotsComasColonsValidation && !checkSentenceFormat(paragraph), errorType: "InvalidDotsComasColons" },
         // Add more checks as needed
     ];
     return styleChecks;

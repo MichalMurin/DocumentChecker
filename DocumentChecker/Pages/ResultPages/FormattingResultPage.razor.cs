@@ -13,7 +13,6 @@ namespace DocumentChecker.Pages.ResultPages
     // TODO: Umoznit opravit cely dokument naraz??
     // TODO: Dorobit Import a export nastaveni
     // TODO: Dropdown na vyber zarovnania
-    // TODO: rednastavenen hodnoty napisat tabulatorom
     // TODO: Urobit kontrolu podla stylov, cize pre jeden styl kontrolovat vsetko .. atd??
     //      - dalo by sa to urobit tak ze si potiahnem vsetky styly z wordu a uzivatel si nastavi kazdy jeden? ... alebo budem kontrolovat len to co uz je nastavene pre tie styly
     public partial class FormattingResultPage
@@ -34,7 +33,7 @@ namespace DocumentChecker.Pages.ResultPages
             {
                 SetHeaderAndResult();
                 Console.WriteLine("Page initialized, starting scan");
-                await ScanDocumentFormatting();
+                await ScanDocumentFormatting(true);
             }
         }
         public override async Task OnIgnoreClick()
@@ -48,9 +47,8 @@ namespace DocumentChecker.Pages.ResultPages
                 SetHeaderAndResult();
                 await ScanDocumentFormatting();
             }
-
-
         }
+
         public override async Task OnCorrectClick()
         {
             // perform a correction on a paragraph and run a scan again
@@ -58,20 +56,14 @@ namespace DocumentChecker.Pages.ResultPages
             {
                 Console.WriteLine($"Correcting paragraph: {ScanResult.ParagraphId}");
                 SetHeaderAndResult();
-                await ScanDocumentFormatting(ScanResult.ParagraphId);
+                await JsConnector.CorrectParagraph(ScanResult.ParagraphId);
+                await ScanDocumentFormatting();
             }
         }
 
-        private async Task ScanDocumentFormatting(string paraIdToCorrect = "")
+        private async Task ScanDocumentFormatting(bool start = false)
         {
-            ScanResult = await JsConnector.CheckParagraphs(FormattingPageDataService.IgnoredParagraphs,
-                                              FormattingPageDataService.FontName,
-                                              FormattingPageDataService.FontSize,
-                                              FormattingPageDataService.Alligment,
-                                              FormattingPageDataService.LineSpacing.GetLineSpacingInPoints(FormattingPageDataService.FontSize),
-                                              FormattingPageDataService.LeftIndent.ConvertCmToPoints(),
-                                              FormattingPageDataService.RightIndent.ConvertCmToPoints(),
-                                              paraIdToCorrect);
+            ScanResult = await JsConnector.CheckParagraphs(start, FormattingPageDataService);
             if (ScanResult.FoundError)
             {
                 Header = "Chyba!";
