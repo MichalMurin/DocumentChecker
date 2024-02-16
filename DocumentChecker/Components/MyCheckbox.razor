@@ -1,9 +1,11 @@
-﻿<label class="@color rounded-lg w-[95%] mx-auto text-white py-2 pl-6 flex justify-between">
+﻿<label title=@Description class="@color rounded-lg w-[95%] mx-auto text-white py-2 pl-6 flex justify-between">
     <span class="text-2xl" >@Text</span>
     <input type="checkbox" name="myCheckbox" class="mr-2 form-checkbox-lg" @bind="Checked" @bind:event="oninput" disabled=@Disabled>
 </label>
 @code {
     private string color = "bg-pallette-secondary-black";
+    [Parameter]
+    public string Description { get; set; } = "Description";
     [Parameter]
     public string Text { get; set; } = "Text";
 
@@ -34,7 +36,7 @@
         {
             if (value)
             {
-                color = "bg-pallette-disabled";
+                color = "bg-pallette-disabled-black";
             }
             else
             {

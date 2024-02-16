@@ -8,14 +8,14 @@ namespace CommonCode.DataServices
 {
     public class ConsistencyPageDataService
     {
-        public bool TitleConsistency { get; set; }
-        public bool DoubleSpaces { get; set; }
-        public bool EmptyLines { get; set; }
-        public bool CrossReferenceFunctionality { get; set; }
-        public bool DocumentAlignment { get; set; }
-        public bool DescriptionValidation { get; set; }
-        public bool ListValidation { get; set; }
-        public bool ParenthesesValidation { get; set; }
-        public bool DotsComasColonsValidation { get; set; }
+        public bool TitleConsistency { get; set; } = true;
+        public bool DoubleSpaces { get; set; } = true;
+        public bool EmptyLines { get; set; } = true;
+        public bool CrossReferenceFunctionality { get; set; } = true;
+        public bool DocumentAlignment { get; set; } = true;
+        public bool DescriptionValidation { get; set; } = true;
+        public bool ListValidation { get; set; } = true;
+        public bool ParenthesesValidation { get; set; } = true;
+        public bool DotsComasColonsValidation { get; set; } = true;
     }
 }

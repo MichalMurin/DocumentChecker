@@ -8,16 +8,14 @@ namespace DocumentChecker.Pages
         [Inject]
         private ConsistencyPageDataService ConsistencyPageDataService { get; set; } = default!;
 
+
+        protected override void OnInitialized()
+        {
+            Console.WriteLine($"Consistency page initialized {ConsistencyPageDataService.TitleConsistency}");
+        }
+
         public override void OnStartClick()
         {
-            Console.WriteLine("TitleConsistency: " + ConsistencyPageDataService.TitleConsistency);
-            Console.WriteLine("CrossReferenceFunctionality: " + ConsistencyPageDataService.CrossReferenceFunctionality);
-            Console.WriteLine("DocumentAlignment: " + ConsistencyPageDataService.DocumentAlignment);
-            Console.WriteLine("DescriptionValidation: " + ConsistencyPageDataService.DescriptionValidation);
-            Console.WriteLine("ListValidation: " + ConsistencyPageDataService.ListValidation);
-            Console.WriteLine("ParenthesesValidation: " + ConsistencyPageDataService.ParenthesesValidation);
-            Console.WriteLine("SentenceEndingValidation: " + ConsistencyPageDataService.DotsComasColonsValidation);
-
             NavigationManager.NavigateTo($"/consistencyResult/{true}");
         }
     }
