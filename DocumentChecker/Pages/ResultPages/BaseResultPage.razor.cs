@@ -15,6 +15,18 @@ namespace DocumentChecker.Pages.ResultPages
         {
             TextResult = "Chyba bola opravená";
         }
+        protected void HandleCorrectionResult(bool result)
+        {
+            if (result)
+            {
+                TextResult = "Oprava prebehla úspešne";
+
+            }
+            else
+            {
+                TextResult = "Pri oprave nastala chyba, uistite sa, že je odstavec označený!";
+            }
+        }
 
     }
 }

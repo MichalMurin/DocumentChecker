@@ -1,5 +1,5 @@
 ﻿var dataService = null;
-
+const consistencyParamsToLoad = 'text, alignment, style, fields, listItemOrNullObject, uniqueLocalId';
 dotsComasColonsSpaceRegex = [/ \./, / ,/, / :/];
 dotsComasColonsNoSpaceRegex = [/\.[^\s]/,/,\S/, /:\S/];
 const consistencyErrorTypes = {
@@ -26,90 +26,99 @@ window.consistencyConnector = {
             console.log("Starting consistency scan");
             resetAtrributes();
             await refresshAllRefFields();
-            await getAllParagraphs("text, alignment, style, fields, listItemOrNullObject");
+            await getAllParagraphs(consistencyParamsToLoad);
             CURRENT_PARAGRAPG_INDEX = 0;
         }
-        //else {
-        //    // if we are continuing with scan, we just continue from the last paragraph
-        //    //if (CURRENT_PARAGRAPG_INDEX == GLOBAL_PARAGRAPHS.items.length - 1) {
-        //    //    // if current paragraph was the last one, we cannot continue
-        //    //    return;
-        //    //}
-        //    // we increase the paragraph index to continue from the next one
-        //    //CURRENT_PARAGRAPG_INDEX++;
-        //}
         return await startConsistencyScan();
     },
     corectParagraph: async (idToCorrect, data) => {
+        result = false;
         console.log("Correcting paragraph " + idToCorrect + " with data: ", data);
-        await Word.run(async (context) => {
-            const paragraphs = context.document.body.paragraphs;
-            paragraphs.load('uniqueLocalId');
-            await context.sync();
-            console.log("Current paragraph: ", GLOBAL_PARAGRAPHS.items[CURRENT_PARAGRAPG_INDEX].uniqueLocalId);
-            if (GLOBAL_PARAGRAPHS.items[CURRENT_PARAGRAPG_INDEX].uniqueLocalId === idToCorrect) {
-                console.log('Setting paragraph formatting', dataService);
-                correctConsistencyParagraph(data, paragraphs.items[CURRENT_PARAGRAPG_INDEX], GLOBAL_PARAGRAPHS.items[CURRENT_PARAGRAPG_INDEX]);
-            }
-            else {
-                console.log("Current paragraph is not the one we are looking for");
-                // Current paragraph is not the one we are looking for
-            }
-            await context.sync();
-        });
-    }
-}
-
-function correctConsistencyParagraph(data, paragraph, sourceParagpraph)
-{
-    console.log("Entering func, Correcting paragraph with data: ", data);
-    data.forEach((element) => {
-        switch (element) {
-            // TODO - NOT WORING REPLACE !!!! ?????
-            case consistencyErrorTypes.DOUBLE_SPACES:
-                console.log("Correcting double spaces", sourceParagpraph.text, / {2,}/g.test(sourceParagpraph.text));
-                paragraph.text = sourceParagpraph.text.replace(/ {2,}/g, ' ');
-                console.log("Corrected double spaces", sourceParagpraph.text);
-                break;
-            case consistencyErrorTypes.EMPTY_LINES:
-                // Code for EMPTY_LINES error type
-                // TODO - remove this paragraph?? -> start check from begining, because the indexes will be broken
-                break;
-            case consistencyErrorTypes.INVALID_CROSS_REFERENCE:
-                // Code for INVALID_CROSS_REFERENCE error type
-                // Cannot fix this issue automaticaly
-                break;
-            case consistencyErrorTypes.INVALID_HEADING_CONTINUITY:
-                // Code for INVALID_HEADING_CONTINUITY error type
-                // TODO - fix the heading + update previous numberedHeading
-                break;
-            case consistencyErrorTypes.INVALID_HEADING_CONSISTENCY:
-                // Code for INVALID_HEADING_CONSISTENCY error type
-                // TODO - fix the heading + update previous heading
-                break;
-            case consistencyErrorTypes.INCONSISTENT_FORMATTING:
-                // Code for INCONSISTENT_FORMATTING error type
-                paragraph.alignment = GLOBAL_PARAGRAPHS.items[CURRENT_PARAGRAPG_INDEX - 1].alignment;
-                break;
-            case consistencyErrorTypes.INVALID_PARENTHESIS:
-                // Code for INVALID_PARENTHESIS error type
-                break;
-            case consistencyErrorTypes.INVALID_DOTS_COMAS_COLONS:
-                // Code for INVALID_DOTS_COMAS_COLONS error type
-                dotsComasColonsNoSpaceRegex.forEach((regex) => {
-                    let regexWithG = new RegExp(regex.source, 'g');
-                    paragraph.text = sourceParagpraph.text.replace(regexWithG, ' ');
-                });
-                dotsComasColonsSpaceRegex.forEach((regex) => {
-                    let regexWithG = new RegExp(regex.source, 'g');
-                    paragraph.text = sourceParagpraph.text.replace(regexWithG, '');
-                });
-                break;
-            default:
-                // Code for default case
-                break;
+        if (GLOBAL_PARAGRAPHS.items[CURRENT_PARAGRAPG_INDEX].uniqueLocalId !== idToCorrect) {
+            console.log("Current paragraph is not the one we are looking for");
+            // Current paragraph is not the one we are looking for
+            // TODO - find the paragraph with the idToCorrect
+            result = false;
+            return;
         }
-    });
+        await Word.run(async (context) => {
+            var selection = context.document.getSelection();
+            // Load the paragraph that contains the selection
+            selection.paragraphs.load('uniqueLocalId');
+            await context.sync();
+            var paragraph = selection.paragraphs.items.find(para => para.uniqueLocalId === idToCorrect);
+            if (paragraph === undefined) {
+                console.log('Selection has changed, the id is not correct');
+                result = false;
+                return;
+            }
+            sourceParagraph = GLOBAL_PARAGRAPHS.items[CURRENT_PARAGRAPG_INDEX];
+            sourceParagraphText = sourceParagraph.text;
+            //console.log("Correcting paragraph: ", paragraph.text);
+            data.forEach((element) => {
+                switch (element) {
+                    case consistencyErrorTypes.DOUBLE_SPACES:
+                        sourceParagraphText = sourceParagraphText.replace(/ {2,}/g, ' ');
+                        paragraph.insertText(sourceParagraphText, 'Replace');
+                        break;
+                    case consistencyErrorTypes.EMPTY_LINES:
+                        // Code for EMPTY_LINES error type
+                        // TODO - remove this paragraph?? -> start check from begining, because the indexes will be broken
+                        break;
+                    case consistencyErrorTypes.INVALID_CROSS_REFERENCE:
+                        // Code for INVALID_CROSS_REFERENCE error type
+                        // Cannot fix this issue automaticaly
+                        break;
+                    case consistencyErrorTypes.INVALID_HEADING_CONTINUITY:
+                        // Code for INVALID_HEADING_CONTINUITY error type
+                        // TODO - fix the heading + update previous numberedHeading
+                        break;
+                    case consistencyErrorTypes.INVALID_HEADING_CONSISTENCY:
+                        // Code for INVALID_HEADING_CONSISTENCY error type
+                        // TODO - fix the heading + update previous heading
+                        break;
+                    case consistencyErrorTypes.INCONSISTENT_FORMATTING:
+                        // Code for INCONSISTENT_FORMATTING error type
+                        paragraph.alignment = GLOBAL_PARAGRAPHS.items[CURRENT_PARAGRAPG_INDEX - 1].alignment;
+                        break;
+                    case consistencyErrorTypes.INVALID_PARENTHESIS:
+                        // Code for INVALID_PARENTHESIS error type
+                        break;
+                    case consistencyErrorTypes.INVALID_DOTS_COMAS_COLONS:
+                        console.log("Correcting invalid dots, comas, colons", sourceParagraphText);
+                        // Code for INVALID_DOTS_COMAS_COLONS error type
+                        dotsComasColonsNoSpaceRegex.forEach((regex) => {
+                            let regexWithG = new RegExp(regex.source, 'g');
+                            //sourceParagraphText = sourceParagraphText.replace(regexWithG, ' ');
+                            sourceParagraphText = sourceParagraphText.replace(/\.[^\s]/g, function (match) {
+                                return match[0] + ' ' + match[1];
+                            });
+                            console.log("First correction", sourceParagraphText);
+
+                            paragraph.insertText(sourceParagraphText, 'Replace');
+                        });
+                        dotsComasColonsSpaceRegex.forEach((regex) => {
+                            let regexWithG = new RegExp(regex.source, 'g');
+                            sourceParagraphText = sourceParagraphText.replace(regexWithG, function (match) {
+                                return match.trim();
+                            });
+                            console.log("Second correction", sourceParagraphText);
+                            paragraph.insertText(sourceParagraphText, 'Replace');
+                        });
+                        break;
+                    default:
+                        // Code for default case
+                        break;
+                }
+            });
+            paragraph.select();
+            await context.sync();
+
+            await saveSelectedParagraphAtCurrentIndex(consistencyParamsToLoad);
+            result = true;
+        });
+        return result;
+    }
 }
 
 function resetAtrributes() {

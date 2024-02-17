@@ -76,4 +76,18 @@ async function selectParagraph(index) {
     });
 }
 
+async function saveSelectedParagraphAtCurrentIndex(paramsToLoad) {
+    console.log('Saving selected paragraph at index ' + CURRENT_PARAGRAPG_INDEX);
+    await Word.run(async (context) => {
+        let newSelection = context.document.getSelection();
+        // Load the paragraph that contains the selection
+        newSelection.paragraphs.load(paramsToLoad);
+        await context.sync();
+        let newParagraph = newSelection.paragraphs.items[0];
+        console.log("Paragraph corrected: ", newParagraph.text);
+        console.log('Settign new item to global paragraphs');
+        console.log('POaragraph', newParagraph.text , ' saving to index: ', CURRENT_PARAGRAPG_INDEX);
+        GLOBAL_PARAGRAPHS.items[CURRENT_PARAGRAPG_INDEX] = newParagraph;
+    });
+}
 

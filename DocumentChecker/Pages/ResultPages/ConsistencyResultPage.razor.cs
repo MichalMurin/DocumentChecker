@@ -35,8 +35,15 @@ namespace DocumentChecker.Pages.ResultPages
             {
                 Console.WriteLine($"Correcting paragraph: {ScanResult.ParagraphId}");
                 SetHeaderAndResult();
-                await JsConnector.CorrectParagraph(ScanResult.ParagraphId, ScanResult.ErrorTypes);
-                await ScanDocumentConsistency();
+                var correctionResult = await JsConnector.CorrectParagraph(ScanResult.ParagraphId, ScanResult.ErrorTypes);
+                if (!correctionResult)
+                {
+                    HandleCorrectionResult(correctionResult);
+                }
+                else
+                {
+                    await ScanDocumentConsistency();
+                }
             }
         }
 
@@ -57,7 +64,7 @@ namespace DocumentChecker.Pages.ResultPages
             if (ScanResult.FoundError)
             {
                 Header = "Chyba!";
-                TextResult = $"Boli zistené chyby v konzistnentnosti dokumentu";
+                TextResult = $"Boli zistené chyby v konzistnentnosti dokumentu. Aby bola oprava úspešná, prosím, nechajte odstavec označený";
                 foreach (var error in ScanResult.ErrorTypes)
                 {
                     TextResult += $"\n{error}";

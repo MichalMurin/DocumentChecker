@@ -1,6 +1,7 @@
 ﻿// dataService to store data about formatiing
 var dataService = undefined;
 const DELTA = 0.1;
+const formattingParamsToLoad = "text, font, alignment, lineSpacing, style, leftIndent, rightIndent, uniqueLocalId";
 
 // Enum for error types
 const formattingErrorTypes = {
@@ -15,53 +16,52 @@ const formattingErrorTypes = {
 window.formattingConnector = {
     checkFormatting: async (start, data) => {
         console.log("retireved args: ", start, data);
+        dataService = data;
         if (start) {
             // if we are starting the scan, we load all paragraphs and refresh all ref fields
             console.log("Starting consistency scan");
-            dataService = data;
-            await getAllParagraphs("text, font, alignment, lineSpacing, style, leftIndent, rightIndent");
+            await getAllParagraphs(formattingParamsToLoad);
             CURRENT_PARAGRAPG_INDEX = 0;
         }
-        //else {
-            // if we are continuing with scan, we just continue from the last paragraph
-            //if (CURRENT_PARAGRAPG_INDEX == GLOBAL_PARAGRAPHS.items.length - 1) {
-                // if current paragraph was the last one, we cannot continue
-               // return;
-            //}
-            // we increase the paragraph index to continue from the next one
-            //CURRENT_PARAGRAPG_INDEX++;
-        //}
         return await startFormattingScan();
     },
 
-    correctFormatting: async (idToCorrect, data) => {
-        await correctParagraph(idToCorrect, data); 
-    }
-}
-
-async function correctParagraph(idToCorrect) {
-    console.log("Correcting paragraph " + idToCorrect);
-    await Word.run(async (context) => {
-        const paragraphs = context.document.body.paragraphs;
-        paragraphs.load('uniqueLocalId');
-        await context.sync();
-        console.log("Current paragraph: ", GLOBAL_PARAGRAPHS.items[CURRENT_PARAGRAPG_INDEX].uniqueLocalId);
-        if (GLOBAL_PARAGRAPHS.items[CURRENT_PARAGRAPG_INDEX].uniqueLocalId === idToCorrect) {
+    correctFormatting: async (idToCorrect) => {
+        // we are assuiming that the paragraph is already selected
+        result = false;
+        console.log("Correcting paragraph " + idToCorrect);
+        if (GLOBAL_PARAGRAPHS.items[CURRENT_PARAGRAPG_INDEX].uniqueLocalId !== idToCorrect) {
+            console.log("Current paragraph is not the one we are looking for");
+            // Current paragraph is not the one we are looking for
+            // TODO - find the paragraph with the idToCorrect
+            result = false;
+            return;
+        }
+        await Word.run(async (context) => {
+            var selection = context.document.getSelection();
+            // Load the paragraph that contains the selection
+            selection.paragraphs.load('uniqueLocalId');
+            await context.sync();
+            var paragraph = selection.paragraphs.items.find(para => para.uniqueLocalId === idToCorrect);
+            if (paragraph === undefined) {
+                console.log('Selection has changed, the id is not correct');
+                result = false;
+                return;
+            }
             console.log('Setting paragraph formatting', dataService);
-            var paragraph = paragraphs.items[CURRENT_PARAGRAPG_INDEX];
             paragraph.font.name = dataService.fontName;
             paragraph.font.size = dataService.fontSize;
             paragraph.alignment = dataService.alligment;
             paragraph.lineSpacing = dataService.lineSpacingInPoints;
             paragraph.leftIndent = dataService.leftIndentInPoints;
             paragraph.rightIndent = dataService.rightIndentInPoints;
-        }
-        else {
-            console.log("Current paragraph is not the one we are looking for");
-            // Current paragraph is not the one we are looking for
-        }
-        await context.sync();
-    });
+            paragraph.select();
+            await context.sync();
+            await saveSelectedParagraphAtCurrentIndex(formattingParamsToLoad);
+            result = true;
+        });
+        return result;
+    }
 }
 
 
@@ -73,7 +73,8 @@ async function startFormattingScan() {
     for (var i = CURRENT_PARAGRAPG_INDEX; i < GLOBAL_PARAGRAPHS.items.length; i++) {
         paragraph = GLOBAL_PARAGRAPHS.items[i];
         CURRENT_PARAGRAPG_INDEX = i;
-        console.log("Checking: ", paragraph.text);
+        console.log(dataService.ignoredParagraphs);
+        console.log("Checking: ", paragraph.text, paragraph.uniqueLocalId, dataService.ignoredParagraphs.includes(paragraph.uniqueLocalId));
         if (dataService.ignoredParagraphs.includes(paragraph.uniqueLocalId) || paragraph.text === "") {
             continue;
         }

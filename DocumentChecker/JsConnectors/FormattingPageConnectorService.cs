@@ -18,9 +18,9 @@ namespace DocumentChecker.JsConnectors
            return await _jsRuntime.InvokeAsync<ScanReturnValue>("formattingConnector.checkFormatting", start, data);
         }
 
-        public async Task CorrectParagraph(string paraIdToCorrect)
+        public async Task<bool> CorrectParagraph(string paraIdToCorrect)
         {
-            await _jsRuntime.InvokeVoidAsync("formattingConnector.correctFormatting", paraIdToCorrect);
+            return await _jsRuntime.InvokeAsync<bool>("formattingConnector.correctFormatting", paraIdToCorrect);
         }
     }
 }

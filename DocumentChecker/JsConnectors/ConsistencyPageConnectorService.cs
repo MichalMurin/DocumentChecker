@@ -18,9 +18,9 @@ namespace DocumentChecker.JsConnectors
             return await _jsRuntime.InvokeAsync<ScanReturnValue>("consistencyConnector.checkConsistency", start, data);
         }
 
-        public async Task CorrectParagraph(string paraIdToCorrect, List<string> errorList)
+        public async Task<bool> CorrectParagraph(string paraIdToCorrect, List<string> errorList)
         {
-            await _jsRuntime.InvokeVoidAsync("consistencyConnector.corectParagraph", paraIdToCorrect, errorList);
+            return await _jsRuntime.InvokeAsync<bool>("consistencyConnector.corectParagraph", paraIdToCorrect, errorList);
         }
     }
 }
