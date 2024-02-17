@@ -49,7 +49,6 @@ async function getAllParagraphs(atributesToLoad) {
         retParagraphs = paragraphs;
     });
     GLOBAL_PARAGRAPHS = retParagraphs;
-    //CURRENT_PARAGRAPG_INDEX = 0;
     return retParagraphs;
 }
 
@@ -75,6 +74,18 @@ async function selectParagraph(index) {
         await context.sync();
     });
 }
+
+//async function selectParagraph(index) {
+//    console.log("Selecting paragraph at index " + index);
+//    await Word.run(async (context) => {
+//        var paragraph = context.document.body.paragraphs.items[index];
+//        paragraph.load('uniqueLocalId');
+//        paragraph.select();
+//        await context.sync();
+//        //paragraphs.select();
+//        //await context.sync();
+//    });
+//}
 
 async function saveSelectedParagraphAtCurrentIndex(paramsToLoad) {
     console.log('Saving selected paragraph at index ' + CURRENT_PARAGRAPG_INDEX);

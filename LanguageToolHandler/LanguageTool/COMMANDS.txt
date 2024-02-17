@@ -1,0 +1,2 @@
+java -jar languagetool-commandline.jar -l pl polishfile.txt
+java -jar languagetool-commandline.jar -adl polishfile.txt

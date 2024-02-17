@@ -2,7 +2,8 @@ using CommonCode.DataServices;
 using DocumentChecker.JsConnectors;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-
+using LanguageToolHandler.Interfaces;
+using LanguageToolHandler;
 namespace DocumentChecker
 {
     public class Program
@@ -19,6 +20,8 @@ namespace DocumentChecker
             builder.Services.AddSingleton<FormattingPageConnectorService>();
             builder.Services.AddSingleton<ConsistencyPageDataService>();
             builder.Services.AddSingleton<ConsistencyPageConnectorService>();
+            builder.Services.AddSingleton<SpellingPageConnectorService>();
+            builder.Services.AddSingleton<ILanguageToolService, LanguageToolService>();
             await builder.Build().RunAsync();
         }
     }
