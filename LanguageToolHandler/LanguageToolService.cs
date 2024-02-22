@@ -1,5 +1,8 @@
 ﻿using LanguageToolHandler.Interfaces;
+using LanguageToolHandler.Items;
 using System.Diagnostics;
+using System.Text.Json;
+using WeCantSpell.Hunspell;
 
 namespace LanguageToolHandler
 {
@@ -62,7 +65,7 @@ namespace LanguageToolHandler
             return output;
         }
 
-        public async Task<string> RunGrammarCheckViaAPi(string text)
+        public async Task<LanguageToolResult?> RunGrammarCheckViaAPi(string text)
         {
             // API endpoint
             string apiUrl = "https://api.languagetoolplus.com/v2/check";
@@ -104,7 +107,7 @@ namespace LanguageToolHandler
                 {
                     Console.WriteLine($"Exception: {ex.Message}");
                 }
-                return result;
+                return JsonSerializer.Deserialize<LanguageToolResult>(result);
             }
         }
     }

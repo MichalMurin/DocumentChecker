@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LanguageToolHandler.Items;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,7 +10,6 @@ namespace LanguageToolHandler.Interfaces
     public interface ILanguageToolService
     {
         Task<string> RunGrammarCheck(string text);
-        Task<string> RunGrammarCheckViaAPi(string text);
-
+        Task<LanguageToolResult?> RunGrammarCheckViaAPi(string text);
     }
 }
