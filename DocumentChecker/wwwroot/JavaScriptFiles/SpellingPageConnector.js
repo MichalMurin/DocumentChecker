@@ -9,6 +9,7 @@ window.spellingConnector = {
             const paragraphs = context.document.body.paragraphs;
             paragraphs.load('uniqueLocalId, text');
             await context.sync();
+            GLOBAL_PARAGRAPHS = paragraphs;
             paragraphs.items.forEach((paragraph, index) => {
                 let paragraphData = {
                     index: index,
@@ -22,5 +23,8 @@ window.spellingConnector = {
         console.log('Returning paragraphs');
         console.log(JSON.stringify(resultList));
         return resultList;
+    },
+    selectParagraphAtIndex: async (index) => {
+        await selectParagraph(index);
     }
 }

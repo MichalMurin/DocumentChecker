@@ -22,7 +22,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CommonCode\CommonCode.csproj" />
-    <ProjectReference Include="..\LanguageToolHandler\LanguageToolHandler.csproj" />
   </ItemGroup>
 
 </Project>

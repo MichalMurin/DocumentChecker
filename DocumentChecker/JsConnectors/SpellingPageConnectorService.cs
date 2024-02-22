@@ -17,5 +17,10 @@ namespace DocumentChecker.JsConnectors
             return await _jsRuntime.InvokeAsync<List<ParagraphData>>("spellingConnector.collectAllParagraphs");
         }
 
+        public async Task SelectParagraph(int index)
+        {
+            await _jsRuntime.InvokeVoidAsync("spellingConnector.selectParagraphAtIndex", index);
+        }
+
     }
 }
