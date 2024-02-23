@@ -9,5 +9,7 @@ namespace CommonCode.DataServices
     public class SpellingPageDataService: BaseDataService
     {
         public List<string> Rules { get; set; } = new List<string>();
+        public bool CheckPrepositions { get; set; } = true;
+        public bool CheckLanguageTool { get; set; } = true;
     }
 }

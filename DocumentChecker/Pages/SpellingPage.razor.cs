@@ -1,10 +1,14 @@
-﻿using DocumentChecker.JsConnectors;
+﻿using CommonCode.DataServices;
+using DocumentChecker.JsConnectors;
 using Microsoft.AspNetCore.Components;
 
 namespace DocumentChecker.Pages
 {
     public partial class SpellingPage
     {
+        [Inject]
+        private SpellingPageDataService SpellingPageDataService { get; set; } = default!;
+
         private void OpenNewRulePage()
         {
             NavigationManager.NavigateTo("/newrule");

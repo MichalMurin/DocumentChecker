@@ -1,6 +1,8 @@
-﻿using CommonCode.CheckResults;
+﻿using CommonCode.ApiModels;
+using CommonCode.CheckResults;
 using CommonCode.Interfaces;
 using CommonCode.Results;
+using CommonCode.ReturnValues;
 using System.Net.Http.Json;
 
 namespace CommonCode.Services
@@ -19,7 +21,7 @@ namespace CommonCode.Services
             _httpClient.BaseAddress = new System.Uri(_apiBaseAddress);
         }
 
-        public async Task<List<LanguageToolCheckResult>?> CheckLanguageTool(string text)
+        public async Task<List<LanguageToolCheckResult>?> CheckCmdLanguageTool(string text)
         {
             try
             {
@@ -55,6 +57,20 @@ namespace CommonCode.Services
                 Console.WriteLine($"Error occured during calling api for prepositions check: {e}");
                 return null;
             }
+        }
+
+        public LanguageToolItem CreateLanguageToolItem(List<ParagraphData> paragraphs)
+        {
+            string tmpText = string.Empty;
+            var ltItem = new LanguageToolItem();
+            foreach (var para in paragraphs)
+            {
+                ltItem.StartIndexes[para.Id] = tmpText.Length;
+                tmpText += para.Text;
+            }
+            ltItem.Text = tmpText;
+            ltItem.NumberOfParagraphs = paragraphs.Count;
+            return ltItem;
         }
     }
 }

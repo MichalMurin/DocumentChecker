@@ -22,5 +22,10 @@ namespace DocumentChecker.JsConnectors
             await _jsRuntime.InvokeVoidAsync("spellingConnector.selectParagraphAtIndex", index);
         }
 
+        public async Task ReplaceSelectedText(string newText)
+        {
+            await _jsRuntime.InvokeVoidAsync("spellingConnector.replaceSelectedText", newText);
+        }   
+
     }
 }

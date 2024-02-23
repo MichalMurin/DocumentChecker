@@ -52,38 +52,11 @@ namespace SpelingCheckAPI.Services
                 // Delete the temporary file
                 File.Delete(tempFilePath);
             }
-            var languageToolResult = JsonSerializer.Deserialize<LanguageToolResult>(jasonResult);
-            return TransformLtResultToCheckResult(languageToolResult);
+            var languageToolResult = JsonSerializer.Deserialize<LanguageToolApiResult>(jasonResult);
+            return LanguageToolParser.TransformLtResultToCheckResult(languageToolResult);
         }
 
-        private List<LanguageToolCheckResult>? TransformLtResultToCheckResult(LanguageToolResult? lTresult)
-        {
-            if (lTresult is not null && lTresult.Matches is not null)
-            {
-                var result = new List<LanguageToolCheckResult>();
-                foreach (var match in lTresult.Matches)
-                {
-                    var newResult = new LanguageToolCheckResult
-                    {
-                        Message = match.Message ?? "No message to show",
-                        ShortMessage = match.ShortMessage ?? "No message to show",
-                        ErrorSentence = match.Sentence ?? "No sentence to show",
-                        Index = match.Offset,
-                        Length = match.Length
-                    };
-                    if (match.Replacements is not null && match.Replacements.Count > 0)
-                    {
-                        newResult.Suggestion = match.Replacements[0].Value ?? "No suqqestion to show";
-                    }
-                    result.Add(newResult);
-                }
-                return result;
-            }
-            else
-            {
-                return null;
-            }
-        }
+
 
 
         ///////////////////////////

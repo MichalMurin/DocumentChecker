@@ -26,5 +26,18 @@ window.spellingConnector = {
     },
     selectParagraphAtIndex: async (index) => {
         await selectParagraph(index);
+    },
+    replaceSelectedText: async (text) => {
+        console.log('Starting text replacement');
+        await Word.run(async (context) => {
+            const range = context.document.getSelection();
+            range.load('text');
+            await context.sync();
+            console.log('Current selected text: ' + range.text);
+            range.insertText(text, Word.InsertLocation.replace);
+            await context.sync();
+            console.log('Text replaced with: ' + text);
+        });
+        console.log('Text replacement finished');
     }
 }

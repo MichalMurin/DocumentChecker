@@ -23,6 +23,7 @@ namespace DocumentChecker
             builder.Services.AddSingleton<SpellingPageConnectorService>();
             builder.Services.AddSingleton<SpellingPageDataService>();
             builder.Services.AddSingleton<ISpellingApiService, SpellingApiService>();
+            builder.Services.AddSingleton<ILanguageToolApiService, LanguageToolApiService>();
             await builder.Build().RunAsync();
         }
     }
