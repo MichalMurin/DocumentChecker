@@ -78,7 +78,6 @@ function GetExpectedFontSize(paragraph) {
     //    return dataService.fontSize;
     //}
     return dataService.fontSize;
-
 }
 
 async function startFormattingScan(start) {
@@ -128,9 +127,9 @@ async function startFormattingScan(start) {
                     }
                 });
                 if (errors.length > 0) {
+                    console.log("This paragraph is wrong: ", paragraph.text, paragraph.style, paragraph.font.size, paragraph.font.name, paragraph.alignment, paragraph.lineSpacing);
                     paraId = paragraph.uniqueLocalId;
                     isErrorr = true;
-                    console.log("This paragraph is wrong: ", paragraph.text, paragraph.style, paragraph.font.size, paragraph.font.name, paragraph.alignment, paragraph.lineSpacing);
                     paragraph.select();
                     //await selectParagraph(CURRENT_PARAGRAPG_INDEX);
                     console.log(errors);

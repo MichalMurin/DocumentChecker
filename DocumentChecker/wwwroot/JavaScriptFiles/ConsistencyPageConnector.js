@@ -12,6 +12,9 @@ const consistencyErrorTypes = {
     INVALID_PARENTHESIS: 'InvalidParenthesis',
     INVALID_DOTS_COMAS_COLONS: 'InvalidDotsComasColons'
 }
+// key: paragraphStyle, value: paragraph
+var previousParagraphsDictionary = {};
+var previousParagraphEmpty = false;
 
 // variable to store previous heading, for heading continuity check
 var previousNumberedHeading = { text: null, number: null };
@@ -26,21 +29,12 @@ window.consistencyConnector = {
             console.log("Starting consistency scan");
             resetAtrributes();
             await refresshAllRefFields();
-            await getAllParagraphs(consistencyParamsToLoad);
-            CURRENT_PARAGRAPG_INDEX = 0;
         }
-        return await startConsistencyScan();
+        return await startConsistencyScan(start);
     },
     corectParagraph: async (idToCorrect, data) => {
         result = false;
         console.log("Correcting paragraph " + idToCorrect + " with data: ", data);
-        if (GLOBAL_PARAGRAPHS.items[CURRENT_PARAGRAPG_INDEX].uniqueLocalId !== idToCorrect) {
-            console.log("Current paragraph is not the one we are looking for");
-            // Current paragraph is not the one we are looking for
-            // TODO - find the paragraph with the idToCorrect
-            result = false;
-            return;
-        }
         await Word.run(async (context) => {
             var selection = context.document.getSelection();
             // Load the paragraph that contains the selection
@@ -52,8 +46,7 @@ window.consistencyConnector = {
                 result = false;
                 return;
             }
-            sourceParagraph = GLOBAL_PARAGRAPHS.items[CURRENT_PARAGRAPG_INDEX];
-            sourceParagraphText = sourceParagraph.text;
+            sourceParagraphText = paragraph.text;
             //console.log("Correcting paragraph: ", paragraph.text);
             data.forEach((element) => {
                 switch (element) {
@@ -113,8 +106,7 @@ window.consistencyConnector = {
             });
             paragraph.select();
             await context.sync();
-
-            await saveSelectedParagraphAtCurrentIndex(consistencyParamsToLoad);
+            //await saveSelectedParagraphAtCurrentIndex(consistencyParamsToLoad);
             result = true;
         });
         return result;
@@ -126,46 +118,83 @@ function resetAtrributes() {
     previousHeading = null;
 }
 
-async function startConsistencyScan() {
+async function startConsistencyScan(start) {
     // list of found errors
     const errors = [];
     var paraId = undefined;
     var isErrorr = false;
-    for (var i = CURRENT_PARAGRAPG_INDEX; i < GLOBAL_PARAGRAPHS.items.length; i++) {
-        paragraph = GLOBAL_PARAGRAPHS.items[i];
-        CURRENT_PARAGRAPG_INDEX = i;
-        console.log("Checking: ", paragraph.text);
-        console.log("Ignored paragraphs: ", dataService.ignoredParagraphs);
-        console.log("This id", paragraph.uniqueLocalId, " is ignored: ", dataService.ignoredParagraphs.includes(paragraph.uniqueLocalId));
-        if (dataService.ignoredParagraphs.includes(paragraph.uniqueLocalId)) {
-            continue;
+    return Word.run(async (context) => {
+        if (start) {
+            console.log("Getting first paragraph");
+            paragraph = context.document.body.paragraphs.getFirst();
+            paragraph.load(consistencyParamsToLoad);
+            await context.sync();
         }
-        const styleChecks = prepareChecks(paragraph);
-        console.log("Style checks: ", styleChecks);
-        // Iterate over checks
-        styleChecks.forEach((check) => {
-            console.log("Checking: ", check.errorType);
-            console.log("Result: ", check.condition);
-            if (check.condition) {
-                errors.push(check.errorType);
+        else {
+            console.log("Getting selected paragraph");
+            var selection = context.document.getSelection();
+            // Load the paragraph that contains the selection
+            selection.paragraphs.load(consistencyParamsToLoad);
+            await context.sync();
+            if (selection.paragraphs.items.length > 0) {
+                paragraph = selection.paragraphs.items[0];
             }
-        });
-        if (errors.length > 0) {
-            console.log("This paragraph is wrong: ", paragraph.text);
-            paraId = paragraph.uniqueLocalId;
-            isErrorr = true;
-            await selectParagraph(CURRENT_PARAGRAPG_INDEX);
-            console.log(errors);
-            break;
+            else {
+                // TODO - check if the paragraph stayed selected - if it is not null
+                console.log("Selection has changed, I cannot find any paragraph");
+            }
         }
+
+        while (paragraph !== null && !paragraph.isNullObject) {
+            console.log("Checking: ", paragraph.text);
+            console.log("Ignored paragraphs: ", dataService.ignoredParagraphs);
+            console.log("This id", paragraph.uniqueLocalId, " is ignored: ", dataService.ignoredParagraphs.includes(paragraph.uniqueLocalId));
+            if (!dataService.ignoredParagraphs.includes(paragraph.uniqueLocalId)) {
+                const styleChecks = prepareChecks(paragraph);
+                console.log("Style checks: ", styleChecks);
+                // Iterate over checks
+                styleChecks.forEach((check) => {
+                    console.log("Checking: ", check.errorType);
+                    console.log("Result: ", check.condition);
+                    if (check.condition) {
+                        errors.push(check.errorType);
+                    }
+                });
+                if (errors.length > 0) {
+                    console.log("This paragraph is wrong: ", paragraph.text);
+                    paraId = paragraph.uniqueLocalId;
+                    isErrorr = true;
+                    paragraph.select();
+                    console.log(errors);
+                    break;
+                }
+            }
+            cosnole.log("Saving this paragraph as previous, before going to the next one")
+            UpdatePreviousParagraph(paragraph);
+            console.log("Moving to next paragraph");
+            paragraph = paragraph.getNextOrNullObject();
+            paragraph.load(formattingParamsToLoad);
+            await context.sync();
+            console.log("Next paragraph is null?", paragraph.isNullObject);
+        }
+        const ScanReturnValue = {
+            FoundError: isErrorr,
+            ParagraphId: paraId,
+            ErrorTypes: errors
+        };
+        console.log(JSON.stringify(ScanReturnValue));
+        return ScanReturnValue;
+    });
+}
+
+function UpdatePreviousParagraph(paragraph) {
+    if (paragraph.text !== '') {
+        previousParagraphsDictionary[paragraph.style] = paragraph;
+        previousParagraphEmpty = false;
     }
-    const ScanReturnValue = {
-        FoundError: isErrorr,
-        ParagraphId: paraId,
-        ErrorTypes: errors
+    else {
+        previousParagraphEmpty = true;
     }
-    console.log(JSON.stringify(ScanReturnValue));
-    return ScanReturnValue;
 }
 
 function prepareChecks(paragraph) {
@@ -329,37 +358,6 @@ function checkDotsComasColons(paragraph) {
         });
     }
     return result;
-    //if (/\.[^\s]/.test(text)) {
-    //    console.log("There is a dot without leading space");
-    //    // there is a dot without leading space
-    //    return false;
-    //}
-    //if (/ \./.test(text)) {
-    //    console.log("There is a dot with previous space");
-    //    // there is a dot without leading space
-    //    return false;
-    //}
-    //if (/,\S/.test(text)) {
-    //    // there is a comma without leading space
-    //    console.log("There is a comma without leading space");
-    //    return false;
-    //}
-    //if (/ ,/.test(text)) {
-    //    console.log("There is a comma with previous space");
-    //    // there is a dot without leading space
-    //    return false;
-    //}
-    //if (/:\S/.test(text)) {
-    //    // there is a comma without leading space
-    //    console.log("There is a colon without leading space");
-    //    return false;
-    //}
-    //if (/ :/.test(text)) {
-    //    console.log("There is a colon with previous space");
-    //    // there is a dot without leading space
-    //    return false;
-    //}
-    //return true;
 }
 
 
@@ -403,26 +401,62 @@ function isValidContinuation(previous, current) {
 }
 
 function isEmptyLine(paragraph) {
-    if (CURRENT_PARAGRAPG_INDEX === 0) {
-        return false;
-    }
-    if (paragraph.text.trim() === '' && GLOBAL_PARAGRAPHS.items[CURRENT_PARAGRAPG_INDEX - 1].text.trim() === '') {
+    if (previousParagraphEmpty && paragraph.text.trim() === '') {
         return true;
     }
-    else {
-        return false;
-    }
+    return false;
 }
 
 function isDifferentFormatting(paragraph) {
-    if (CURRENT_PARAGRAPG_INDEX === 0) {
-        return false;
+    if (paragraph.style in previousParagraphsDictionary) {
+        // checking formatting with previous paragraph with same style
+        // TODO add more formatting checks
+        return paragraph.alignment !== previousParagraphsDictionary[paragraph.style].alignment;
     }
-    if (paragraph.alignment !== GLOBAL_PARAGRAPHS.items[CURRENT_PARAGRAPG_INDEX - 1].alignment) {
-        return true;
-    }
-    else {
-        return false;
-    }
+    return false;
 }
 
+
+//////////////////////////////ARCHIVE//////////////////////////////////////
+
+async function startConsistencyScanBAK() {
+    // list of found errors
+    const errors = [];
+    var paraId = undefined;
+    var isErrorr = false;
+    for (var i = CURRENT_PARAGRAPG_INDEX; i < GLOBAL_PARAGRAPHS.items.length; i++) {
+        paragraph = GLOBAL_PARAGRAPHS.items[i];
+        CURRENT_PARAGRAPG_INDEX = i;
+        console.log("Checking: ", paragraph.text);
+        console.log("Ignored paragraphs: ", dataService.ignoredParagraphs);
+        console.log("This id", paragraph.uniqueLocalId, " is ignored: ", dataService.ignoredParagraphs.includes(paragraph.uniqueLocalId));
+        if (dataService.ignoredParagraphs.includes(paragraph.uniqueLocalId)) {
+            continue;
+        }
+        const styleChecks = prepareChecks(paragraph);
+        console.log("Style checks: ", styleChecks);
+        // Iterate over checks
+        styleChecks.forEach((check) => {
+            console.log("Checking: ", check.errorType);
+            console.log("Result: ", check.condition);
+            if (check.condition) {
+                errors.push(check.errorType);
+            }
+        });
+        if (errors.length > 0) {
+            console.log("This paragraph is wrong: ", paragraph.text);
+            paraId = paragraph.uniqueLocalId;
+            isErrorr = true;
+            await selectParagraph(CURRENT_PARAGRAPG_INDEX);
+            console.log(errors);
+            break;
+        }
+    }
+    const ScanReturnValue = {
+        FoundError: isErrorr,
+        ParagraphId: paraId,
+        ErrorTypes: errors
+    }
+    console.log(JSON.stringify(ScanReturnValue));
+    return ScanReturnValue;
+}
