@@ -2,12 +2,16 @@
 
 <div class="block bg-pallette-secondary-black rounded-lg flex items-center justify-between text-white py-2 pl-6">
     <p class="text-white text-2xl mr-4">@Text</p>
-    <input type=@InputType class="form-control bg-pallette-primary-black hover:bg-gray rounded-md mr-8" @bind="@InputValue" placeholder=@Placeholder @onkeydown="HandleKeyDown" />
+    <input type=@InputType step=@Step pattern=@Pattern class="form-control bg-pallette-primary-black hover:bg-gray rounded-md mr-8" @bind="@InputValue" placeholder=@Placeholder @onkeydown="HandleKeyDown" />
 </div>
 
 @code {
     [Parameter]
     public string Text { get; set; } = "Text";
+    [Parameter]
+    public string Pattern { get; set; } = string.Empty;
+    [Parameter]
+    public string Step { get; set; } = string.Empty;
     [Parameter]
     public string InputType { get; set; } = "text";
     [Parameter]

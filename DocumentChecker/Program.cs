@@ -4,6 +4,8 @@ using CommonCode.Services.DataServices;
 using DocumentChecker.JsConnectors;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using System.Globalization;
+using System.Text.RegularExpressions;
 namespace DocumentChecker
 {
     public class Program
@@ -24,6 +26,11 @@ namespace DocumentChecker
             builder.Services.AddSingleton<SpellingPageDataService>();
             builder.Services.AddSingleton<ISpellingApiService, SpellingApiService>();
             builder.Services.AddSingleton<ILanguageToolApiService, LanguageToolApiService>();
+
+            builder.Services.AddLocalization();
+            var culture = new CultureInfo("en-US");
+            CultureInfo.DefaultThreadCurrentCulture = culture;
+            CultureInfo.DefaultThreadCurrentUICulture = culture;
             await builder.Build().RunAsync();
         }
     }

@@ -12,6 +12,10 @@ namespace CommonCode.Services.DataServices
 {
     public class FormattingPageDataService : BaseDataService
     {
+        public double Heading1FontSize { get; set; } = 16;
+        public double Heading2FontSize { get; set; } = 14;
+        public double Heading3FontSize { get; set; } = 12;
+        public double Heading4FontSize { get; set; } = 11;
         public double FontSize { get; set; } = 11;
         public string FontName { get; set; } = string.Empty;
         public string Alligment { get; set; } = string.Empty;
@@ -20,10 +24,10 @@ namespace CommonCode.Services.DataServices
         {
             get
             {
-                return LineSpacing.GetLineSpacingInPoints(FontSize);
+                return ((double)LineSpacing).GetLineSpacingInPoints(FontSize);
             }
         }
-        public double LeftIndent { get; set; }
+        public double LeftIndent { get; set; } = 3.5;
         public double LeftIndentInPoints
         {
             get
@@ -31,7 +35,7 @@ namespace CommonCode.Services.DataServices
                 return LeftIndent.ConvertCmToPoints();
             }
         }
-        public double RightIndent { get; set; }
+        public double RightIndent { get; set; } = 2.5;
         public double RightIndentInPoints
         {
             get

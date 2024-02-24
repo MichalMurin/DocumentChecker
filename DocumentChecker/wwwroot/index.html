@@ -25,6 +25,12 @@
         window.history.replaceState = window._historyCache.replaceState;
         window.history.pushState = window._historyCache.pushState;
     </script>
+    <script>
+        // Set the default locale for number formatting
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelector("html").lang = "en-US"; // Set to your desired locale, e.g., "en-US" for English
+        });
+    </script>
     <script src="JavaScriptFiles/BaseJsFunctions.js"></script>
     <script src="JavaScriptFiles/FormattingPageConnector.js"></script>
     <script src="JavaScriptFiles/ConsistencyPageConnector.js"></script>

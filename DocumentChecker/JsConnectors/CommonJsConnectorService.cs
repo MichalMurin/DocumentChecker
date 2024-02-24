@@ -28,5 +28,6 @@ namespace DocumentChecker.JsConnectors
         {
             await _jsRuntime.InvokeVoidAsync("InsertText", text);
         }
+
     }
 }

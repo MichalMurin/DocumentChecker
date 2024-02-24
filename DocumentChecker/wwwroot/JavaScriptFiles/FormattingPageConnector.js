@@ -1,7 +1,7 @@
 ﻿// dataService to store data about formatiing
 var dataService = undefined;
 const DELTA = 0.1;
-const formattingParamsToLoad = "text, font, alignment, lineSpacing, style, leftIndent, rightIndent, uniqueLocalId";
+const formattingParamsToLoad = "text, font, alignment, lineSpacing, style, leftIndent, rightIndent, listItemOrNullObject, uniqueLocalId";
 
 // Enum for error types
 const formattingErrorTypes = {
@@ -18,8 +18,8 @@ window.formattingConnector = {
         console.log("retireved args: ", start, data);
         dataService = data;
         if (start) {
-            // if we are starting the scan, we load all paragraphs and refresh all ref fields
-            console.log("Starting consistency scan");
+            // if we are starting the scan, we load all paragraphs
+            console.log("Starting formatting scan");
             await getAllParagraphs(formattingParamsToLoad);
             CURRENT_PARAGRAPG_INDEX = 0;
         }
@@ -40,7 +40,7 @@ window.formattingConnector = {
         await Word.run(async (context) => {
             var selection = context.document.getSelection();
             // Load the paragraph that contains the selection
-            selection.paragraphs.load('uniqueLocalId');
+            selection.paragraphs.load('uniqueLocalId, style, listItemOrNullObject');
             await context.sync();
             var paragraph = selection.paragraphs.items.find(para => para.uniqueLocalId === idToCorrect);
             if (paragraph === undefined) {
@@ -50,7 +50,7 @@ window.formattingConnector = {
             }
             console.log('Setting paragraph formatting', dataService);
             paragraph.font.name = dataService.fontName;
-            paragraph.font.size = dataService.fontSize;
+            paragraph.font.size = GetExpectedFontSize(paragraph);
             paragraph.alignment = dataService.alligment;
             paragraph.lineSpacing = dataService.lineSpacingInPoints;
             paragraph.leftIndent = dataService.leftIndentInPoints;
@@ -80,7 +80,7 @@ async function startFormattingScan() {
         }
         const styleChecks = [
             { condition: paragraph.font.name !== dataService.fontName, errorType: formattingErrorTypes.INCORRECT_FONT_NAME },
-            { condition: paragraph.font.size !== dataService.fontSize, errorType: formattingErrorTypes.INCORRECT_FONT_SIZE },
+            { condition: paragraph.font.size !== GetExpectedFontSize(paragraph), errorType: formattingErrorTypes.INCORRECT_FONT_SIZE },
             { condition: paragraph.alignment !== dataService.alligment, errorType: formattingErrorTypes.INCORRECT_ALIGNMENT },
             { condition: paragraph.lineSpacing !== dataService.lineSpacingInPoints, errorType: formattingErrorTypes.INCORRECT_LINE_SPACING },
             { condition: paragraph.leftIndent > dataService.leftIndentInPoints + DELTA || paragraph.leftIndent < dataService.leftIndentInPoints - DELTA, errorType: formattingErrorTypes.INCORRECT_LEFT_INDENT },
@@ -108,4 +108,31 @@ async function startFormattingScan() {
     };
     console.log(JSON.stringify(FormattingReturnValue));
     return FormattingReturnValue;
+}
+
+function GetExpectedFontSize(paragraph) {
+    if (paragraph.style.includes("Heading") || paragraph.style.includes("Nadpis")) {
+        if (!paragraph.listItemOrNullObject.isNullObject) {
+            // this is part of the list
+            var level = paragraph.listItemOrNullObject.level;
+            switch (level) {
+                case 0:
+                    return dataService.heading1FontSize;
+                case 1:
+                    return dataService.heading2FontSize;
+                case 2:
+                    return dataService.heading3FontSize;
+                case 3:
+                    return dataService.heading4FontSize;
+                default:
+                    return dataService.fontSize;
+            }
+        }
+        return dataService.heading1FontSize;
+    }
+    //if (paragraph.style === "Normal") {
+    //    return dataService.fontSize;
+    //}
+    return dataService.fontSize;
+
 }

@@ -10,10 +10,14 @@
         <InputFile id="filePicker" OnChange="ImportFile" hidden accept=".txt" />
         <DocumentChecker.Components.MyButton ButtonContent="Export" Icon="fa-solid fa-file-export" OnClick="OnExportClick" />
     </div>
-    <DocumentChecker.Components.MyInput Text="Veľkosť textu" InputType="number" Placeholder=12 @bind-Value="@FormattingPageDataService.FontSize" T="double"/>
-    <DocumentChecker.Components.MyInput Text="Riadkovanie" InputType="number" Placeholder=1.5 @bind-Value="@FormattingPageDataService.LineSpacing" T="double" />
-    <DocumentChecker.Components.MyInput Text="Ľavý okraj" InputType="number" Placeholder=0 @bind-Value="@FormattingPageDataService.LeftIndent" T="double" />
-    <DocumentChecker.Components.MyInput Text="Pravý okraj" InputType="number" Placeholder=0 @bind-Value="@FormattingPageDataService.RightIndent" T="double" />
+    <DocumentChecker.Components.MyInput Text="Veľkosť nadpisu 1. úrovne" InputType="number" Placeholder=16 @bind-Value="@FormattingPageDataService.Heading1FontSize" T="double" />
+    <DocumentChecker.Components.MyInput Text="Veľkosť nadpisu 2. úrovne" InputType="number" Placeholder=14 @bind-Value="@FormattingPageDataService.Heading2FontSize" T="double" />
+    <DocumentChecker.Components.MyInput Text="Veľkosť nadpisu 3. úrovne" InputType="number" Placeholder=12 @bind-Value ="@FormattingPageDataService.Heading3FontSize" T="double" />
+    <DocumentChecker.Components.MyInput Text="Veľkosť nadpisu 4. úrovne" InputType="number" Placeholder=11 @bind-Value="@FormattingPageDataService.Heading4FontSize" T="double" />
+    <DocumentChecker.Components.MyInput Text="Veľkosť textu" InputType="number" Placeholder=11 @bind-Value ="@FormattingPageDataService.FontSize" T="double" />
+    <DocumentChecker.Components.MyInput Text="Riadkovanie" Step=".1" InputType="number" Placeholder="1.5" @bind-Value="@FormattingPageDataService.LineSpacing" T="double" />
+    <DocumentChecker.Components.MyInput Text="Ľavý okraj" Step=".1"  InputType="number" Placeholder=3.5 @bind-Value="@FormattingPageDataService.LeftIndent" T="double" />
+    <DocumentChecker.Components.MyInput Text="Pravý okraj" Step=".1" InputType="number" Placeholder=2.5 @bind-Value="@FormattingPageDataService.RightIndent" T="double" />
     <DocumentChecker.Components.MyInput Text="Font" InputType="text" Placeholder=@FORNT_NAME_PLACE_HOLDER @bind-Value="@FormattingPageDataService.FontName" T="string" />
     <DocumentChecker.Components.MyInput Text="Zarovnanie" InputType="text" Placeholder=@ALLIGMENT_PLACEHOLDER @bind-Value="@FormattingPageDataService.Alligment" T="string" />
     <DocumentChecker.Components.MyButton ButtonContent="ŠTART" Icon="fa-solid fa-play" Classes="w-48" OnClick="OnStartClick" />
