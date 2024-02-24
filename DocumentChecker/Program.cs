@@ -1,6 +1,6 @@
-using CommonCode.DataServices;
 using CommonCode.Interfaces;
 using CommonCode.Services;
+using CommonCode.Services.DataServices;
 using DocumentChecker.JsConnectors;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;

@@ -1,5 +1,5 @@
-﻿using CommonCode.DataServices;
-using CommonCode.ReturnValues;
+﻿using CommonCode.ReturnValues;
+using CommonCode.Services.DataServices;
 using DocumentChecker.JsConnectors;
 using Microsoft.AspNetCore.Components;
 using System.Diagnostics;

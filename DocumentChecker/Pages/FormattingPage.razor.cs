@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.JSInterop;
-using CommonCode.DataServices;
 using DocumentChecker.JsConnectors;
+using CommonCode.Services.DataServices;
 
 namespace DocumentChecker.Pages
 {

@@ -1,10 +1,10 @@
-﻿using CommonCode.DataServices;
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using CommonCode.Extensions;
 using System.Reflection;
 using DocumentChecker.JsConnectors;
 using CommonCode.ReturnValues;
+using CommonCode.Services.DataServices;
 
 namespace DocumentChecker.Pages.ResultPages
 {

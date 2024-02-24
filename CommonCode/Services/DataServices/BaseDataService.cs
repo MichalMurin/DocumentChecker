@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CommonCode.DataServices
+namespace CommonCode.Services.DataServices
 {
     public class BaseDataService
     {

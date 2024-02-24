@@ -1,6 +1,7 @@
-﻿<div class="bg-pallette-secondary-black rounded-lg px-6 py-6">
+﻿@typeparam T
+<div class="bg-pallette-secondary-black rounded-lg px-6 py-6">
     <h3 class="text-2xl pb-2 border-b-2 border-black text-white">@Header</h3>
-    <input type=@InputType class="form-control bg-pallette-primary-black hover:bg-gray rounded-md w-[95%] py-2 border-2 border-black text-white" @bind="@Value" placeholder=@Placeholder />
+    <input type=@InputType class="form-control bg-pallette-primary-black hover:bg-gray rounded-md w-[95%] py-2 border-2 border-black text-white" @bind="@InputValue" placeholder=@Placeholder />
     <p class="mt-4 text-white">@Description</p>
 </div>
 @code {
@@ -12,5 +13,21 @@
     public string InputType { get; set; } = "text";
     [Parameter]
     public string Placeholder { get; set; } = string.Empty;
-    public string Value { get; set; }  = string.Empty;
+    [Parameter]
+    public T Value { get; set; } = default!;
+    [Parameter]
+    public EventCallback<T> ValueChanged { get; set; }
+
+    private T InputValue
+    {
+        get => Value;
+        set
+        {
+            if (!EqualityComparer<T>.Default.Equals(Value, value))
+            {
+                Value = value;
+                ValueChanged.InvokeAsync(value);
+            }
+        }
+    }
 }

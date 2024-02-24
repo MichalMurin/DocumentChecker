@@ -8,9 +8,9 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CommonCode.DataServices
+namespace CommonCode.Services.DataServices
 {
-    public class FormattingPageDataService: BaseDataService
+    public class FormattingPageDataService : BaseDataService
     {
         public double FontSize { get; set; } = 11;
         public string FontName { get; set; } = string.Empty;

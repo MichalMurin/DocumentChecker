@@ -1,4 +1,4 @@
-﻿using CommonCode.DataServices;
+﻿using CommonCode.Services.DataServices;
 using Microsoft.AspNetCore.Components;
 
 namespace DocumentChecker.Pages

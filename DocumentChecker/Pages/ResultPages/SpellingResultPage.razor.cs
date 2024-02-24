@@ -1,14 +1,15 @@
 ﻿using CommonCode.ApiModels;
 using CommonCode.CheckResults;
-using CommonCode.DataServices;
 using CommonCode.Interfaces;
 using CommonCode.Results;
 using CommonCode.ReturnValues;
 using CommonCode.Services;
+using CommonCode.Services.DataServices;
 using DocumentChecker.JsConnectors;
 using Microsoft.AspNetCore.Components;
 using System.Dynamic;
-using SpellingResults = (System.Collections.Generic.List<CommonCode.Results.PrepositionCheckResult>? prepositionCheckResults, System.Collections.Generic.List<CommonCode.CheckResults.LanguageToolCheckResult>? languageToolResults);
+using System.Text.RegularExpressions;
+using SpellingResults = (System.Collections.Generic.List<CommonCode.Results.PrepositionCheckResult>? prepositionCheckResults, System.Collections.Generic.List<CommonCode.CheckResults.LanguageToolCheckResult>? languageToolResults, System.Collections.Generic.List<CommonCode.CheckResults.OwnRuleCheckResult>? ownRulesCheckResult);
 
 namespace DocumentChecker.Pages.ResultPages
 {
@@ -84,17 +85,23 @@ namespace DocumentChecker.Pages.ResultPages
                     if (SpellingPageDataService.CheckLanguageTool)
                     {
                         languageToolResults = await CheckLanguageToolInParagraph(_paragraphs[i]);
-                    }                    
+                    }
+                    List<OwnRuleCheckResult>? ownRulesCheckResult = null;
+                    if (SpellingPageDataService.Rules.Count > 0)
+                    {
+                        ownRulesCheckResult =  CheckOwnRules(_paragraphs[i]);
+                    }
 
                     if ((prepositionCheckResults is not null && prepositionCheckResults.Count > 0) ||
-                        (languageToolResults is not null && languageToolResults.Count > 0))
+                        (languageToolResults is not null && languageToolResults.Count > 0) ||
+                        (ownRulesCheckResult is not null && ownRulesCheckResult.Count > 0))
                     {
                         Header = "Našla sa chyba";
-                        _currentSpellingResult = (prepositionCheckResults, languageToolResults);
+                        _currentSpellingResult = (prepositionCheckResults, languageToolResults, ownRulesCheckResult);
                         TextResult = CollectErrorsInString(_currentSpellingResult);
                         await JsConnector.SelectParagraph(i);
                         _currentIndex = i;
-                        break;
+                        return;
                     }
                 }
             }
@@ -128,6 +135,37 @@ namespace DocumentChecker.Pages.ResultPages
             return relevantCheckResults;
         }
 
+        private List<OwnRuleCheckResult>? CheckOwnRules(ParagraphData paragraph)
+        {
+            if (SpellingPageDataService.Rules.Count > 0)
+            {
+                var result = new List<OwnRuleCheckResult>();
+                foreach (var rule in SpellingPageDataService.Rules)
+                {
+                    var regex = rule.RegexRule;
+                    var matches = Regex.Matches(paragraph.Text, regex);
+                    if (matches.Count > 0)
+                    {
+                        foreach (System.Text.RegularExpressions.Match match in matches)
+                        {
+                            Console.WriteLine($"Nasla sa zhoda: {match.Value}");
+                            var ownRuleCheckResult = new OwnRuleCheckResult
+                            {
+                                ErrorDescription = rule.Description,
+                                Correction = rule.Correction,
+                                StartIndex = match.Index,
+                                Length = match.Length
+                            };
+                            result.Add(ownRuleCheckResult);
+                        }
+                    }
+                }
+                return result;
+            }
+            return null;
+        }
+
+
         private async Task<List<PrepositionCheckResult>?> CheckPrepositionInParagraph(ParagraphData paragraph)
         {
             var prepositionsResult = await SpellingApiService.CheckPrepositions(text: paragraph.Text);
@@ -159,6 +197,13 @@ namespace DocumentChecker.Pages.ResultPages
                     result += $"Našla sa chyba v predložke \"{err.Error}\"\n";
                 }
             }
+            if (results.ownRulesCheckResult is not null)
+            {
+                foreach (var err in results.ownRulesCheckResult)
+                {
+                    result += $"Našla sa vlastná chyba: {err.ErrorDescription}\n";
+                }
+            }
             return result;
         }
 
@@ -182,6 +227,14 @@ namespace DocumentChecker.Pages.ResultPages
                 foreach (var err in results.prepositionCheckResults)
                 {
                     result = result.Replace(err.Error, err.Suggestion);
+                }
+            }
+            if (results.ownRulesCheckResult is not null)
+            {
+                foreach (var err in results.ownRulesCheckResult)
+                {
+                    result = result.Remove(err.StartIndex, err.Length);
+                    result = result.Insert(err.StartIndex, err.Correction);
                 }
             }
             return result;

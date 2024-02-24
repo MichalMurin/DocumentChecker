@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CommonCode.DataServices
+namespace CommonCode.Services.DataServices
 {
-    public class ConsistencyPageDataService: BaseDataService
+    public class ConsistencyPageDataService : BaseDataService
     {
         public bool TitleConsistency { get; set; } = true;
         public bool DoubleSpaces { get; set; } = true;
