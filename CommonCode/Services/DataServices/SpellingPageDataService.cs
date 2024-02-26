@@ -12,5 +12,6 @@ namespace CommonCode.Services.DataServices
         public List<OwnRuleModel> Rules { get; set; } = new List<OwnRuleModel>();
         public bool CheckPrepositions { get; set; } = true;
         public bool CheckLanguageTool { get; set; } = true;
+        public bool CheckOwnRules { get; set; } = true;
     }
 }

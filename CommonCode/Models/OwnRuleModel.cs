@@ -11,5 +11,10 @@ namespace CommonCode.Models
         public string RegexRule { get; set; } = string.Empty;
         public string Correction { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
+
+        public override string ToString()
+        {
+            return Description;
+        }
     }
 }

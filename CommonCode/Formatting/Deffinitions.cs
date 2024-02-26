@@ -2,6 +2,14 @@
 {
     public class Deffinitions
     {
+        public static Dictionary<string,string> AlignmentDict = new Dictionary<string, string>
+        {
+            { "Na stred", "Centered" },
+            { "Do bloku", "Justified" },
+            { "Vľavo", "Left" },
+            { "Vpravo", "Right" },  
+        };
+   
         public enum Alignment
         {
             Centered,

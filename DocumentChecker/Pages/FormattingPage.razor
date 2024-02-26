@@ -1,4 +1,5 @@
 ﻿@page "/formatting"
+@using CommonCode.Formatting
 @inject NavigationManager NavigationManager
 @inherits BaseJsPage;
 <PageTitle>Formatting</PageTitle> 
@@ -19,6 +20,6 @@
     <DocumentChecker.Components.MyInput Text="Ľavý okraj" Step=".1"  InputType="number" Placeholder=3.5 @bind-Value="@FormattingPageDataService.LeftIndent" T="double" />
     <DocumentChecker.Components.MyInput Text="Pravý okraj" Step=".1" InputType="number" Placeholder=2.5 @bind-Value="@FormattingPageDataService.RightIndent" T="double" />
     <DocumentChecker.Components.MyInput Text="Font" InputType="text" Placeholder=@FORNT_NAME_PLACE_HOLDER @bind-Value="@FormattingPageDataService.FontName" T="string" />
-    <DocumentChecker.Components.MyInput Text="Zarovnanie" InputType="text" Placeholder=@ALLIGMENT_PLACEHOLDER @bind-Value="@FormattingPageDataService.Alligment" T="string" />
+    <DocumentChecker.Components.MyDropDown Text="Zarovnanie" T="string" Items="Deffinitions.AlignmentDict.Keys" @bind-SelectedItem="@FormattingPageDataService.AllingmentDispalyed"/>
     <DocumentChecker.Components.MyButton ButtonContent="ŠTART" Icon="fa-solid fa-play" Classes="w-48" OnClick="OnStartClick" />
 </div>

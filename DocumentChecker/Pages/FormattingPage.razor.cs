@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.JSInterop;
 using DocumentChecker.JsConnectors;
 using CommonCode.Services.DataServices;
+using CommonCode.Formatting;
 
 namespace DocumentChecker.Pages
 {
@@ -12,7 +13,7 @@ namespace DocumentChecker.Pages
 
         private const string FORNT_NAME_PLACE_HOLDER  = "Arial";
 
-        private const string ALLIGMENT_PLACEHOLDER = "Justified";
+        //private const string ALLIGMENT_PLACEHOLDER = "Justified";
         [Inject]
         private FormattingPageDataService FormattingPageDataService { get; set; } = default!;
         [Inject]
@@ -20,6 +21,8 @@ namespace DocumentChecker.Pages
 
         private async Task OnImportClick()
         {
+            var x = Deffinitions.AlignmentDict.Values;
+            Console.WriteLine(FormattingPageDataService.AllingmentDispalyed);
             Console.WriteLine("Import clicked - triggering file import");
             await JsConnector.TriggerImport("filePicker");
         }

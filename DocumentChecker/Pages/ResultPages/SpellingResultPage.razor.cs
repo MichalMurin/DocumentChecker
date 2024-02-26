@@ -87,7 +87,7 @@ namespace DocumentChecker.Pages.ResultPages
                         languageToolResults = await CheckLanguageToolInParagraph(_paragraphs[i]);
                     }
                     List<OwnRuleCheckResult>? ownRulesCheckResult = null;
-                    if (SpellingPageDataService.Rules.Count > 0)
+                    if (SpellingPageDataService.Rules.Count > 0 && SpellingPageDataService.CheckOwnRules)
                     {
                         ownRulesCheckResult =  CheckOwnRules(_paragraphs[i]);
                     }

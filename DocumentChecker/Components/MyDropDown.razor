@@ -1,0 +1,38 @@
+﻿@typeparam T where T: notnull
+
+<div class="block bg-pallette-secondary-black rounded-lg flex items-center justify-between text-white py-2 pl-6">
+    <p class="text-white text-2xl mr-4">@Text</p>
+    <select @bind="InputValue" class="form-control bg-pallette-primary-black hover:bg-gray rounded-md mr-8">
+        @foreach (var item in Items)
+        {
+            <option value="@item!.ToString()">@item</option>
+        }
+    </select>
+</div>
+
+@code {
+
+    [Parameter]
+    public string Text { get; set; } = "Text";
+
+    [Parameter]
+    public IEnumerable<T> Items { get; set; } = default!;
+
+    [Parameter]
+    public T SelectedItem { get; set; } = default!;
+    [Parameter]
+    public EventCallback<T> SelectedItemChanged { get; set; }
+
+    private T InputValue
+    {
+        get => SelectedItem;
+        set
+        {
+            if (!EqualityComparer<T>.Default.Equals(SelectedItem, value))
+            {
+                SelectedItem = value;
+                SelectedItemChanged.InvokeAsync(value);
+            }
+        }
+    }
+}
