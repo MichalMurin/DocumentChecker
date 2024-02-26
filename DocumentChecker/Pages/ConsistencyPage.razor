@@ -8,10 +8,10 @@
     <DocumentChecker.Components.MyCheckbox Text="Kontorla nadpisov" @bind-Checked="@ConsistencyPageDataService.TitleConsistency" Description="Kontrola nadväznosti nadpisov a ich konzistentnosti vzhľadom na predchádzajúve nadpisy."/>
     <DocumentChecker.Components.MyCheckbox Text="Dvojité medzery" @bind-Checked="@ConsistencyPageDataService.DoubleSpaces" Description="Kontrola, či sa v texte nachádzajú dvojité medzery."/>
     <DocumentChecker.Components.MyCheckbox Text="Prázdne riadky" @bind-Checked="@ConsistencyPageDataService.EmptyLines" Description="Kontrola prítomnosti viac ako jedného prázdneho riadku za sebou."/>
-    <DocumentChecker.Components.MyCheckbox Text="Funkčnosť krížových odkazov" @bind-Checked="@ConsistencyPageDataService.CrossReferenceFunctionality" />
-    <DocumentChecker.Components.MyCheckbox Text="Zarovnanie dokumentu" @bind-Checked="@ConsistencyPageDataService.DocumentAlignment" />
-    <DocumentChecker.Components.MyCheckbox Text="Kontrola popisov" @bind-Checked="@ConsistencyPageDataService.DescriptionValidation" Disabled=true/>
-    <DocumentChecker.Components.MyCheckbox Text="Kontrola zoznamov" @bind-Checked="@ConsistencyPageDataService.ListValidation" Disabled=true/>
+    <DocumentChecker.Components.MyCheckbox Text="Funkčnosť krížových odkazov" @bind-Checked="@ConsistencyPageDataService.CrossReferenceFunctionality" Description="Kontrola funkčnosti krížových odkazov." />
+    <DocumentChecker.Components.MyCheckbox Text="Formátovanie dokumentu" @bind-Checked="@ConsistencyPageDataService.DocumentAlignment" Description="Kontrola konzistentného formátovania rovnakých štýlov." />
+    <DocumentChecker.Components.MyCheckbox Text="Kontrola popisov" @bind-Checked="@ConsistencyPageDataService.CaptionValidation" Description="Kontrola prítomnosti popisov obrázkov a tabuliek." />
+    <DocumentChecker.Components.MyCheckbox Text="Kontrola zoznamov" @bind-Checked="@ConsistencyPageDataService.ListValidation" Description="Kontrola konzistentnosti typov zoznamov." />
     <DocumentChecker.Components.MyCheckbox Text="Kontrola zátvoriek a úvodzoviek" @bind-Checked="@ConsistencyPageDataService.ParenthesesValidation" Description="Kontrola uzavretých zátvoriek a úvodzoviek." />
     <DocumentChecker.Components.MyCheckbox Text="Kontrola bodiek, čiarok, dvojbodok" @bind-Checked="@ConsistencyPageDataService.DotsComasColonsValidation" Description="Kontrola správnosti použitie bodiek, čiarok a dvojbodiek. Predpopkladá sa medzera za znakom a žiadna medzera pred." />
     <DocumentChecker.Components.MyButton ButtonContent="ŠTART" Icon="fa-solid fa-play" Classes="w-48" OnClick="OnStartClick" />

@@ -42,7 +42,7 @@ namespace CommonCode.Services.DataServices
                 return ((double)LineSpacing).GetLineSpacingInPoints(FontSize);
             }
         }
-        public double LeftIndent { get; set; } = 3.5;
+        public double LeftIndent { get; set; } = 0;
         public double LeftIndentInPoints
         {
             get
@@ -50,7 +50,7 @@ namespace CommonCode.Services.DataServices
                 return LeftIndent.ConvertCmToPoints();
             }
         }
-        public double RightIndent { get; set; } = 2.5;
+        public double RightIndent { get; set; } = 0;
         public double RightIndentInPoints
         {
             get

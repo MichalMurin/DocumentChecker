@@ -1,5 +1,5 @@
 ﻿var dataService = null;
-const consistencyParamsToLoad = 'text, alignment, style, fields, listItemOrNullObject, uniqueLocalId';
+const consistencyParamsToLoad = 'text, alignment, font, style, fields, listItemOrNullObject, tableNestingLevel, inlinePictures, uniqueLocalId';
 dotsComasColonsSpaceRegex = [/ \./, / ,/, / :/];
 dotsComasColonsNoSpaceRegex = [/\.[^\s]/,/,\S/, /:\S/];
 const consistencyErrorTypes = {
@@ -8,17 +8,23 @@ const consistencyErrorTypes = {
     INVALID_CROSS_REFERENCE: 'InvalidCrossRef',
     INVALID_HEADING_CONTINUITY: 'InvalidHeadingContinuity',
     INVALID_HEADING_CONSISTENCY: 'InvalidHeadingConsistency',
+    INVALID_HEADING_NUMBER_CONSISTENCY: 'InvalidHeadingNumberConsistency',
     INCONSISTENT_FORMATTING: 'InconsistentFormatting',
     INVALID_PARENTHESIS: 'InvalidParenthesis',
-    INVALID_DOTS_COMAS_COLONS: 'InvalidDotsComasColons'
-}
+    INVALID_DOTS_COMAS_COLONS: 'InvalidDotsComasColons',
+    CAPTION_MISSING: 'DescriptionMissing',
+    INVALID_LIST_CONSISTENCY: 'InvalidListConsistency'
+};
 // key: paragraphStyle, value: paragraph
-var previousParagraphsDictionary = {};
-var previousParagraphEmpty = false;
-
-// variable to store previous heading, for heading continuity check
-var previousNumberedHeading = { text: null, number: null };
-var previousHeading = null;
+var previousParagraphsByStyle = {};
+const previousParagraphsKeys = {
+    HEADING: "Heading",
+    NUMBERED_HEADING: "NumberedHeading",
+    LIST_ITEM: "PreviousListItem",
+    PREVIOUS_PARAGRAPH: "PreviousParagraph"
+};
+// key "previousParagraphsKeys". value: paragraph
+var previousParagraphs = {};
 
 window.consistencyConnector = {
     checkConsistency: async (start, data) => {
@@ -38,7 +44,7 @@ window.consistencyConnector = {
         await Word.run(async (context) => {
             var selection = context.document.getSelection();
             // Load the paragraph that contains the selection
-            selection.paragraphs.load('uniqueLocalId');
+            selection.paragraphs.load('uniqueLocalId, text');
             await context.sync();
             var paragraph = selection.paragraphs.items.find(para => para.uniqueLocalId === idToCorrect);
             if (paragraph === undefined) {
@@ -114,8 +120,8 @@ window.consistencyConnector = {
 }
 
 function resetAtrributes() {
-    previousNumberedHeading = { text: null, number: null };
-    previousHeading = null;
+    previousParagraphsByStyle = {};
+    previousParagraphs = {};
 }
 
 async function startConsistencyScan(start) {
@@ -169,11 +175,11 @@ async function startConsistencyScan(start) {
                     break;
                 }
             }
-            cosnole.log("Saving this paragraph as previous, before going to the next one")
+            console.log("Saving this paragraph as previous, before going to the next one")
             UpdatePreviousParagraph(paragraph);
             console.log("Moving to next paragraph");
             paragraph = paragraph.getNextOrNullObject();
-            paragraph.load(formattingParamsToLoad);
+            paragraph.load(consistencyParamsToLoad);
             await context.sync();
             console.log("Next paragraph is null?", paragraph.isNullObject);
         }
@@ -188,27 +194,35 @@ async function startConsistencyScan(start) {
 }
 
 function UpdatePreviousParagraph(paragraph) {
-    if (paragraph.text !== '') {
-        previousParagraphsDictionary[paragraph.style] = paragraph;
-        previousParagraphEmpty = false;
-    }
-    else {
-        previousParagraphEmpty = true;
+    if (!dataService.ignoredParagraphs.includes(paragraph.uniqueLocalId)) {
+        if (paragraph.text !== '') {
+            previousParagraphsByStyle[paragraph.style] = paragraph;
+            if (isParagraphHeading(paragraph)) {
+                previousParagraphs[previousParagraphsKeys.HEADING] = paragraph;
+                if (GetNumberOfHeading(paragraph) !== null) {
+                    previousParagraphs[previousParagraphsKeys.NUMBERED_HEADING] = paragraph;
+                }
+            }
+            if (!paragraph.listItemOrNullObject.isNullObject) {
+                previousParagraphs[previousParagraphsKeys.LIST_ITEM] = paragraph;
+            }
+        }
+        previousParagraphs[previousParagraphsKeys.PREVIOUS_PARAGRAPH] = paragraph;
     }
 }
 
 function prepareChecks(paragraph) {
     console.log("Preparing checks: ", dataService.doubleSpaces);
     var wrongHeadingContinuity = false;
-    wrongHeadingConsistency = false;
-    var currentheadingNumber = GetNumberOfHeading(paragraph);
-    if (currentheadingNumber !== null) {
-        // if paragraph is numbered heading, it has number -> we check heading continuity and consistency
-        wrongHeadingContinuity = !checkHeadingContinuity(currentheadingNumber, paragraph.text)
-        wrongHeadingConsistency = !checkchHeadingConsistency(paragraph);
-    }
-    else if (paragraph.style.includes('Heading')) {
-        // if paragraph is heading, but it is not numbered, we check only heading consistency
+    var wrongHeadingConsistency = false;
+    var wrongHeadingNumberConsistency = false;
+    if (isParagraphHeading(paragraph)) {
+        var currentheadingNumber = GetNumberOfHeading(paragraph);
+        if (currentheadingNumber !== null) {
+            // if paragraph is numbered heading, it has number -> we check heading continuity
+            wrongHeadingContinuity = !checkHeadingContinuity(currentheadingNumber)
+            wrongHeadingNumberConsistency = !checkHeadingNumberConsistency(currentheadingNumber);
+        }
         wrongHeadingConsistency = !checkchHeadingConsistency(paragraph);
     }
     const styleChecks = [
@@ -216,13 +230,20 @@ function prepareChecks(paragraph) {
         { condition: dataService.emptyLines && isEmptyLine(paragraph), errorType: consistencyErrorTypes.EMPTY_LINES },
         { condition: dataService.crossReferenceFunctionality && checkInvalidCrossReference(paragraph), errorType: consistencyErrorTypes.INVALID_CROSS_REFERENCE },
         { condition: dataService.titleConsistency && wrongHeadingContinuity, errorType: consistencyErrorTypes.INVALID_HEADING_CONTINUITY },
+        { condition: dataService.titleConsistency && wrongHeadingNumberConsistency, errorType: consistencyErrorTypes.INVALID_HEADING_NUMBER_CONSISTENCY },
         { condition: dataService.titleConsistency && wrongHeadingConsistency, errorType: consistencyErrorTypes.INVALID_HEADING_CONSISTENCY },
         { condition: dataService.documentAlignment && isDifferentFormatting(paragraph), errorType: consistencyErrorTypes.INCONSISTENT_FORMATTING },
         { condition: dataService.parenthesesValidation && !isValidParenthesis(paragraph), errorType: consistencyErrorTypes.INVALID_PARENTHESIS },
         { condition: dataService.dotsComasColonsValidation && !checkDotsComasColons(paragraph), errorType: consistencyErrorTypes.INVALID_DOTS_COMAS_COLONS },
+        { condition: dataService.captionValidation && !isCaptionPresent(paragraph), errorType: consistencyErrorTypes.CAPTION_MISSING },
+        { condition: dataService.listValidation && !isListConsistent(paragraph), errorType: consistencyErrorTypes.INVALID_LIST_CONSISTENCY },
         // Add more checks as needed
     ];
     return styleChecks;
+}
+
+function isParagraphHeading(paragraph) {
+    return paragraph.style.includes('Heading') || paragraph.style.includes('Nadpis');
 }
 
 function GetNumberOfHeading(paragraph) {
@@ -259,38 +280,42 @@ function checkInvalidCrossReference(paragraph) {
     return paragraph.text.includes("Error! Reference source not found.");
 }
 
-function checkHeadingContinuity(currentNumber, currentText) {
-    console.log("Checking heading continuity, previous heading: ", previousNumberedHeading.text, previousNumberedHeading.number);
+function checkHeadingContinuity(currentNumber) {
     console.log("Checking continuity ... Current number: ", currentNumber);
-    if (previousNumberedHeading.text === null) {
-        console.log("Previous heading is undefined");
-        // previous heading does not exists, this is the first one
-        previousNumberedHeading.text = currentText;
-        previousNumberedHeading.number = currentNumber;
-        return true;
-    }
-    else {
-        if (isValidContinuation(previousNumberedHeading.number, currentNumber)) {
-            console.log("Heading has valid continuation", previousNumberedHeading.number, currentNumber);
-            previousNumberedHeading.text = currentText;
-            previousNumberedHeading.number = currentNumber;
+    previousHeading = previousParagraphs[previousParagraphsKeys.NUMBERED_HEADING];
+    if (previousHeading !== undefined) {
+        previousNumber = GetNumberOfHeading(previousHeading);
+        continuingNumbers = GetNextPossibleNumbers(previousNumber);
+        console.log('Possible next numbers: ', continuingNumbers);
+        if (continuingNumbers.includes(currentNumber)) {
             return true;
         }
         else {
-            console.log("Heading has invalid continuation", previousNumberedHeading.number, currentNumber);
             return false;
         }
     }
+    // if there is no previous heading, we cannot check the continuity -> this is the first heading
+    return true;
 }
 
-function checkchHeadingConsistency(paragraph) {
-    if (previousHeading === null) {
-        console.log("Previous heading is undefined")
-        // this is first heading
-        previousHeading = paragraph;
-        return true;
+function checkHeadingNumberConsistency(currentNumber) {
+    console.log("Checking number consistency ... Current number: ", currentNumber);
+    previousHeading = previousParagraphs[previousParagraphsKeys.NUMBERED_HEADING];
+    if (previousHeading !== undefined) {
+        previousNumber = GetNumberOfHeading(previousHeading);
+        if ((previousNumber.endsWith('.') && currentNumber.endsWith('.')) || ((!previousNumber.endsWith('.') && !currentNumber.endsWith('.')))) {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
-    else {
+    // if there is no previous heading, we cannot check the continuity -> this is the first heading
+    return true;
+}
+function checkchHeadingConsistency(paragraph) {
+    previousHeading = previousParagraphs[previousParagraphsKeys.HEADING];
+    if (previousHeading !== undefined) {
         previousHeader = previousHeading.text;
         currentHeader = paragraph.text;
         console.log("Checking heading consistency: ", previousHeader, currentHeader);
@@ -303,18 +328,12 @@ function checkchHeadingConsistency(paragraph) {
         else if (previousHeader === previousHeader.toLowerCase()) {
             result = currentHeader === currentHeader.toLowerCase();
         }
-        // Check if the previous text has the first letter uppercase and the rest lowercase
-        else if (previousHeader === previousHeader.charAt(0).toUpperCase() + previousHeader.slice(1).toLowerCase()) {
-            result = currentHeader === currentHeader.charAt(0).toUpperCase() + currentHeader.slice(1).toLowerCase();
-        }
-        else {
-            result = false;
-        }
         if (result) {
             previousHeading = paragraph;
         }
         return result;
-    }    
+    }
+    return true;  
 }
 
 function isValidParenthesis(paragraph) {
@@ -346,7 +365,13 @@ function isValidParenthesis(paragraph) {
 }
 
 function checkDotsComasColons(paragraph) {
-    const text = paragraph.text;
+    var text = paragraph.text;
+    if (isParagraphHeading(paragraph)) {
+        var headingNumber = GetNumberOfHeading(paragraph)
+        if (headingNumber !== null) {
+            text = text.slice(headingNumber.length);
+        }
+    }
     var result = dotsComasColonsSpaceRegex.every((regex) => {
         // testing every regex
         return !regex.test(text);
@@ -360,60 +385,83 @@ function checkDotsComasColons(paragraph) {
     return result;
 }
 
-
-
-function isValidContinuation(previous, current) {
-
-    const previousParts = previous.replace(/\.$/, '').split('.');
-    const currentParts = current.replace(/\.$/, '').split('.');
-    console.log("Previous parts: ", previousParts);
-    console.log("Current parts: ", currentParts);
-    // If the current heading has more parts than the previous one,
-    // it should only have one more part and that part should be '1'.
-    if (currentParts.length > previousParts.length) {
-        return currentParts.length === previousParts.length + 1 && currentParts[currentParts.length - 1] === '1';
+function GetNextPossibleNumbers(previousNumber) {
+    var endsWithDot = previousNumber.endsWith('.');
+    if (endsWithDot) {
+        previousNumber = previousNumber.slice(0, -1);
     }
 
-    // If the current heading has the same number of parts as the previous one,
-    // all parts should be the same as the previous one except for the last part,
-    // which should be one greater than the last part of the previous one.
-    else if (currentParts.length === previousParts.length) {
-        for (let i = 0; i < currentParts.length - 1; i++) {
-            if (currentParts[i] !== previousParts[i]) {
-                return false;
-            }
-        }
-        return parseInt(currentParts[currentParts.length - 1]) === parseInt(previousParts[previousParts.length - 1]) + 1;
+    var parts = previousNumber.split('.');
+    var results = [];
+    console.log("Previous parts: ", parts);
+
+    // Increment each part from the end
+    for (var i = parts.length - 1; i >= 0; i--) {
+        var newParts = parts.slice();
+        newParts[i] = parseInt(newParts[i]) + 1;
+        results.push(newParts.join('.'));
     }
 
-    // If the current heading has fewer parts than the previous one,
-    // the first parts should be the same and the last part of the current heading
-    // should be one greater than the corresponding part of the previous heading.
-    else if (currentParts.length < previousParts.length) {
-        for (let i = 0; i < currentParts.length - 1; i++) {
-            if (currentParts[i] !== previousParts[i]) {
-                return false;
-            }
-        }
-        return parseInt(currentParts[currentParts.length - 1]) === parseInt(previousParts[currentParts.length - 1]) + 1;
+    // Add the next major heading
+    results.push(`${previousNumber}.1`);
+
+    if (endsWithDot) {
+        results = results.map(function (result) {
+            return result + '.';
+        });
     }
-    return false;
+    return results;
 }
 
 function isEmptyLine(paragraph) {
-    if (previousParagraphEmpty && paragraph.text.trim() === '') {
+    var previousPara = previousParagraphs[previousParagraphsKeys.PREVIOUS_PARAGRAPH];
+    if (previousPara !== undefined && previousPara.text.trim() === '' && paragraph.text.trim() === '') {
         return true;
     }
     return false;
 }
 
 function isDifferentFormatting(paragraph) {
-    if (paragraph.style in previousParagraphsDictionary) {
+    var previousPara = previousParagraphsByStyle[paragraph.style];
+    if (previousPara !== undefined) {
         // checking formatting with previous paragraph with same style
-        // TODO add more formatting checks
-        return paragraph.alignment !== previousParagraphsDictionary[paragraph.style].alignment;
+        console.log("Checking formatting: ", paragraph, previousPara);
+        return paragraph.alignment !== previousPara.alignment ||
+            paragraph.font.name !== previousPara.font.name ||
+            paragraph.font.size !== previousPara.font.size;
     }
     return false;
+}
+
+function isCaptionPresent(currentParagraph) {
+    previousPara = previousParagraphs[previousParagraphsKeys.PREVIOUS_PARAGRAPH];
+    if (previousPara !== undefined) {
+        console.log("Previous paragraph: ", previousPara, "This paragraph: ", currentParagraph)
+        if (previousPara.tableNestingLevel > 0 && currentParagraph.tableNestingLevel === 0) {
+            console.log("Previous paragraph is in table, this is not -> so this should be a caption");
+            return currentParagraph.style.includes('Caption') || currentParagraph.style.includes('Popis');
+        }
+        else if (previousPara.inlinePictures.items.length > 0 && currentParagraph.inlinePictures.items.length === 0) {
+            console.log('Previous paragraph was image, and this is not -> this should be caption');
+            return currentParagraph.style.includes('Caption') || currentParagraph.style.includes('Popis');
+        }
+    }
+    return true;
+}
+
+function isListConsistent(currentParagraph) {
+    var previousListItem = previousParagraphs[previousParagraphsKeys.LIST_ITEM];
+    if (previousListItem !== undefined && !currentParagraph.listItemOrNullObject.isNullObject) {
+        let previousListString = previousListItem.listItemOrNullObject.listString;
+        let currentListString = currentParagraph.listItemOrNullObject.listString;
+        if ((/^\d/.test(previousListString) && /^\d/.test(currentListString)) || (previousListString === currentListString)) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    return true;
 }
 
 
@@ -460,3 +508,41 @@ async function startConsistencyScanBAK() {
     console.log(JSON.stringify(ScanReturnValue));
     return ScanReturnValue;
 }
+
+//function isValidContinuation(previous, current) {
+
+//    const previousParts = previous.replace(/\.$/, '').split('.');
+//    const currentParts = current.replace(/\.$/, '').split('.');
+//    console.log("Previous parts: ", previousParts);
+//    console.log("Current parts: ", currentParts);
+//    // If the current heading has more parts than the previous one,
+//    // it should only have one more part and that part should be '1'.
+//    if (currentParts.length > previousParts.length) {
+//        return currentParts.length === previousParts.length + 1 && currentParts[currentParts.length - 1] === '1';
+//    }
+
+//    // If the current heading has the same number of parts as the previous one,
+//    // all parts should be the same as the previous one except for the last part,
+//    // which should be one greater than the last part of the previous one.
+//    else if (currentParts.length === previousParts.length) {
+//        for (let i = 0; i < currentParts.length - 1; i++) {
+//            if (currentParts[i] !== previousParts[i]) {
+//                return false;
+//            }
+//        }
+//        return parseInt(currentParts[currentParts.length - 1]) === parseInt(previousParts[previousParts.length - 1]) + 1;
+//    }
+
+//    // If the current heading has fewer parts than the previous one,
+//    // the first parts should be the same and the last part of the current heading
+//    // should be one greater than the corresponding part of the previous heading.
+//    else if (currentParts.length < previousParts.length) {
+//        for (let i = 0; i < currentParts.length - 1; i++) {
+//            if (currentParts[i] !== previousParts[i]) {
+//                return false;
+//            }
+//        }
+//        return parseInt(currentParts[currentParts.length - 1]) === parseInt(previousParts[currentParts.length - 1]) + 1;
+//    }
+//    return false;
+//}
