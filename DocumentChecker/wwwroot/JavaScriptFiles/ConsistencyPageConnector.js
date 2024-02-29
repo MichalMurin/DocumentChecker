@@ -1,7 +1,8 @@
 ﻿var dataService = null;
-const consistencyParamsToLoad = 'text, alignment, font, style, fields, listItemOrNullObject, tableNestingLevel, inlinePictures, uniqueLocalId';
-dotsComasColonsSpaceRegex = [/ \./, / ,/, / :/];
-dotsComasColonsNoSpaceRegex = [/\.[^\s]/,/,\S/, /:\S/];
+const consistencyParamsToLoad = 'text, alignment, font, style, fields, listItemOrNullObject, tableNestingLevel, inlinePictures, isLastParagraph, uniqueLocalId';
+const dotsComasColonsSpaceRegex = [/ \./, / ,/, / :/];
+const dotsComasColonsNoSpaceRegex = [/\.[^\s]/, /,\S/, /:\S/];
+const crossReferenceError = ["Error! Reference source not found.", "Chyba! Nenašiel sa žiaden zdroj odkazov."];
 const consistencyErrorTypes = {
     DOUBLE_SPACES: 'DoubleSpaces',
     EMPTY_LINES: 'EmptyLines',
@@ -44,7 +45,7 @@ window.consistencyConnector = {
         await Word.run(async (context) => {
             var selection = context.document.getSelection();
             // Load the paragraph that contains the selection
-            selection.paragraphs.load('uniqueLocalId, text');
+            selection.paragraphs.load('uniqueLocalId, text, style, listItemOrNullObject');
             await context.sync();
             var paragraph = selection.paragraphs.items.find(para => para.uniqueLocalId === idToCorrect);
             if (paragraph === undefined) {
@@ -61,11 +62,24 @@ window.consistencyConnector = {
                         paragraph.insertText(sourceParagraphText, 'Replace');
                         break;
                     case consistencyErrorTypes.EMPTY_LINES:
-                        // Code for EMPTY_LINES error type
-                        // TODO - remove this paragraph?? -> start check from begining, because the indexes will be broken
+                        console.log('Correcting empty lines');
+                        // We are checking empty line only on not last paragraphs -> there will be always next paragraph
+                        nextParagraph = paragraph.getNext();
+                        paragraph.delete();
+                        paragraph = nextParagraph;
                         break;
                     case consistencyErrorTypes.INVALID_CROSS_REFERENCE:
                         // Code for INVALID_CROSS_REFERENCE error type
+                        console.log("Correcting invalid cross reference", sourceParagraphText);
+                        var newText = paragraph.text;
+                        crossReferenceError.forEach((error) => {
+                            var regex = new RegExp(error, 'g');
+                            newText = newText.replace(regex, "");
+                        });
+                        newText = newText.replace(/ {2,}/g, ' ');
+                        console.log("Corrected text in paragraph: ", newText);
+                        paragraph.insertText(newText, 'Replace');
+
                         // Cannot fix this issue automaticaly
                         break;
                     case consistencyErrorTypes.INVALID_HEADING_CONTINUITY:
@@ -76,12 +90,27 @@ window.consistencyConnector = {
                         // Code for INVALID_HEADING_CONSISTENCY error type
                         // TODO - fix the heading + update previous heading
                         break;
+                    case consistencyErrorTypes.INVALID_HEADING_NUMBER_CONSISTENCY:
+                        // Code for INVALID_HEADING_CONSISTENCY error type
+                        // TODO - fix the heading + update previous heading
+                        break;
                     case consistencyErrorTypes.INCONSISTENT_FORMATTING:
                         // Code for INCONSISTENT_FORMATTING error type
-                        paragraph.alignment = GLOBAL_PARAGRAPHS.items[CURRENT_PARAGRAPG_INDEX - 1].alignment;
+                        var previousPara = previousParagraphsByStyle[paragraph.style];
+                        if (previousPara !== undefined) {
+                            // checking formatting with previous paragraph with same style
+                            console.log("Correcting formatting: ", paragraph, previousPara);
+                            paragraph.alignment = previousPara.alignment;
+                            paragraph.font.name = previousPara.font.name;
+                            paragraph.font.size = previousPara.font.size;
+                        }
                         break;
-                    case consistencyErrorTypes.INVALID_PARENTHESIS:
-                        // Code for INVALID_PARENTHESIS error type
+                    case consistencyErrorTypes.INVALID_LIST_CONSISTENCY:
+                        var previousListItem = previousParagraphs[previousParagraphsKeys.LIST_ITEM];
+                        if (previousListItem !== undefined && !paragraph.listItemOrNullObject.isNullObject) {
+                            let previousListString = previousListItem.listItemOrNullObject.listString;
+                            paragraph.listItemOrNullObject.listString = previousListString;
+                        }
                         break;
                     case consistencyErrorTypes.INVALID_DOTS_COMAS_COLONS:
                         console.log("Correcting invalid dots, comas, colons", sourceParagraphText);
@@ -104,6 +133,14 @@ window.consistencyConnector = {
                             console.log("Second correction", sourceParagraphText);
                             paragraph.insertText(sourceParagraphText, 'Replace');
                         });
+                        break;
+                    case consistencyErrorTypes.INVALID_PARENTHESIS:
+                        // Code for INVALID_PARENTHESIS error type
+                        console.log("Correcting invalid parenthesis - THIS ERROR CANNOT BE CORRECTED AUTOMATICALLY");
+                        break;
+                    case consistencyErrorTypes.CAPTION_MISSING:
+                        // Code for INVALID_PARENTHESIS error type
+                        console.log("Correcting caption missing - THIS ERROR CANNOT BE CORRECTED AUTOMATICALLY");
                         break;
                     default:
                         // Code for default case
@@ -277,7 +314,15 @@ function checkDoubleSpaces(paragraph) {
 }
 
 function checkInvalidCrossReference(paragraph) {
-    return paragraph.text.includes("Error! Reference source not found.");
+    var result = false;
+    console.log("Checking cross reference: ", paragraph.text);
+    crossReferenceError.forEach((error) => {
+        console.log("Checking ref error: ", error);
+        if (paragraph.text.includes(error)) {
+            result = true;
+        }
+    });
+    return result;
 }
 
 function checkHeadingContinuity(currentNumber) {
@@ -415,7 +460,8 @@ function GetNextPossibleNumbers(previousNumber) {
 
 function isEmptyLine(paragraph) {
     var previousPara = previousParagraphs[previousParagraphsKeys.PREVIOUS_PARAGRAPH];
-    if (previousPara !== undefined && previousPara.text.trim() === '' && paragraph.text.trim() === '') {
+    console.log("checking empty line, previous: ", previousPara, "current: ", paragraph);
+    if (!paragraph.isLastParagraph && previousPara !== undefined && previousPara.text.trim() === '' && paragraph.text.trim() === '') {
         return true;
     }
     return false;

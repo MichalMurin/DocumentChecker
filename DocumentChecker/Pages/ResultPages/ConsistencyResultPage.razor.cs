@@ -73,7 +73,7 @@ namespace DocumentChecker.Pages.ResultPages
             else
             {
                 Header = "Kontrola prebehla";
-                TextResult = $"V dokumente sa nenašli žiadne formátovacie chyby.";
+                TextResult = $"V dokumente sa nenašli žiadne chyby konzistencie.";
             }
         }
 
