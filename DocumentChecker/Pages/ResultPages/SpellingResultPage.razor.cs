@@ -118,7 +118,7 @@ namespace DocumentChecker.Pages.ResultPages
             var languageToolResults = _ltItem.Result;
             if (languageToolResults is null)
             {
-                _ltItem.Result = await SpellingApiService.CheckCmdLanguageTool(_ltItem.Text);
+                _ltItem.Result = await SpellingApiService.CheckCmdLanguageTool(_ltItem.Text, SpellingPageDataService.LanguageToolDisabledRules);
                 languageToolResults = _ltItem.Result;
             }
             var relevantCheckResults = languageToolResults?.Where(x => x.Index >= startIndex && x.Index <= startIndex + paragraph.Text.Length).ToList();

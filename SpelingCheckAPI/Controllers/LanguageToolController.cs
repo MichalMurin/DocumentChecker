@@ -17,9 +17,9 @@ namespace SpelingCheckAPI.Controllers
         }
 
         [HttpGet("checkText/{text}")]
-        public async Task<ActionResult<List<LanguageToolCheckResult>?>> CheckTextViaLT(string text)
+        public async Task<ActionResult<List<LanguageToolCheckResult>?>> CheckTextViaLT(string text, [FromQuery] List<string>? disabledRules = null)
         {
-            var result = await _languageToolService.RunGrammarCheck(text);
+            var result = await _languageToolService.RunGrammarCheck(text, disabledRules);
             return result;
         }
     }

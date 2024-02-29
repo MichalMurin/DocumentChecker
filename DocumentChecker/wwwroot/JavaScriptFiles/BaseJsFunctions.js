@@ -33,6 +33,29 @@ window.InsertText = async (text) => {
         });
 }
 
+async function selectParagraph(index) {
+    console.log("Selecting paragraph at index " + index);
+    await Word.run(async (context) => {
+        const paragraphs = context.document.body.paragraphs;
+        paragraphs.load('uniqueLocalId');
+        await context.sync();
+        if (paragraphs.items.length === GLOBAL_PARAGRAPHS.items.length) {
+            paragraphs.items[index].select();
+        }
+        else {
+            console.log('Paragraphs are not the same');
+            var id = GLOBAL_PARAGRAPHS.items[index].uniqueLocalId;
+            for (let i = 0; i < paragraphs.items.length; i++) {
+                if (paragraphs.items[i].uniqueLocalId === id) {
+                    paragraphs.items[i].select();
+                    break;
+                }
+            }
+        }
+        await context.sync();
+    });
+}
+
 ///////////////////////ARCHIVE/////////////////////////
 
 //// Global parameter, where are stored curently loaded paragraphs
@@ -56,28 +79,7 @@ window.InsertText = async (text) => {
 //    return retParagraphs;
 //}
 
-//async function selectParagraph(index) {
-//    console.log("Selecting paragraph at index " + index);
-//    await Word.run(async (context) => {
-//        const paragraphs = context.document.body.paragraphs;
-//        paragraphs.load('uniqueLocalId');
-//        await context.sync();
-//        if (paragraphs.items.length === GLOBAL_PARAGRAPHS.items.length) {
-//            paragraphs.items[index].select();
-//        }
-//        else {
-//            console.log('Paragraphs are not the same');
-//            var id = GLOBAL_PARAGRAPHS.items[index].uniqueLocalId;
-//            for (let i = 0; i < paragraphs.items.length; i++) {
-//                if (paragraphs.items[i].uniqueLocalId === id) {
-//                    paragraphs.items[i].select();
-//                    break;
-//                }
-//            }
-//        }
-//        await context.sync();
-//    });
-//}
+
 
 //async function selectParagraph(index) {
 //    console.log("Selecting paragraph at index " + index);

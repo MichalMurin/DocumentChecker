@@ -8,7 +8,7 @@ namespace CommonCode.Interfaces
     public interface ISpellingApiService
     {
         public Task<List<PrepositionCheckResult>?> CheckPrepositions(string text);
-        public Task<List<LanguageToolCheckResult>?> CheckCmdLanguageTool(string text);
+        public Task<List<LanguageToolCheckResult>?> CheckCmdLanguageTool(string text, List<string>? disabledRules = null);
         public LanguageToolItem CreateLanguageToolItem(List<ParagraphData> paragraphs);
     }
 }

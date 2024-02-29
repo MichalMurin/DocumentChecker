@@ -4,6 +4,6 @@ namespace SpelingCheckAPI.Interfaces
 {
     public interface ILanguageToolService
     {
-        Task<List<LanguageToolCheckResult>?> RunGrammarCheck(string text);
+        Task<List<LanguageToolCheckResult>?> RunGrammarCheck(string text, List<string>? disabledRules = null);
     }
 }

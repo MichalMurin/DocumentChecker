@@ -21,11 +21,16 @@ namespace CommonCode.Services
             _httpClient.BaseAddress = new System.Uri(_apiBaseAddress);
         }
 
-        public async Task<List<LanguageToolCheckResult>?> CheckCmdLanguageTool(string text)
+        public async Task<List<LanguageToolCheckResult>?> CheckCmdLanguageTool(string text, List<string>? disabledRules = null)
         {
             try
             {
-                var res = await _httpClient.GetFromJsonAsync<List<LanguageToolCheckResult>>($"api/languageToolCheck/checkText/{text}");
+                var disabledRulesQuerry = string.Empty;
+                if (disabledRules is not null && disabledRules.Count > 0)
+                {
+                    disabledRulesQuerry = $"?{string.Join("&", disabledRules.Select(rule => $"disabledRules={Uri.EscapeDataString(rule)}"))}";
+                }
+                var res = await _httpClient.GetFromJsonAsync<List<LanguageToolCheckResult>>($"api/languageToolCheck/checkText/{text}{disabledRulesQuerry}");
                 return res;
             }
             catch (HttpRequestException e)

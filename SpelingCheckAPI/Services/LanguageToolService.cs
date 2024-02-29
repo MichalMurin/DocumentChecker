@@ -9,7 +9,7 @@ namespace SpelingCheckAPI.Services
 {
     public class LanguageToolService: ILanguageToolService
     {
-        public async Task<List<LanguageToolCheckResult>?> RunGrammarCheck(string text)
+        public async Task<List<LanguageToolCheckResult>?> RunGrammarCheck(string text, List<string>? disabledRules = null)
         {
             string jasonResult;
             string tempFilePath = Path.GetTempFileName();
@@ -18,11 +18,15 @@ namespace SpelingCheckAPI.Services
             {
                 // Write the input text to the temporary file
                 await File.WriteAllTextAsync(tempFilePath, text);
-
+                var disableRuleCommand = string.Empty;
+                if (disabledRules is not null && disabledRules.Count > 0)
+                {
+                    disableRuleCommand = $"--disable {string.Join(",", disabledRules)}";
+                }
                 var processInfo = new ProcessStartInfo
                 {
                     FileName = "java",
-                    Arguments = $"-jar LanguageTool\\languagetool-commandline.jar -l sk-SK --encoding utf-8 --json {tempFilePath}",
+                    Arguments = $"-jar LanguageTool\\languagetool-commandline.jar -l sk-SK --encoding utf-8 {disableRuleCommand} --json {tempFilePath}",
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
                     UseShellExecute = false,
