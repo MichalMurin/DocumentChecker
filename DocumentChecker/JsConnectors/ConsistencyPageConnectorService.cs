@@ -22,5 +22,10 @@ namespace DocumentChecker.JsConnectors
         {
             return await _jsRuntime.InvokeAsync<bool>("consistencyConnector.corectParagraph", paraIdToCorrect, errorList);
         }
+        
+        public async Task<bool> HandleIgnoredParagraph(string paraIdToIgnore, List<string> errorList)
+        {
+            return await _jsRuntime.InvokeAsync<bool>("consistencyConnector.handleIgnoredParagraph", paraIdToIgnore, errorList);
+        }
     }
 }

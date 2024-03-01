@@ -54,11 +54,12 @@ namespace DocumentChecker.Pages.ResultPages
                 Console.WriteLine($"Ignoring paragraph: {ScanResult.ParagraphId}");
                 ConsistencyPageDataService.IgnoredParagraphs.Add(ScanResult.ParagraphId);
                 SetHeaderAndResult();
+                await JsConnector.HandleIgnoredParagraph(ScanResult.ParagraphId, ScanResult.ErrorTypes);
                 await ScanDocumentConsistency();
             }
         }
 
-        private async Task ScanDocumentConsistency(bool start = false)
+        private async Task ScanDocumentConsistency(bool start = false, bool ignore = false)
         {
             ScanResult = await JsConnector.ScanDocumentConsistency(start, ConsistencyPageDataService);
             if (ScanResult.FoundError)

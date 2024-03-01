@@ -8,6 +8,7 @@ namespace CommonCode.Services.DataServices
 {
     public class ConsistencyPageDataService : BaseDataService
     {
+        public bool TitleContinutity { get; set; } = true;
         public bool TitleConsistency { get; set; } = true;
         public bool DoubleSpaces { get; set; } = true;
         public bool EmptyLines { get; set; } = true;
