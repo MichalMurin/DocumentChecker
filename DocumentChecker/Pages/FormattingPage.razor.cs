@@ -10,7 +10,6 @@ namespace DocumentChecker.Pages
 {
     public partial class FormattingPage
     {
-
         private const string FORNT_NAME_PLACE_HOLDER  = "Arial";
 
         //private const string ALLIGMENT_PLACEHOLDER = "Justified";

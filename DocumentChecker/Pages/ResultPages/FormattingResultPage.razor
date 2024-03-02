@@ -1,6 +1,9 @@
 ﻿@inherits BaseResultPage
+@inject CommonCode.Services.DataServices.FormattingPageDataService FormattingPageDataService;
+@page "/formattingResult/{StartScan:bool}"
 @{
     base.BuildRenderTree(__builder);
 }
-@page "/formattingResult/{StartScan:bool}"
-
+@* <ChildContent>
+    <DocumentChecker.Components.MyListBox Items="@FormattingPageDataService.FoundErrors" Header="Chyby formátovania" />
+</ChildContent> *@

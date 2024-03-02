@@ -1,87 +1,79 @@
-﻿using CommonCode.ReturnValues;
+﻿using CommonCode.Interfaces;
+using CommonCode.Models;
+using CommonCode.ReturnValues;
 using CommonCode.Services.DataServices;
 using DocumentChecker.JsConnectors;
 using Microsoft.AspNetCore.Components;
 using System.Diagnostics;
+using static CommonCode.Formatting.Deffinitions;
 
 namespace DocumentChecker.Pages.ResultPages
 {
     public partial class ConsistencyResultPage
     {
         [Inject]
-        public ConsistencyPageDataService ConsistencyPageDataService { get; set; } = default!;
-        [Inject]
         public ConsistencyPageConnectorService JsConnector { get; set; } = default!;
-        [Parameter]
-        public bool StartScan { get; set; } = false;
-        public override string TextResult { get; set; } = "Kontroluje sa dokument...";
-        public ScanReturnValue? ScanResult { get; set; }
-
-        protected async override Task OnInitializedAsync()
+        protected override ConsistencyPageDataService DataService
         {
-            base.OnInitialized();
-            if (StartScan)
+            get
             {
-                SetHeaderAndResult();
-                Console.WriteLine("Page initialized, starting scan");
-                await ScanDocumentConsistency(true);
+                return DataServiceFactory.GetConsistencyDataService();
             }
         }
 
-        public override async Task OnCorrectClick()
+        protected override async Task HandleIgnoredParagraph()
         {
-            // perform a correction on a paragraph and run a scan again
-            if (ScanResult is not null)
+            if (CurrentScan is not null)
             {
-                Console.WriteLine($"Correcting paragraph: {ScanResult.ParagraphId}");
-                SetHeaderAndResult();
-                var correctionResult = await JsConnector.CorrectParagraph(ScanResult.ParagraphId, ScanResult.ErrorTypes);
-                if (!correctionResult)
-                {
-                    HandleCorrectionResult(correctionResult);
-                }
-                else
-                {
-                    await ScanDocumentConsistency();
-                }
+                await JsConnector.HandleIgnoredParagraph(CurrentScan.ParagraphId, CurrentScan.ErrorTypes);
             }
         }
 
-        public override async Task OnIgnoreClick()
+        protected override async Task<bool> TryToCorrectParagraph()
         {
-            if (ScanResult is not null)
+            if (CurrentScan is not null)
             {
-                Console.WriteLine($"Ignoring paragraph: {ScanResult.ParagraphId}");
-                ConsistencyPageDataService.IgnoredParagraphs.Add(ScanResult.ParagraphId);
-                SetHeaderAndResult();
-                await JsConnector.HandleIgnoredParagraph(ScanResult.ParagraphId, ScanResult.ErrorTypes);
-                await ScanDocumentConsistency();
-            }
-        }
-
-        private async Task ScanDocumentConsistency(bool start = false, bool ignore = false)
-        {
-            ScanResult = await JsConnector.ScanDocumentConsistency(start, ConsistencyPageDataService);
-            if (ScanResult.FoundError)
-            {
-                Header = "Chyba!";
-                TextResult = $"Boli zistené chyby v konzistnentnosti dokumentu. Aby bola oprava úspešná, prosím, nechajte odstavec označený";
-                foreach (var error in ScanResult.ErrorTypes)
-                {
-                    TextResult += $"\n{error}";
-                }
+                return await JsConnector.CorrectParagraph(CurrentScan.ParagraphId, DataService.FoundErrors.Select(err => ((DisplayedErrorModel)err).ErrorType).ToList());
             }
             else
             {
-                Header = "Kontrola prebehla";
-                TextResult = $"V dokumente sa nenašli žiadne chyby konzistencie.";
+                return false;
             }
         }
 
-        private void SetHeaderAndResult()
+        protected override async Task<ScanReturnValue> GetScanResult(bool isStart)
         {
-            Header = "Kontrola konzistnentnosti dokumentu...";
-            TextResult = "Prebieha kontrola konzistnentnosti dokumentu, prosím neupravujte dokument počas prebiehajúcej kontroly...";
+            return await JsConnector.ScanDocumentConsistency(isStart, DataService);
+        }
+
+        protected override void SetDisplayedTexts(CheckState state)
+        {
+            switch (state)
+            {
+                case CheckState.FOUND_ERROR:
+                    Header = "Našla sa chyba!";
+                    TextResult = $"Boli zistené chyby v konzistencii dokumentu. Aby bola oprava úspešná, prosím, nechajte odstavec označený";
+                    break;
+                case CheckState.FINISHED:
+                    Header = "Kontrola dokončená!";
+                    TextResult = $"Kontrola bola úspešne ukončená, nenašli sa žiadne ďalšie chyby v konzistentnosti dokumentu";
+                    break;
+                default:
+                    base.SetDisplayedTexts(state);
+                    break;
+            }
+        }
+
+        protected override string GetErrorString(string errorType)
+        {
+            if (ConsistencyErrors.ContainsKey(errorType))
+            {
+                return ConsistencyErrors[errorType];
+            }
+            else
+            {
+                return "Neznáma chyba";
+            }
         }
     }
 }

@@ -5,94 +5,70 @@ using System.Reflection;
 using DocumentChecker.JsConnectors;
 using CommonCode.ReturnValues;
 using CommonCode.Services.DataServices;
+using CommonCode.Models;
+using static CommonCode.Formatting.Deffinitions;
 
 namespace DocumentChecker.Pages.ResultPages
 {
     // TODO: Dorobit kontrolu hlaviciek a paticiek
-    // TODO: Osetrit pripad ze nadpisy maju inu velkost
     // TODO: Umoznit opravit cely dokument naraz??
     // TODO: Dorobit Import a export nastaveni
-    // TODO: Dropdown na vyber zarovnania
-    // TODO: Urobit kontrolu podla stylov, cize pre jeden styl kontrolovat vsetko .. atd??
-    //      - dalo by sa to urobit tak ze si potiahnem vsetky styly z wordu a uzivatel si nastavi kazdy jeden? ... alebo budem kontrolovat len to co uz je nastavene pre tie styly
-    public partial class FormattingResultPage
+    public partial class FormattingResultPage: BaseResultPage
     {
         [Inject]
-        public FormattingPageDataService FormattingPageDataService { get; set; } = default!;
-        [Inject]
         public FormattingPageConnectorService JsConnector { get; set; } = default!;
-        [Parameter]
-        public bool StartScan { get; set; } = false;
-        public override string TextResult { get; set; } = "Kontroluje sa dokument...";
-        public ScanReturnValue? ScanResult { get; set; }
 
-        protected async override Task OnInitializedAsync()
-        {
-            base.OnInitialized();
-            if (StartScan)
+        protected override FormattingPageDataService DataService { 
+            get
             {
-                SetHeaderAndResult();
-                Console.WriteLine("Page initialized, starting scan");
-                await ScanDocumentFormatting(true);
+                return DataServiceFactory.GetFormattingDataService();
             }
         }
-        public override async Task OnIgnoreClick()
+        protected override async Task<bool> TryToCorrectParagraph()
         {
-            // Add paragraph to ignored paragraphs
-            // run scan again
-            if (ScanResult is not null)
+            if (CurrentScan is not null)
             {
-                Console.WriteLine($"Ignoring paragraph: {ScanResult.ParagraphId}");
-                FormattingPageDataService.IgnoredParagraphs.Add(ScanResult.ParagraphId);
-                SetHeaderAndResult();
-                await ScanDocumentFormatting();
-            }
-        }
-
-        public override async Task OnCorrectClick()
-        {
-            // perform a correction on a paragraph and run a scan again
-            if (ScanResult is not null)
-            {
-                Console.WriteLine($"Correcting paragraph: {ScanResult.ParagraphId}");
-                SetHeaderAndResult();
-                var correctionResult = await JsConnector.CorrectParagraph(ScanResult.ParagraphId);
-                if (!correctionResult)
-                {
-                    HandleCorrectionResult(correctionResult);
-                }
-                else
-                {
-                    await ScanDocumentFormatting();
-                }
-            }
-        }
-
-        private async Task ScanDocumentFormatting(bool start = false)
-        {
-            ScanResult = await JsConnector.CheckParagraphs(start, FormattingPageDataService);
-            if (ScanResult.FoundError)
-            {
-                Header = "Chyba!";
-                TextResult = $"Boli zistené chyby v formátovaní dokumentu.  Aby bola oprava úspešná, prosím, nechajte odstavec označený";
-                foreach (var error in ScanResult.ErrorTypes)
-                {
-                    TextResult += $"\n{error}";
-                }
+                return await JsConnector.CorrectParagraph(CurrentScan.ParagraphId, DataService.FoundErrors.Select(err => ((DisplayedErrorModel)err).ErrorType).ToList());
             }
             else
             {
-                Header = "Kontrola prebehla";
-                TextResult = $"V dokumente sa nenašli žiadne formátovacie chyby.";
-            }
-            // Set Header and Result based on the result of the scan
-            // TODO: check headers and footers
+                return false;
+            }            
         }
 
-        private void SetHeaderAndResult()
+        protected override async Task<ScanReturnValue> GetScanResult(bool isStart)
         {
-            Header = "Kontrola formátovania dokumentu...";
-            TextResult = "Prebieha kontrola formátovania dokumentu, prosím neupravujte dokument počas prebiehajúcej kontroly...";
+            return await JsConnector.CheckParagraphs(isStart, DataService);
+        }
+
+        protected override void SetDisplayedTexts(CheckState state)
+        {
+            switch (state)
+            {
+                case CheckState.FOUND_ERROR:
+                    Header = "Našla sa chyba!";
+                    TextResult = $"Boli zistené chyby v formátovaní dokumentu. Aby bola oprava úspešná, prosím, nechajte odstavec označený";
+                    break;
+                case CheckState.FINISHED:
+                    Header = "Kontrola dokončená!";
+                    TextResult = $"Kontrola bola úspešne ukončená, nenašli sa žiadne ďalšie chyby vo formátovaní";
+                    break;
+                default:
+                    base.SetDisplayedTexts(state);
+                    break;
+            }
+        }
+
+        protected override string GetErrorString(string errorType)
+        {
+            if (FormattingErrors.ContainsKey(errorType))
+            {
+                return FormattingErrors[errorType];
+            }
+            else
+            {
+                return "Neznáma chyba";
+            }
         }
     }
 }

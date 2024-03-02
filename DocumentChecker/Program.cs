@@ -26,6 +26,7 @@ namespace DocumentChecker
             builder.Services.AddSingleton<SpellingPageDataService>();
             builder.Services.AddSingleton<ISpellingApiService, SpellingApiService>();
             builder.Services.AddSingleton<ILanguageToolApiService, LanguageToolApiService>();
+            builder.Services.AddSingleton<IDataServiceFactory, DataServiceFactory>();
 
             builder.Services.AddLocalization();
             var culture = new CultureInfo("en-US");

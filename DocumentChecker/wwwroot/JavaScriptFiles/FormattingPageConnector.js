@@ -20,8 +20,9 @@ window.formattingConnector = {
         return await startFormattingScan(start);
     },
 
-    correctFormatting: async (idToCorrect) => {
+    correctFormatting: async (idToCorrect, errors) => {
         // we are assuiming that the paragraph is already selected
+        console.log("Correcting paragraph errors " + errors);
         result = false;
         console.log("Correcting paragraph " + idToCorrect);
         await Word.run(async (context) => {
@@ -37,17 +38,33 @@ window.formattingConnector = {
             }
             console.log('Paragraph = ', paragraph);
             console.log('Setting paragraph formatting', dataService);
-            paragraph.font.name = dataService.fontName;
-            paragraph.font.size = GetExpectedFontSize(paragraph);
-            paragraph.alignment = dataService.alligment;
-            paragraph.lineSpacing = dataService.lineSpacingInPoints;
-            paragraph.leftIndent = dataService.leftIndentInPoints;
-            paragraph.rightIndent = dataService.rightIndentInPoints;
+            errors.forEach(error => {
+                switch (error) {
+                    case formattingErrorTypes.INCORRECT_FONT_NAME:
+                        paragraph.font.name = dataService.fontName;
+                        break;
+                    case formattingErrorTypes.INCORRECT_FONT_SIZE:
+                        paragraph.font.size = GetExpectedFontSize(paragraph);
+                        break;
+                    case formattingErrorTypes.INCORRECT_ALIGNMENT:
+                        paragraph.alignment = dataService.alligment;
+                        break;
+                    case formattingErrorTypes.INCORRECT_LINE_SPACING:
+                        paragraph.lineSpacing = dataService.lineSpacingInPoints;
+                        break;
+                    case formattingErrorTypes.INCORRECT_LEFT_INDENT:
+                        paragraph.leftIndent = dataService.leftIndentInPoints;
+                        break;
+                    case formattingErrorTypes.INCORRECT_RIGHT_INDENT:
+                        paragraph.rightIndent = dataService.rightIndentInPoints;
+                        break;
+                    default:
+                        break;
+                }
+            });
             console.log('Setting formatting done, selecting paragraph again');
             paragraph.select();
-            console.log('Refreshing context');
             await context.sync();
-            console.log('Setting formatting done');
             result = true;
         });
         return result;

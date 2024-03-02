@@ -1,4 +1,5 @@
-﻿using CommonCode.ReturnValues;
+﻿using CommonCode.Interfaces;
+using CommonCode.ReturnValues;
 using CommonCode.Services.DataServices;
 using Microsoft.JSInterop;
 
@@ -18,9 +19,9 @@ namespace DocumentChecker.JsConnectors
            return await _jsRuntime.InvokeAsync<ScanReturnValue>("formattingConnector.checkFormatting", start, data);
         }
 
-        public async Task<bool> CorrectParagraph(string paraIdToCorrect)
+        public async Task<bool> CorrectParagraph(string paraIdToCorrect, List<string> errors)
         {
-            return await _jsRuntime.InvokeAsync<bool>("formattingConnector.correctFormatting", paraIdToCorrect);
+            return await _jsRuntime.InvokeAsync<bool>("formattingConnector.correctFormatting", paraIdToCorrect, errors);
         }
     }
 }

@@ -14,7 +14,7 @@ const consistencyErrorTypes = {
     INCONSISTENT_FORMATTING: 'InconsistentFormatting',
     INVALID_PARENTHESIS: 'InvalidParenthesis',
     INVALID_DOTS_COMAS_COLONS: 'InvalidDotsComasColons',
-    CAPTION_MISSING: 'DescriptionMissing',
+    CAPTION_MISSING: 'CaptionMissing',
     INVALID_LIST_CONSISTENCY: 'InvalidListConsistency'
 };
 const headingFormatTypes = {
