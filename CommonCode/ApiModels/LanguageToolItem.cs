@@ -14,7 +14,7 @@ namespace CommonCode.ApiModels
     {
         public string Text { get; set; } = string.Empty;
         public int NumberOfParagraphs { get; set; } = 0;
-        public List<LanguageToolCheckResult>? Result { get; set; }
+        public List<SpellingCheckResult>? Result { get; set; }
         public Dictionary<string,int> StartIndexes { get; set; } = new Dictionary<string, int>();
     }
 }

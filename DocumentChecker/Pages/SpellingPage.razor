@@ -8,7 +8,7 @@
     <DocumentChecker.Components.MyButton ButtonContent="Nahrajte pravidlo" Icon="fa-solid fa-file-import" OnClick="@OpenNewRulePage" />
     @if (SpellingPageDataService.Rules.Count > 0)
     {
-        <DocumentChecker.Components.ListBox Items="@SpellingPageDataService.Rules" Header="Vlastné pravidlá" />
+        <DocumentChecker.Components.MyListBox Items="@SpellingPageDataService.Rules" Header="Vlastné pravidlá" />
     }
     <DocumentChecker.Components.MyCheckbox Text="Kontrola predložiek s/z, so/zo" @bind-Checked="@SpellingPageDataService.CheckPrepositions" Description="Kontrola správnosti použitia predložiek v texte." />
     <DocumentChecker.Components.MyCheckbox Text="Kontrola pomocou LanguageTool" @bind-Checked="@SpellingPageDataService.CheckLanguageTool" Description="Kontrola textu pomocou nástroja LanguageTool." />

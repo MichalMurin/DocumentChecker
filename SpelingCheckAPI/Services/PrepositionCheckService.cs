@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 using PrepositionChecker;
 using SpelingCheckAPI.Interfaces;
 using Microsoft.Extensions.ML;
-using CommonCode.Results;
+using CommonCode.CheckResults;
 
 namespace SpelingCheckAPI.Services
 {
@@ -33,9 +33,9 @@ namespace SpelingCheckAPI.Services
             }
         }
 
-        public async Task<List<PrepositionCheckResult>> CheckPrepositionsInText(string text)
+        public async Task<List<SpellingCheckResult>> CheckPrepositionsInText(string text)
         {
-            var result = new List<PrepositionCheckResult>();
+            var result = new List<SpellingCheckResult>();
             var words = FindWordsAfterPrepositions(text, _prepositions);
             foreach (var preposition in words.Keys)
             {
@@ -49,11 +49,14 @@ namespace SpelingCheckAPI.Services
                         {
                             if (!await IsInstrumental(word.word))
                             {
-                                result.Add(new PrepositionCheckResult
+                                var newPreposition = ChangePreposition(preposition);
+                                result.Add(new SpellingCheckResult
                                 {
-                                    Error = $"{preposition} {word.word}",
-                                    Suggestion = $"{ChangePreposition(preposition)} {word.word}",
-                                    IndexOfPreposition = word.prepositionIndex
+                                    ErrorSentence = $"{preposition} {word.word}",
+                                    Suggestion = $"{newPreposition} {word.word}",
+                                    Index = word.prepositionIndex,
+                                    Length = word.length,
+                                    Message = $"Nesprávna predložka {preposition}"
                                 });
                             }
                         }
@@ -66,11 +69,15 @@ namespace SpelingCheckAPI.Services
                         {
                             if (await IsInstrumental(word.word))
                             {
-                                result.Add(new PrepositionCheckResult
+                                var newPreposition = ChangePreposition(preposition);
+                                result.Add(new SpellingCheckResult
                                 {
-                                    Error = $"{preposition} {word.word}",
-                                    Suggestion = $"{ChangePreposition(preposition)} {word.word}",
-                                    IndexOfPreposition = word.prepositionIndex
+                                    ErrorSentence = $"{preposition} {word.word}",
+                                    Suggestion = $"{newPreposition} {word.word}",
+                                    Index = word.prepositionIndex,
+                                    Length = word.length,
+                                    Message = $"Nesprávna predložka {preposition}"
+
                                 });
                             }
                         }

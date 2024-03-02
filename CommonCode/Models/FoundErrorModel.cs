@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace CommonCode.Models
 {
-    public class DisplayedErrorModel : IListBoxItem
+    public class FoundErrorModel : IListBoxItem
     {
         public string Name { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;

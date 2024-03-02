@@ -28,7 +28,7 @@ namespace DocumentChecker.Pages.ResultPages
         {
             if (CurrentScan is not null)
             {
-                return await JsConnector.CorrectParagraph(CurrentScan.ParagraphId, DataService.FoundErrors.Select(err => ((DisplayedErrorModel)err).ErrorType).ToList());
+                return await JsConnector.CorrectParagraph(CurrentScan.ParagraphId, DataService.FoundErrors.Select(err => ((FoundErrorModel)err).ErrorType).ToList());
             }
             else
             {

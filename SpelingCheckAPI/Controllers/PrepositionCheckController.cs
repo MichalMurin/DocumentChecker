@@ -1,4 +1,4 @@
-﻿using CommonCode.Results;
+﻿using CommonCode.CheckResults;
 using Microsoft.AspNetCore.Mvc;
 using SpelingCheckAPI.Interfaces;
 using SpelingCheckAPI.Services;
@@ -17,7 +17,7 @@ namespace SpelingCheckAPI.Controllers
         }
 
         [HttpGet("checkText/{text}")]
-        public async Task<ActionResult<List<PrepositionCheckResult>>> CheckPrepositionsInText(string text)
+        public async Task<ActionResult<List<SpellingCheckResult>>> CheckPrepositionsInText(string text)
         {
             var result = await _prepositionCheckService.CheckPrepositionsInText(text);
             return result;

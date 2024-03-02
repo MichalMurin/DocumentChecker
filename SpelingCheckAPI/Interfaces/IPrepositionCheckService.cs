@@ -1,4 +1,4 @@
-﻿using CommonCode.Results;
+﻿using CommonCode.CheckResults;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +11,6 @@ namespace SpelingCheckAPI.Interfaces
     {
         Task<bool> IsInstrumental(string word);
 
-        Task<List<PrepositionCheckResult>> CheckPrepositionsInText(string text);
+        Task<List<SpellingCheckResult>> CheckPrepositionsInText(string text);
     }
 }

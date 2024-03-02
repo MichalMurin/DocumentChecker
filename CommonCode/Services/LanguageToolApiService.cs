@@ -24,7 +24,7 @@ namespace CommonCode.Services
             _httpClient = new HttpClient();
             //_httpClient.BaseAddress = new System.Uri(_apiBaseAddress);
         }
-        public async Task<List<LanguageToolCheckResult>?> CheckTextViaLanguageTool(string text)
+        public async Task<List<SpellingCheckResult>?> CheckTextViaLanguageTool(string text)
         {
             //try
             //{

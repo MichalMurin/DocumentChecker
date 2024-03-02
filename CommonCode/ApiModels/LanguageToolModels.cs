@@ -9,14 +9,14 @@ namespace CommonCode.ApiModels
 {
     public static class LanguageToolParser
     {
-        public static List<LanguageToolCheckResult>? TransformLtResultToCheckResult(LanguageToolApiResult? lTresult)
+        public static List<SpellingCheckResult>? TransformLtResultToCheckResult(LanguageToolApiResult? lTresult)
         {
             if (lTresult is not null && lTresult.Matches is not null)
             {
-                var result = new List<LanguageToolCheckResult>();
+                var result = new List<SpellingCheckResult>();
                 foreach (var match in lTresult.Matches)
                 {
-                    var newResult = new LanguageToolCheckResult
+                    var newResult = new SpellingCheckResult
                     {
                         Message = match.Message ?? "No message to show",
                         ShortMessage = match.ShortMessage ?? "No message to show",
@@ -26,7 +26,7 @@ namespace CommonCode.ApiModels
                     };
                     if (match.Replacements is not null && match.Replacements.Count > 0)
                     {
-                        newResult.Suggestion = match.Replacements[0].Value ?? "No suqqestion to show";
+                        newResult.Suggestion = match.Replacements[0].Value ?? string.Empty;
                     }
                     result.Add(newResult);
                 }
@@ -37,6 +37,7 @@ namespace CommonCode.ApiModels
                 return null;
             }
         }
+
     }
 
 

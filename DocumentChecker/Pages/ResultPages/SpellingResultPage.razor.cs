@@ -1,7 +1,7 @@
 ﻿using CommonCode.ApiModels;
 using CommonCode.CheckResults;
 using CommonCode.Interfaces;
-using CommonCode.Results;
+using CommonCode.Models;
 using CommonCode.ReturnValues;
 using CommonCode.Services;
 using CommonCode.Services.DataServices;
@@ -9,106 +9,112 @@ using DocumentChecker.JsConnectors;
 using Microsoft.AspNetCore.Components;
 using System.Dynamic;
 using System.Text.RegularExpressions;
-using SpellingResults = (System.Collections.Generic.List<CommonCode.Results.PrepositionCheckResult>? prepositionCheckResults, System.Collections.Generic.List<CommonCode.CheckResults.LanguageToolCheckResult>? languageToolResults, System.Collections.Generic.List<CommonCode.CheckResults.OwnRuleCheckResult>? ownRulesCheckResult);
-
+using static CommonCode.Formatting.Deffinitions;
 namespace DocumentChecker.Pages.ResultPages
 {
-    public partial class SpellingResultPage
+    public partial class SpellingResultPage: BaseResultPage
     {
-
-        [Inject]
-        public SpellingPageDataService SpellingPageDataService { get; set; } = default!;
         [Inject]
         public SpellingPageConnectorService JsConnector { get; set; } = default!;
         [Inject]
         public ISpellingApiService SpellingApiService { get; set; } = default!;
+        protected override SpellingPageDataService DataService
+        {
+            get
+            {
+                return DataServiceFactory.GetSpellingDataService();
+            }
+        }
 
-        [Parameter]
-        public bool StartScan { get; set; } = false;
-        public override string TextResult { get; set; } = "Kontroluje sa dokument...";
-        public ScanReturnValue? ScanResult { get; set; }
         private List<ParagraphData>? _paragraphs;
         private LanguageToolItem? _ltItem;
         private int _currentIndex = 0;
-        private SpellingResults _currentSpellingResult;
+        private List<SpellingCheckResult> _currentSpellingResult = new List<SpellingCheckResult>();
 
-        protected async override Task OnInitializedAsync()
+        protected override async Task<ScanReturnValue> GetScanResult(bool isStart)
         {
-            base.OnInitialized();
-            if (StartScan)
+            if (isStart)
             {
-                SetHeaderAndResult();
-                Console.WriteLine("Page initialized, starting spelling scan");
                 _paragraphs = await JsConnector.GetParagrapghs();
-                await StartCheck(0);
-            }
-        }
-
-        public override async Task OnIgnoreClick()
-        {
-            if (_paragraphs is not null)
-            {
-                SpellingPageDataService.IgnoredParagraphs.Add(_paragraphs[_currentIndex].Id);
-                await StartCheck(_currentIndex + 1);
+                _currentIndex = 0;
             }
             else
             {
-                TextResult = "Vyskytla sa neočakávaná chyba, prosím spustite kontrolu nanovo.";
+                _currentIndex++;
             }
-        }
-        public override async Task OnCorrectClick()
-        {
-            if (_paragraphs is not null)
-            {
-                // replace selected wrong text with the new one
-                await JsConnector.ReplaceSelectedText(CorrectParagraph(_paragraphs[_currentIndex].Text ,_currentSpellingResult));
-                await StartCheck(_currentIndex + 1);
-            }
-            else
-            {
-                TextResult = "Vyskytla sa neočakávaná chyba, prosím spustite kontrolu nanovo.";
-            }
+            return await StartCheck(_currentIndex);
         }
 
-        private async Task StartCheck(int paragraphIndex)
+        private async Task<ScanReturnValue> StartCheck(int paragraphIndex)
         {
             if (_paragraphs is not null && paragraphIndex < _paragraphs.Count)
             {
+                var tmpList = new List<SpellingCheckResult>();
                 for (int i = paragraphIndex; i < _paragraphs.Count; i++)
                 {
-                    List<PrepositionCheckResult>? prepositionCheckResults = null;
-                    if (SpellingPageDataService.CheckPrepositions)
+                    _currentSpellingResult.Clear();
+                    if (DataService.CheckPrepositions)
                     {
-                        prepositionCheckResults = await CheckPrepositionInParagraph(_paragraphs[i]);
+                        tmpList = await CheckPrepositionInParagraph(_paragraphs[i]);
+                        if (tmpList is not null)
+                        {
+                            _currentSpellingResult.AddRange(tmpList);
+                        }
                     }
-                    List<LanguageToolCheckResult>? languageToolResults = null;
-                    if (SpellingPageDataService.CheckLanguageTool)
+                    if (DataService.CheckLanguageTool)
                     {
-                        languageToolResults = await CheckLanguageToolInParagraph(_paragraphs[i]);
+                        tmpList = await CheckLanguageToolInParagraph(_paragraphs[i]);
+                        if (tmpList is not null)
+                        {
+                            _currentSpellingResult.AddRange(tmpList);
+                        }
                     }
-                    List<OwnRuleCheckResult>? ownRulesCheckResult = null;
-                    if (SpellingPageDataService.Rules.Count > 0 && SpellingPageDataService.CheckOwnRules)
+                    if (DataService.Rules.Count > 0 && DataService.CheckOwnRules)
                     {
-                        ownRulesCheckResult =  CheckOwnRules(_paragraphs[i]);
+                        tmpList =  CheckOwnRules(_paragraphs[i]);
+                        if (tmpList is not null)
+                        {
+                            _currentSpellingResult.AddRange(tmpList);
+                        }
                     }
 
-                    if ((prepositionCheckResults is not null && prepositionCheckResults.Count > 0) ||
-                        (languageToolResults is not null && languageToolResults.Count > 0) ||
-                        (ownRulesCheckResult is not null && ownRulesCheckResult.Count > 0))
+                    if (_currentSpellingResult.Count > 0)
                     {
-                        Header = "Našla sa chyba";
-                        _currentSpellingResult = (prepositionCheckResults, languageToolResults, ownRulesCheckResult);
-                        TextResult = CollectErrorsInString(_currentSpellingResult);
                         await JsConnector.SelectParagraph(i);
                         _currentIndex = i;
-                        return;
+                        return new ScanReturnValue
+                        {
+                            FoundError = true,
+                            ParagraphId = _paragraphs[i].Id
+                        };
                     }
                 }
             }
-            SetFinishResults();
+            return new ScanReturnValue
+            {
+                FoundError = false
+            };
         }
 
-        private async Task<List<LanguageToolCheckResult>?> CheckLanguageToolInParagraph(ParagraphData paragraph)
+        protected override void FillErrors()
+        {
+            if (_currentSpellingResult.Count > 0)
+            {
+                foreach (var err in _currentSpellingResult)
+                {
+                    DataService.FoundErrors.Add(
+                        new FoundSpellingErrorModel()
+                        {
+                            Name = $"{err.ShortMessage}: {err.ErrorSentence}",
+                            Description = $"Oprava: {err.Suggestion}",
+                            SpellingCheckResult = err
+                        }
+                    );
+                }
+            }
+        }
+
+        private async Task<List<SpellingCheckResult>?> CheckLanguageToolInParagraph(ParagraphData paragraph)
         {
             if (_ltItem is null)
             {
@@ -118,12 +124,14 @@ namespace DocumentChecker.Pages.ResultPages
             var languageToolResults = _ltItem.Result;
             if (languageToolResults is null)
             {
-                _ltItem.Result = await SpellingApiService.CheckCmdLanguageTool(_ltItem.Text, SpellingPageDataService.LanguageToolDisabledRules);
-                languageToolResults = _ltItem.Result;
+                _ltItem.Result = await SpellingApiService.CheckCmdLanguageTool(_ltItem.Text, DataService.LanguageToolDisabledRules);
+                languageToolResults = _ltItem.Result ?? new List<SpellingCheckResult>();
             }
             var relevantCheckResults = languageToolResults?.Where(x => x.Index >= startIndex && x.Index <= startIndex + paragraph.Text.Length).ToList();
             if (relevantCheckResults is not null)
             {
+                relevantCheckResults.ForEach(x => x.Index -= startIndex);
+
                 foreach (var item in relevantCheckResults)
                 {
                     Console.WriteLine($"Chyba: {item.ShortMessage}");
@@ -135,12 +143,12 @@ namespace DocumentChecker.Pages.ResultPages
             return relevantCheckResults;
         }
 
-        private List<OwnRuleCheckResult>? CheckOwnRules(ParagraphData paragraph)
+        private List<SpellingCheckResult>? CheckOwnRules(ParagraphData paragraph)
         {
-            if (SpellingPageDataService.Rules.Count > 0)
+            if (DataService.Rules.Count > 0)
             {
-                var result = new List<OwnRuleCheckResult>();
-                foreach (var rule in SpellingPageDataService.Rules)
+                var result = new List<SpellingCheckResult>();
+                foreach (var rule in DataService.Rules)
                 {
                     var regex = rule.RegexRule;
                     var matches = Regex.Matches(paragraph.Text, regex);
@@ -149,11 +157,12 @@ namespace DocumentChecker.Pages.ResultPages
                         foreach (System.Text.RegularExpressions.Match match in matches)
                         {
                             Console.WriteLine($"Nasla sa zhoda: {match.Value}");
-                            var ownRuleCheckResult = new OwnRuleCheckResult
+                            var ownRuleCheckResult = new SpellingCheckResult
                             {
-                                ErrorDescription = rule.Description,
-                                Correction = rule.Correction,
-                                StartIndex = match.Index,
+                                Message = rule.Description,
+                                ShortMessage = rule.Description,
+                                Suggestion = rule.Correction,
+                                Index = match.Index,
                                 Length = match.Length
                             };
                             result.Add(ownRuleCheckResult);
@@ -166,91 +175,65 @@ namespace DocumentChecker.Pages.ResultPages
         }
 
 
-        private async Task<List<PrepositionCheckResult>?> CheckPrepositionInParagraph(ParagraphData paragraph)
+        private async Task<List<SpellingCheckResult>?> CheckPrepositionInParagraph(ParagraphData paragraph)
         {
             var prepositionsResult = await SpellingApiService.CheckPrepositions(text: paragraph.Text);
             if (prepositionsResult is not null)
             {
                 foreach (var item in prepositionsResult)
                 {
-                    Console.WriteLine($"Zla predlozka: {item.Error}");
+                    Console.WriteLine($"Zla predlozka: {item.Message}");
                     Console.WriteLine($"Navrhovana oprava: {item.Suggestion}");
                 }
             }
             return prepositionsResult;
         }
 
-        private string CollectErrorsInString(SpellingResults results)
+        private string CorrectParagraph(string paragraph, List<SpellingCheckResult> checkResults)
         {
-            string result = string.Empty;
-            if (results.languageToolResults is not null)
-            {
-                foreach (var err in results.languageToolResults)
-                {
-                    result += $"Vo vete \"{err.ErrorSentence}\" sa našla chyba:\n \"{err.ShortMessage}\"\n";
-                }
-            }
-            if (results.prepositionCheckResults is not null)
-            {
-                foreach (var err in results.prepositionCheckResults)
-                {
-                    result += $"Našla sa chyba v predložke \"{err.Error}\"\n";
-                }
-            }
-            if (results.ownRulesCheckResult is not null)
-            {
-                foreach (var err in results.ownRulesCheckResult)
-                {
-                    result += $"Našla sa vlastná chyba: {err.ErrorDescription}\n";
-                }
-            }
-            return result;
-        }
-
-        private string CorrectParagraph(string paragraph, SpellingResults results)
-        {// Generated - need to check
-            //TODO : pouzi iny index .. start index
-            // TODO pri predlozkach tiez pouzi index aby sa nestalo ze nahradime zle slovo
             string result = paragraph;
-            if (results.languageToolResults is not null)
+            foreach (var err in checkResults.OrderByDescending(x => x.Index))
             {
-                int startIndex = _ltItem!.StartIndexes[_paragraphs![_currentIndex].Id];
-                foreach (var err in results.languageToolResults)
-                {
-                    // index = err.Index - _ltItem.StartIndexes[paragraph.Id]
-                    result = result.Remove(err.Index - startIndex, err.Length);
-                    result = result.Insert(err.Index - startIndex, err.Suggestion);
-                }
-            }
-            if (results.prepositionCheckResults is not null)
-            {
-                foreach (var err in results.prepositionCheckResults)
-                {
-                    result = result.Replace(err.Error, err.Suggestion);
-                }
-            }
-            if (results.ownRulesCheckResult is not null)
-            {
-                foreach (var err in results.ownRulesCheckResult)
-                {
-                    result = result.Remove(err.StartIndex, err.Length);
-                    result = result.Insert(err.StartIndex, err.Correction);
-                }
+                result = result.Remove(err.Index, err.Length).Insert(err.Index, err.Suggestion);
+                //result = result.Replace(err.ErrorSentence, err.Suggestion);
             }
             return result;
         }   
 
-
-        private void SetHeaderAndResult()
+        protected override async Task<bool> TryToCorrectParagraph()
         {
-            Header = "Kontrola pravopisu v dokumente...";
-            TextResult = "Prebieha kontrola pravopisu, prosím neupravujte dokument počas prebiehajúcej kontroly...";
-        }
-        private void SetFinishResults()
-        {
-            Header = "Kontrola pravopisu prebehla";
-            TextResult = "Kontrola pravopisu skončila, nenašli sa žiadne chyby.";
+            if (_paragraphs is not null)
+            {
+                var errorsToCorect = DataService.FoundErrors.Select(err => ((FoundSpellingErrorModel)err).SpellingCheckResult).ToList();
+                if (errorsToCorect is not null)
+                {
+                    await JsConnector.ReplaceSelectedText(CorrectParagraph(_paragraphs[_currentIndex].Text, errorsToCorect));
+                }
+                // retruning true even there was no error to correct
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
+        protected override void SetDisplayedTexts(CheckState state)
+        {
+            switch (state)
+            {
+                case CheckState.FOUND_ERROR:
+                    Header = "Našla sa chyba!";
+                    TextResult = $"Boli zistené chyby v pravopise. Aby bola oprava úspešná, prosím, nechajte odstavec označený";
+                    break;
+                case CheckState.FINISHED:
+                    Header = "Kontrola dokončená!";
+                    TextResult = $"Kontrola bola úspešne ukončená, nenašli sa žiadne ďalšie chyby v pravopise";
+                    break;
+                default:
+                    base.SetDisplayedTexts(state);
+                    break;
+            }
+        }
     }
 }

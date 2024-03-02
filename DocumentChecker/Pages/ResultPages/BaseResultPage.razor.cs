@@ -74,24 +74,27 @@ namespace DocumentChecker.Pages.ResultPages
             if (CurrentScan.FoundError)
             {
                 SetDisplayedTexts(CheckState.FOUND_ERROR);
-                FillErrors(CurrentScan);
+                FillErrors();
             }
             else
             {
                 SetDisplayedTexts(CheckState.FINISHED);
             }
         }
-        protected virtual void FillErrors(ScanReturnValue scanResult)
+        protected virtual void FillErrors()
         {
-            foreach (var err in scanResult.ErrorTypes)
+            if (CurrentScan is not null)
             {
-                DataService.FoundErrors.Add(
-                    new DisplayedErrorModel()
-                    {
-                        Description = GetErrorString(err),
-                        ErrorType = err
-                    }
-                );
+                foreach (var err in CurrentScan.ErrorTypes)
+                {
+                    DataService.FoundErrors.Add(
+                        new FoundErrorModel()
+                        {
+                            Description = GetErrorString(err),
+                            ErrorType = err
+                        }
+                    );
+                }
             }
         }
         protected virtual void SetDisplayedTexts(CheckState state)
@@ -120,8 +123,11 @@ namespace DocumentChecker.Pages.ResultPages
                     break;
             }
         }
+        protected virtual string GetErrorString(string errorType)
+        {
+            return "Neznáma chyba";
+        }
         protected abstract Task<bool> TryToCorrectParagraph();
         protected abstract Task<ScanReturnValue> GetScanResult(bool isStart);
-        protected abstract string GetErrorString(string errorType);
     }
 }

@@ -9,7 +9,7 @@ namespace SpelingCheckAPI.Services
 {
     public class LanguageToolService: ILanguageToolService
     {
-        public async Task<List<LanguageToolCheckResult>?> RunGrammarCheck(string text, List<string>? disabledRules = null)
+        public async Task<List<SpellingCheckResult>?> RunGrammarCheck(string text, List<string>? disabledRules = null)
         {
             string jasonResult;
             string tempFilePath = Path.GetTempFileName();

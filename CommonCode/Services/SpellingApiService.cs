@@ -1,7 +1,6 @@
 ﻿using CommonCode.ApiModels;
 using CommonCode.CheckResults;
 using CommonCode.Interfaces;
-using CommonCode.Results;
 using CommonCode.ReturnValues;
 using System.Net.Http.Json;
 
@@ -21,7 +20,7 @@ namespace CommonCode.Services
             _httpClient.BaseAddress = new System.Uri(_apiBaseAddress);
         }
 
-        public async Task<List<LanguageToolCheckResult>?> CheckCmdLanguageTool(string text, List<string>? disabledRules = null)
+        public async Task<List<SpellingCheckResult>?> CheckCmdLanguageTool(string text, List<string>? disabledRules = null)
         {
             try
             {
@@ -30,7 +29,7 @@ namespace CommonCode.Services
                 {
                     disabledRulesQuerry = $"?{string.Join("&", disabledRules.Select(rule => $"disabledRules={Uri.EscapeDataString(rule)}"))}";
                 }
-                var res = await _httpClient.GetFromJsonAsync<List<LanguageToolCheckResult>>($"api/languageToolCheck/checkText/{text}{disabledRulesQuerry}");
+                var res = await _httpClient.GetFromJsonAsync<List<SpellingCheckResult>>($"api/languageToolCheck/checkText/{text}{disabledRulesQuerry}");
                 return res;
             }
             catch (HttpRequestException e)
@@ -45,11 +44,11 @@ namespace CommonCode.Services
             }
         }
 
-        public async Task<List<PrepositionCheckResult>?> CheckPrepositions(string text)
+        public async Task<List<SpellingCheckResult>?> CheckPrepositions(string text)
         {
             try
             {
-                var res = await _httpClient.GetFromJsonAsync<List<PrepositionCheckResult>>($"api/prepositionCheck/checkText/{text}");
+                var res = await _httpClient.GetFromJsonAsync<List<SpellingCheckResult>>($"api/prepositionCheck/checkText/{text}");
                 return res;
             }
             catch (HttpRequestException e)
