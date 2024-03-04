@@ -13,6 +13,8 @@ namespace DocumentChecker.Pages.ResultPages
     {
         [Inject]
         public ConsistencyPageConnectorService JsConnector { get; set; } = default!;
+
+        protected override string Errorname { get; set; } = "Chyba konzistencie";
         protected override ConsistencyPageDataService DataService
         {
             get

@@ -18,6 +18,7 @@ namespace DocumentChecker.Pages.ResultPages
         protected ScanReturnValue? CurrentScan { get; set; }
         public string Header { get; set; } = "Kontrola";
         public string TextResult { get; set; } = "Kontroluje sa dokument...";
+        protected virtual string Errorname { get; set; } = "Chyba!";
 
         protected async override Task OnInitializedAsync()
         {
@@ -90,7 +91,7 @@ namespace DocumentChecker.Pages.ResultPages
                     DataService.FoundErrors.Add(
                         new FoundErrorModel()
                         {
-                            Name = "nejaka chyba sa nasla oprav ju hned!",
+                            Name = Errorname,
                             Description = GetErrorString(err),
                             ErrorType = err
                         }

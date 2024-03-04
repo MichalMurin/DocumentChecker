@@ -17,6 +17,7 @@ namespace DocumentChecker.Pages.ResultPages
     {
         [Inject]
         public FormattingPageConnectorService JsConnector { get; set; } = default!;
+        protected override string Errorname { get; set; } = "Chyba formátovania";
 
         protected override FormattingPageDataService DataService { 
             get
