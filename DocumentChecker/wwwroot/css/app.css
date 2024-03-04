@@ -106,7 +106,7 @@ code {
 .checkbox-wrapper-5 .check {
     --size: 25px;
     position: relative;
-    background: linear-gradient(90deg, green, lime);
+    background: linear-gradient(90deg, #256F31, #8DCD6A);
     line-height: 0;
     perspective: 25px;
     font-size: var(--size);

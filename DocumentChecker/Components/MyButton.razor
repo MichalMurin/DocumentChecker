@@ -1,5 +1,5 @@
 ﻿
-<button class=" rounded-lg text-white hover:bg-pallette-hover-black bg-black transition duration-300 text-white text-center px-4 py-2 @Classes" @onclick=OnClick>
+<button class=" rounded-lg text-white hover:bg-pallette-hover-black bg-black transition duration-300 text-white text-center px-4 py-2 @Classes" @onclick=OnClick disabled=@Disabled>
     <div class="flex flex-row items-center justify-center py-2 px-1 gap-4">
         <span class="text-2xl">@ButtonContent</span>
         <i class="text-2xl @Icon"></i>
@@ -18,4 +18,7 @@
 
     [Parameter]
     public EventCallback OnClick { get; set; }
+
+    [Parameter]
+    public bool Disabled { get; set; } = false;
 }

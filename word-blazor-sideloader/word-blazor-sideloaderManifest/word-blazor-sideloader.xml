@@ -20,7 +20,7 @@
   <DisplayName DefaultValue="Kontrola dokumentu" />
   <Description DefaultValue="Office Add-in using Blazor for document checking."/>
   <!-- Icon for your add-in. Used on installation screens and the add-ins dialog. -->
-  <IconUrl DefaultValue="~remoteAppUrl/Images/buttonLogo48x48.png" />
+  <IconUrl DefaultValue="~remoteAppUrl/Images/appLogo32x32.png" />
 
   <SupportUrl DefaultValue="https://www.contoso.com" />
   <!-- Domains that will be allowed when navigating. For example, if you use ShowTaskpane and then have an href link, navigation will only be allowed if the domain is on this list. -->
@@ -113,9 +113,9 @@
     <!-- You can use resources across hosts and form factors. -->
     <Resources>
       <bt:Images>
-        <bt:Image id="Contoso.tpicon_16x16" DefaultValue="~remoteAppUrl/Images/Button16x16.png" />
-        <bt:Image id="Contoso.tpicon_32x32" DefaultValue="~remoteAppUrl/Images/Button32x32.png" />
-        <bt:Image id="Contoso.tpicon_80x80" DefaultValue="~remoteAppUrl/Images/Button80x80.png" />
+        <bt:Image id="Contoso.tpicon_16x16" DefaultValue="~remoteAppUrl/Images/appLogo16x16.png" />
+        <bt:Image id="Contoso.tpicon_32x32" DefaultValue="~remoteAppUrl/Images/appLogo32x32.png" />
+        <bt:Image id="Contoso.tpicon_80x80" DefaultValue="~remoteAppUrl/Images/appLogo64x64.png" />
       </bt:Images>
       <bt:Urls>
         <bt:Url id="Contoso.Taskpane.Url" DefaultValue="~remoteAppUrl/" />

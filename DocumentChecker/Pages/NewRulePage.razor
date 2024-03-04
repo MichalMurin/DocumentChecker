@@ -1,11 +1,11 @@
 ﻿@page "/newrule"
 @inject NavigationManager NavigationManager
 <div class="flex flex-col gap-6 py-8 ">
-    <DocumentChecker.Components.MyInputTextBox Header="Vlastné pravidlo" Description=@DescriptionRule InputType="text" Placeholder="(?<!,) že" @bind-Value="@Rule" T="string" />
-    <DocumentChecker.Components.MyInputTextBox Header="Oprava" Description=@DescriptionCorrection InputType="text" Placeholder=", že" @bind-Value="@Correction" T="string" />
-    <DocumentChecker.Components.MyInputTextBox Header="Popis" Description=@Description InputType="text" Placeholder="chýbajúca čiarke pred 'že''" @bind-Value="@DescriptionInput" T="string" />
+    <MyInputTextBox Header="Vlastné pravidlo" Description=@DescriptionRule InputType="text" Placeholder="(?<!,) že" @bind-Value="@Rule" T="string" />
+    <MyInputTextBox Header="Oprava" Description=@DescriptionCorrection InputType="text" Placeholder=", že" @bind-Value="@Correction" T="string" />
+    <MyInputTextBox Header="Popis" Description=@Description InputType="text" Placeholder="chýbajúca čiarke pred 'že''" @bind-Value="@DescriptionInput" T="string" />
     <div class="gap-4 flex buttonResize:flex-row flex-col justify-end">
-        <DocumentChecker.Components.MyButton ButtonContent="Zrušiť" Icon="fa-solid fa-x" OnClick="@OnCancelClick" />
-        <DocumentChecker.Components.MyButton ButtonContent="Uložiť" Icon="fa-solid fa-floppy-disk" OnClick="@OnSaveClick"/>
+        <MyButton ButtonContent="Zrušiť" Icon="fa-solid fa-x" OnClick="@OnCancelClick" />
+        <MyButton ButtonContent="Uložiť" Icon="fa-solid fa-floppy-disk" OnClick="@OnSaveClick"/>
     </div>
 </div>

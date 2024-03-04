@@ -2,13 +2,13 @@
 <PageTitle>ResultPage</PageTitle>
 
 <div class="flex flex-col gap-6 py-8 ">
-    <DocumentChecker.Components.MyTextBox Header=@Header Description=@TextResult Path="#" />
+    <MyTextBox Header=@Header Description=@TextResult Path="#" />
     @if (DataService.FoundErrors.Count > 0)
     {
-        <DocumentChecker.Components.MyListBox Header="Nájdené chyby" Items="@DataService.FoundErrors" />        
+        <MyListBox Header="Nájdené chyby" Items="@DataService.FoundErrors" />        
     }
     <div class="gap-4 flex buttonResize:flex-row flex-col justify-end">
-        <DocumentChecker.Components.MyButton ButtonContent="Ignoruj" Icon="fa-solid fa-minus" OnClick=OnIgnoreClick />
-        <DocumentChecker.Components.MyButton ButtonContent="Oprav" Icon="fa-solid fa-wrench" OnClick="OnCorrectClick" />
+        <MyButton ButtonContent="Ignoruj" Icon="fa-solid fa-minus" OnClick=OnIgnoreClick />
+        <MyButton ButtonContent="Oprav" Icon="fa-solid fa-wrench" OnClick="OnCorrectClick" />
     </div>
 </div>

@@ -5,21 +5,21 @@
 <PageTitle>Formatting</PageTitle> 
 
 <div class="flex flex-col gap-6 py-8 ">
-    <DocumentChecker.Components.MyTextBox Header="Formátovanie" Description="Kontrola formátovania dokumentu podľa zvolených štandardov" Path="formatting" />
+    <MyTextBox Header="Formátovanie" Description="Kontrola formátovania dokumentu podľa zvolených štandardov" Path="formatting" />
     <div class="gap-4 flex buttonResize:flex-row flex-col justify-end">
-        <DocumentChecker.Components.MyButton ButtonContent="Import" Icon="fa-solid fa-file-import" OnClick=OnImportClick />
+        <MyButton ButtonContent="Import" Icon="fa-solid fa-file-import" OnClick=OnImportClick />
         <InputFile id="filePicker" OnChange="ImportFile" hidden accept=".txt" />
-        <DocumentChecker.Components.MyButton ButtonContent="Export" Icon="fa-solid fa-file-export" OnClick="OnExportClick" />
+        <MyButton ButtonContent="Export" Icon="fa-solid fa-file-export" OnClick="OnExportClick" />
     </div>
-    <DocumentChecker.Components.MyInput Text="Veľkosť nadpisu 1. úrovne" InputType="number" Placeholder=16 @bind-Value="@FormattingPageDataService.Heading1FontSize" T="double" />
-    <DocumentChecker.Components.MyInput Text="Veľkosť nadpisu 2. úrovne" InputType="number" Placeholder=14 @bind-Value="@FormattingPageDataService.Heading2FontSize" T="double" />
-    <DocumentChecker.Components.MyInput Text="Veľkosť nadpisu 3. úrovne" InputType="number" Placeholder=12 @bind-Value ="@FormattingPageDataService.Heading3FontSize" T="double" />
-    <DocumentChecker.Components.MyInput Text="Veľkosť nadpisu 4. úrovne" InputType="number" Placeholder=11 @bind-Value="@FormattingPageDataService.Heading4FontSize" T="double" />
-    <DocumentChecker.Components.MyInput Text="Veľkosť textu" InputType="number" Placeholder=11 @bind-Value ="@FormattingPageDataService.FontSize" T="double" />
-    <DocumentChecker.Components.MyInput Text="Riadkovanie" Step=".1" InputType="number" Placeholder="1.5" @bind-Value="@FormattingPageDataService.LineSpacing" T="double" />
-    <DocumentChecker.Components.MyInput Text="Ľavý okraj" Step=".1"  InputType="number" Placeholder=3.5 @bind-Value="@FormattingPageDataService.LeftIndent" T="double" />
-    <DocumentChecker.Components.MyInput Text="Pravý okraj" Step=".1" InputType="number" Placeholder=2.5 @bind-Value="@FormattingPageDataService.RightIndent" T="double" />
-    <DocumentChecker.Components.MyInput Text="Font" InputType="text" Placeholder=@FORNT_NAME_PLACE_HOLDER @bind-Value="@FormattingPageDataService.FontName" T="string" />
-    <DocumentChecker.Components.MyDropDown Text="Zarovnanie" T="string" Items="Deffinitions.AlignmentDict.Keys" @bind-SelectedItem="@FormattingPageDataService.AllingmentDispalyed"/>
-    <DocumentChecker.Components.MyButton ButtonContent="ŠTART" Icon="fa-solid fa-play" Classes="w-48" OnClick="OnStartClick" />
+    <MyInput Text="Veľkosť nadpisu 1. úrovne" InputType="number" Placeholder=16 @bind-Value="@FormattingPageDataService.Heading1FontSize" T="double" />
+    <MyInput Text="Veľkosť nadpisu 2. úrovne" InputType="number" Placeholder=14 @bind-Value="@FormattingPageDataService.Heading2FontSize" T="double" />
+    <MyInput Text="Veľkosť nadpisu 3. úrovne" InputType="number" Placeholder=12 @bind-Value ="@FormattingPageDataService.Heading3FontSize" T="double" />
+    <MyInput Text="Veľkosť nadpisu 4. úrovne" InputType="number" Placeholder=11 @bind-Value="@FormattingPageDataService.Heading4FontSize" T="double" />
+    <MyInput Text="Veľkosť textu" InputType="number" Placeholder=11 @bind-Value ="@FormattingPageDataService.FontSize" T="double" />
+    <MyInput Text="Riadkovanie" Step=".1" InputType="number" Placeholder="1.5" @bind-Value="@FormattingPageDataService.LineSpacing" T="double" />
+    <MyInput Text="Ľavý okraj" Step=".1"  InputType="number" Placeholder=3.5 @bind-Value="@FormattingPageDataService.LeftIndent" T="double" />
+    <MyInput Text="Pravý okraj" Step=".1" InputType="number" Placeholder=2.5 @bind-Value="@FormattingPageDataService.RightIndent" T="double" />
+    <MyInput Text="Font" InputType="text" Placeholder=@FORNT_NAME_PLACE_HOLDER @bind-Value="@FormattingPageDataService.FontName" T="string" />
+    <MyDropDown Text="Zarovnanie" T="string" Items="Deffinitions.AlignmentDict.Keys" @bind-SelectedItem="@FormattingPageDataService.AllingmentDispalyed"/>
+    <MyButton ButtonContent="ŠTART" Icon="fa-solid fa-play" Classes="w-48" OnClick="OnStartClick" />
 </div>
