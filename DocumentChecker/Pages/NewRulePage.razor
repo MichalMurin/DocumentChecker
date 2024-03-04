@@ -4,8 +4,8 @@
     <DocumentChecker.Components.MyInputTextBox Header="Vlastné pravidlo" Description=@DescriptionRule InputType="text" Placeholder="(?<!,) že" @bind-Value="@Rule" T="string" />
     <DocumentChecker.Components.MyInputTextBox Header="Oprava" Description=@DescriptionCorrection InputType="text" Placeholder=", že" @bind-Value="@Correction" T="string" />
     <DocumentChecker.Components.MyInputTextBox Header="Popis" Description=@Description InputType="text" Placeholder="chýbajúca čiarke pred 'že''" @bind-Value="@DescriptionInput" T="string" />
-    <div class="flex-row gap-16 flex justify-between ite">
-        <DocumentChecker.Components.MyButton ButtonContent="Zrušiť" Icon="" OnClick="@OnCancelClick" />
-        <DocumentChecker.Components.MyButton ButtonContent="Uložiť" Icon="" OnClick="@OnSaveClick"/>
+    <div class="gap-4 flex buttonResize:flex-row flex-col justify-end">
+        <DocumentChecker.Components.MyButton ButtonContent="Zrušiť" Icon="fa-solid fa-x" OnClick="@OnCancelClick" />
+        <DocumentChecker.Components.MyButton ButtonContent="Uložiť" Icon="fa-solid fa-floppy-disk" OnClick="@OnSaveClick"/>
     </div>
 </div>

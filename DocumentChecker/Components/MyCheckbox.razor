@@ -1,13 +1,22 @@
-﻿<label title=@Description class="@color rounded-lg w-[95%] mx-auto text-white py-2 pl-6 flex justify-between">
-    <span class="text-2xl" >@Text</span>
-    <input type="checkbox" name="myCheckbox" class="mr-2 form-checkbox-lg" @bind="Checked" @bind:event="oninput" disabled=@Disabled>
+﻿<label title=@Description class="@color rounded-lg  items-center text-white py-2 px-4 flex justify-between">
+    <span class="w-3/4">@Text</span>
+    <div class="checkbox-wrapper-5 w-1/4 flex justify-end items-center">
+        <div class="check">
+            <input name="myCheckbox" id=@Id type="checkbox" @bind="Checked" @bind:event="oninput" disabled=@Disabled>
+            <label for="@Id"></label>
+        </div>
+    </div>
 </label>
+
+
 @code {
     private string color = "bg-pallette-secondary-black";
     [Parameter]
     public string Description { get; set; } = "Description";
     [Parameter]
     public string Text { get; set; } = "Text";
+    [Parameter]
+    public string Id { get; set; } = "checkbox";
 
     private bool _checked = true;
     [Parameter]

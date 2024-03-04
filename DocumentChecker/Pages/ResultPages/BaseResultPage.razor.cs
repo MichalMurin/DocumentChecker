@@ -90,6 +90,7 @@ namespace DocumentChecker.Pages.ResultPages
                     DataService.FoundErrors.Add(
                         new FoundErrorModel()
                         {
+                            Name = "nejaka chyba sa nasla oprav ju hned!",
                             Description = GetErrorString(err),
                             ErrorType = err
                         }

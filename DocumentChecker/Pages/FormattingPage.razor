@@ -6,7 +6,7 @@
 
 <div class="flex flex-col gap-6 py-8 ">
     <DocumentChecker.Components.MyTextBox Header="Formátovanie" Description="Kontrola formátovania dokumentu podľa zvolených štandardov" Path="formatting" />
-    <div class="flex-row gap-16 flex justify-between">
+    <div class="gap-4 flex buttonResize:flex-row flex-col justify-end">
         <DocumentChecker.Components.MyButton ButtonContent="Import" Icon="fa-solid fa-file-import" OnClick=OnImportClick />
         <InputFile id="filePicker" OnChange="ImportFile" hidden accept=".txt" />
         <DocumentChecker.Components.MyButton ButtonContent="Export" Icon="fa-solid fa-file-export" OnClick="OnExportClick" />

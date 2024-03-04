@@ -1,8 +1,8 @@
 ﻿@typeparam T
 
-<div class="block bg-pallette-secondary-black rounded-lg flex items-center justify-between text-white py-2 pl-6">
-    <p class="text-white text-2xl mr-4">@Text</p>
-    <input type=@InputType step=@Step pattern=@Pattern class="form-control bg-pallette-primary-black hover:bg-gray rounded-md mr-8" @bind="@InputValue" placeholder=@Placeholder @onkeydown="HandleKeyDown" />
+<div class="bg-pallette-secondary-black rounded-lg flex flex-col inputResize:flex-row items-center justify-between text-white py-2 pl-6">
+    <p class="text-white text-start mr-4 w-full">@Text</p>
+    <input type=@InputType step=@Step pattern=@Pattern class="inputResize:w-[200px] w-full py-2 px-4 bg-pallette-primary-black hover:bg-gray rounded-md mr-8" @bind="@InputValue" placeholder=@Placeholder @onkeydown="HandleKeyDown" />
 </div>
 
 @code {

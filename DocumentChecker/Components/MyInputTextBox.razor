@@ -1,8 +1,8 @@
 ﻿@typeparam T
 <div class="bg-pallette-secondary-black rounded-lg px-6 py-6">
     <h3 class="text-2xl pb-2 border-b-2 border-black text-white">@Header</h3>
-    <input type=@InputType class="form-control bg-pallette-primary-black hover:bg-gray rounded-md w-[95%] py-2 border-2 border-black text-white" @bind="@InputValue" placeholder=@Placeholder />
-    <p class="mt-4 text-white">@Description</p>
+    <input type=@InputType class="form-control mt-6 w-full bg-pallette-primary-black px-4 hover:bg-gray rounded-md w-[95%] py-2 border-2 border-black text-white" @bind="@InputValue" placeholder=@Placeholder />
+    <p class="mt-4 text-white w-full">@Description</p>
 </div>
 @code {
     [Parameter]

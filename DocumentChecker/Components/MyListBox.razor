@@ -1,22 +1,26 @@
 ﻿@typeparam TItem where TItem : IListBoxItem
-<div class="block bg-pallette-secondary-black rounded-lg w-[95%] mx-auto text-white py-6">
+<div class="block bg-pallette-secondary-black rounded-lg text-white">
+    <div class="w-[95%] mx-auto py-6">
     <h3 class="text-2xl pb-2 border-b-2 border-black mx-2">@Header</h3>
-    <ul class="items-center page-wrapper">
+    <ul class="items-center mt-6">
         @foreach (var item in Items)
         {
             <li class="text-sm flex flex-row justify-between bg-pallette-primary-black rounded-md w-[95%] mx-auto my-2 py-2">
-                @if (!string.IsNullOrEmpty(item!.Name))
-                {
-                    <span class="mx-2">
-                        @item!.Name
-                    </span>
-                }
-                @if (!string.IsNullOrEmpty(item!.Description))
-                {
-                    <span class="mx-2">
-                        @item!.Description
-                    </span>
-                }
+                <div class="flex-col flex gap-1">
+                    @if (!string.IsNullOrEmpty(item!.Name))
+                    {
+                        <span class="mx-2">
+                            @item!.Name
+                        </span>
+                    }
+                    @if (!string.IsNullOrEmpty(item!.Description))
+                    {
+                        <span class="mx-2 text-gray-400">
+                            @item!.Description
+                        </span>
+                    }
+                </div>
+                
                 @if (item!.CanBeDeleted)
                 {
                     <button class="text-white text-center px-4" @onclick="() => Items.Remove(item)">
@@ -32,6 +36,7 @@
             </li>
         }
     </ul>
+    </div>
 </div>
 
 @code
