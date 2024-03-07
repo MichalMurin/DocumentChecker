@@ -8,7 +8,7 @@
     <MyTextBox Header="Formátovanie" Description="Kontrola formátovania dokumentu podľa zvolených štandardov" Path="formatting" />
     <div class="gap-4 flex buttonResize:flex-row flex-col justify-end">
         <MyButton ButtonContent="Import" Icon="fa-solid fa-file-import" OnClick=OnImportClick />
-        <InputFile id="filePicker" OnChange="ImportFile" hidden accept=".txt" />
+        <InputFile id="filePicker" OnChange="ImportFile" hidden accept=".json" />
         <MyButton ButtonContent="Export" Icon="fa-solid fa-file-export" OnClick="OnExportClick" />
     </div>
     <MyInput Text="Veľkosť nadpisu 1. úrovne" InputType="number" Placeholder=16 @bind-Value="@FormattingPageDataService.Heading1FontSize" T="double" />

@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace CommonCode.Services.DataServices
 {
-    public class FormattingPageDataService : BaseDataService
+    public class FormattingPageDataService : BaseDataService, ICloneable
     {
         public double Heading1FontSize { get; set; } = 16;
         public double Heading2FontSize { get; set; } = 14;
@@ -57,6 +57,11 @@ namespace CommonCode.Services.DataServices
             {
                 return RightIndent.ConvertCmToPoints();
             }
+        }
+
+        public object Clone()
+        {
+            return this.MemberwiseClone();
         }
     }
 }

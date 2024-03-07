@@ -5,14 +5,13 @@ using Microsoft.JSInterop;
 using DocumentChecker.JsConnectors;
 using CommonCode.Services.DataServices;
 using CommonCode.Formatting;
+using System.Text.Json;
 
 namespace DocumentChecker.Pages
 {
     public partial class FormattingPage
     {
         private const string FORNT_NAME_PLACE_HOLDER  = "Arial";
-
-        //private const string ALLIGMENT_PLACEHOLDER = "Justified";
         [Inject]
         private FormattingPageDataService FormattingPageDataService { get; set; } = default!;
         [Inject]
@@ -32,26 +31,63 @@ namespace DocumentChecker.Pages
             var buffer = new byte[file.Size];
             await file.OpenReadStream(maxsize).ReadAsync(buffer);
             var fileContent = System.Text.Encoding.UTF8.GetString(buffer);
-            Console.WriteLine(fileContent + " " + file.Size);
-            await JsConnector.InsertTextToWord(fileContent);
+            var NewDataService = JsonSerializer.Deserialize<FormattingPageDataService>(fileContent);
+            if (NewDataService is not null && ValidateData(NewDataService))
+            {
+                FormattingPageDataService.CopyFrom(NewDataService);
+            }
+            else
+            {
+                await JsConnector.ShowAlert("Nepodarilo sa načítať dáta zo súboru");
+            }
         }
         public async Task OnExportClick()
         {
             var memoryStream = new MemoryStream();
             var writer = new StreamWriter(memoryStream);
-
-            writer.Write("Your file content goes here");
+            var dataServiceShallowCopy = FormattingPageDataService.Clone();
+            ((FormattingPageDataService)dataServiceShallowCopy).IgnoredParagraphs.Clear();
+            var jsonContent = JsonSerializer.Serialize(dataServiceShallowCopy);
+            writer.Write(jsonContent);
             writer.Flush();
             memoryStream.Position = 0;
             var base64 = Convert.ToBase64String(memoryStream.ToArray());
             var url = $"data:application/octet-stream;base64,{base64}";
-            var filename = "testFile.txt";
+            var filename = "formatovanie.json";
             await JsConnector.SaveFile(url, filename);
         }
         public override void OnStartClick()
         {
             // skontrolovat paragrafy
-            NavigationManager.NavigateTo($"/formattingResult/{true}");
+            if (ValidateData(FormattingPageDataService))
+            {
+                NavigationManager.NavigateTo($"/formattingResult/{true}");
+            }
+            else
+            {
+                _ = JsConnector.ShowAlert("Nastavte všetky hodnoty");
+            }
         }
+
+        private bool ValidateData(FormattingPageDataService data)
+        {
+            if (data.Heading1FontSize <= 0 ||
+                data.Heading2FontSize <= 0 ||
+                data.Heading3FontSize <= 0 ||
+                data.Heading4FontSize <= 0 ||
+                data.FontSize <= 0 ||
+                string.IsNullOrEmpty(data.FontName) ||
+                data.LineSpacing <= 0 ||
+                data.LeftIndent < 0 ||
+                data.LeftIndent < 0)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
     }
 }
