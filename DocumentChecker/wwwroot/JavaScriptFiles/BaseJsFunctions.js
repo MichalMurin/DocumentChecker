@@ -13,10 +13,6 @@ window.TriggerImport = (elemntId) => {
     document.getElementById(elemntId).click();
 }
 
-window.ShowAlert = (message) => {
-    console.log('Showing alert with message: ' + message);
-}
-
 window.InsertText = async (text) => {
     await Word.run(async (context) => {
         // Create a proxy object for the document body.

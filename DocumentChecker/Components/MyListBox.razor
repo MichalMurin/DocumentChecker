@@ -12,6 +12,12 @@
                         <span class="mx-2">
                             @item!.Name
                         </span>
+                    }                    
+                    @if (!string.IsNullOrEmpty(item!.WarningMessage))
+                    {
+                        <span class="mx-2 text-red-400">
+                            @item!.WarningMessage
+                        </span>
                     }
                     @if (!string.IsNullOrEmpty(item!.Description))
                     {
@@ -27,12 +33,6 @@
                         <i class="fa-solid fa-trash"></i>
                     </button>
                 }
-@*                 @if (item!.CanBeEdited)
-                {
-                    <button class="text-white text-center px-4" @onclick="() => item!.Edit()">
-                        <i class="fa-solid fa-edit"></i>
-                    </button>
-                } *@
             </li>
         }
     </ul>

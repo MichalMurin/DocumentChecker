@@ -11,11 +11,13 @@ namespace DocumentChecker.Pages
 {
     public partial class FormattingPage
     {
-        private const string FORNT_NAME_PLACE_HOLDER  = "Arial";
         [Inject]
         private FormattingPageDataService FormattingPageDataService { get; set; } = default!;
         [Inject]
         public CommonJsConnectorService JsConnector { get; set; } = default!;
+        private const string FORNT_NAME_PLACE_HOLDER = "Arial";
+        public bool IsError { get; set; } = false;
+        public string ErrorMessage { get; set; } = string.Empty;
 
         private async Task OnImportClick()
         {
@@ -32,13 +34,9 @@ namespace DocumentChecker.Pages
             await file.OpenReadStream(maxsize).ReadAsync(buffer);
             var fileContent = System.Text.Encoding.UTF8.GetString(buffer);
             var NewDataService = JsonSerializer.Deserialize<FormattingPageDataService>(fileContent);
-            if (NewDataService is not null && ValidateData(NewDataService))
+            if (NewDataService is not null && ValidateData(NewDataService, "Nepodarilo sa načítať dáta zo súboru!"))
             {
                 FormattingPageDataService.CopyFrom(NewDataService);
-            }
-            else
-            {
-                await JsConnector.ShowAlert("Nepodarilo sa načítať dáta zo súboru");
             }
         }
         public async Task OnExportClick()
@@ -59,18 +57,15 @@ namespace DocumentChecker.Pages
         public override void OnStartClick()
         {
             // skontrolovat paragrafy
-            if (ValidateData(FormattingPageDataService))
+            if (ValidateData(FormattingPageDataService, "Nastavte prosím všetky hodnoty!"))
             {
                 NavigationManager.NavigateTo($"/formattingResult/{true}");
             }
-            else
-            {
-                _ = JsConnector.ShowAlert("Nastavte všetky hodnoty");
-            }
         }
 
-        private bool ValidateData(FormattingPageDataService data)
+        private bool ValidateData(FormattingPageDataService data, string errorMessage)
         {
+            IsError = false;
             if (data.Heading1FontSize <= 0 ||
                 data.Heading2FontSize <= 0 ||
                 data.Heading3FontSize <= 0 ||
@@ -81,12 +76,19 @@ namespace DocumentChecker.Pages
                 data.LeftIndent < 0 ||
                 data.LeftIndent < 0)
             {
+                ShowError(errorMessage);
                 return false;
             }
             else
             {
                 return true;
             }
+        }
+
+        private void ShowError(string message)
+        {
+            IsError = true;
+            ErrorMessage = message;
         }
 
     }

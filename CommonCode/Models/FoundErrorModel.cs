@@ -13,5 +13,6 @@ namespace CommonCode.Models
         public string Description { get; set; } = string.Empty;
         public bool CanBeDeleted { get; set; } = true;
         public string ErrorType { get; set; } = string.Empty;
+        public string WarningMessage { get; set; } = string.Empty;
     }
 }

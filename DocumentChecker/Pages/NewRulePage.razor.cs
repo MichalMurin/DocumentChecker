@@ -10,6 +10,8 @@ namespace DocumentChecker.Pages
     {
         [Inject]
         private SpellingPageDataService SpellingPageDataService { get; set; } = default!;
+        public bool IsError { get; set; } = false;
+        public string ErrorMessage { get; set; } = "Pravidlo, ktoré ste zadali nie je platný regex výraz. Skontrolujte ho a skúste znova.";
         private string Rule { get; set; } = string.Empty;
         public string DescriptionRule { get; set; } = "Vložte vlastné RegEx pravidlo, ktoré sa bude vyhľadávať v texte a nájdená zhoda sa bude považovať za chybu.";
         
@@ -20,6 +22,7 @@ namespace DocumentChecker.Pages
         public string Description { get; set; } = "Vložte popis chyby.";
         private void OnSaveClick()
         {
+            IsError = false;
             if (!string.IsNullOrEmpty(Rule) && IsValidRegex(Rule))
             {
                 var ownRule = new OwnRuleModel
@@ -33,18 +36,13 @@ namespace DocumentChecker.Pages
             }
             else
             {
-                ShowErrorMessage();
+                IsError = true;
             }
         }
 
         private void OnCancelClick()
         {
             NavigationManager.NavigateTo("/spelling");
-        }
-
-        private void ShowErrorMessage()
-        {
-            DescriptionRule = "Pravidlo, ktoré ste zadali nie je platný regex výraz. Skontrolujte ho a skúste znova.";
         }
 
         private bool IsValidRegex(string pattern)

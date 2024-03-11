@@ -12,6 +12,7 @@ namespace CommonCode.Models
         public string RegexRule { get; set; } = string.Empty;
         public string Correction { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
+        public string WarningMessage { get; set; } = string.Empty;
         public bool CanBeDeleted { get; set; } = true;
         public string Name
         {
@@ -24,6 +25,7 @@ namespace CommonCode.Models
                 Name = value;
             }
         }
+
 
         public override string ToString()
         {

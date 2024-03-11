@@ -10,6 +10,7 @@ namespace CommonCode.Interfaces
     {
         public string Name { get; set; }
         public string Description { get; set; }
+        public string WarningMessage { get; set; }
         public bool CanBeDeleted { get; set; }
     }
 }

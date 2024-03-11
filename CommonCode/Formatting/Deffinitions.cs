@@ -36,6 +36,15 @@
             { "InvalidListConsistency", "Neplatná konzistencia zoznamu" }
         };
 
+        public static Dictionary<string, string> WarningMessages = new Dictionary<string, string>
+        {
+            { "InvalidHeadingContinuity", "Chyba sa nedá opraviť automaticky!" },
+            { "InvalidDotsComasColons", "Pri oprave chyby sa pridajú medzery aj za bodky v nadpise, URL atď!" },
+            { "InvalidListConsistency", "Chyba sa nedá opraviť automaticky!" },
+            { "CaptionMissing", "Chyba sa nedá opraviť automaticky!" },
+            { "InvalidParenthesis", "Chyba sa nedá opraviť automaticky!" },
+        };
+
         public enum CheckState
         {
             START,

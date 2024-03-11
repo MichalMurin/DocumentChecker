@@ -93,7 +93,8 @@ namespace DocumentChecker.Pages.ResultPages
                         {
                             Name = Errorname,
                             Description = GetErrorString(err),
-                            ErrorType = err
+                            ErrorType = err,
+                            WarningMessage = GetWarningMessageForError(err)
                         }
                     );
                 }
@@ -128,6 +129,14 @@ namespace DocumentChecker.Pages.ResultPages
         protected virtual string GetErrorString(string errorType)
         {
             return "Neznáma chyba";
+        }
+        protected virtual string GetWarningMessageForError(string errorType)
+        {
+            if (WarningMessages.ContainsKey(errorType))
+            {
+                return WarningMessages[errorType];
+            }
+            return string.Empty;
         }
         protected abstract Task<bool> TryToCorrectParagraph();
         protected abstract Task<ScanReturnValue> GetScanResult(bool isStart);

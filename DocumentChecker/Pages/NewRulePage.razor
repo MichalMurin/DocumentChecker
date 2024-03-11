@@ -1,6 +1,10 @@
 ﻿@page "/newrule"
 @inject NavigationManager NavigationManager
 <div class="flex flex-col gap-6 py-8 ">
+    @if (IsError)
+    {
+        <MyAlert Header="Error" ErrorText="@ErrorMessage" />
+    }
     <MyInputTextBox Header="Vlastné pravidlo" Description=@DescriptionRule InputType="text" Placeholder="(?<!,) že" @bind-Value="@Rule" T="string" />
     <MyInputTextBox Header="Oprava" Description=@DescriptionCorrection InputType="text" Placeholder=", že" @bind-Value="@Correction" T="string" />
     <MyInputTextBox Header="Popis" Description=@Description InputType="text" Placeholder="chýbajúca čiarke pred 'že''" @bind-Value="@DescriptionInput" T="string" />
