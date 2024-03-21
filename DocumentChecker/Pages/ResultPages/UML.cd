@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="DocumentChecker.Pages.ResultPages.BaseResultPage">
+    <Position X="3.5" Y="1" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>JAAAAAAAQgAAAAAAAACAACABAAQAAAASIAIACEAQEAg=</HashCode>
+      <FileName>Pages\ResultPages\BaseResultPage.razor.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="DataServiceFactory" />
+      <Property Name="DataService" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="DocumentChecker.Pages.ResultPages.ConsistencyResultPage">
+    <Position X="4.5" Y="6" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AACAAAAAQAAAAAAAAAAAACAAAAQAAAAQIAIAAAAQAAA=</HashCode>
+      <FileName>Pages\ResultPages\ConsistencyResultPage.razor.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DocumentChecker.Pages.ResultPages.FormattingResultPage">
+    <Position X="2" Y="6" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AACAAAAAQAAAAAAAAAAAACAAAAQAAAAAIAIAAAAQAAA=</HashCode>
+      <FileName>Pages\ResultPages\FormattingResultPage.razor.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DocumentChecker.Pages.ResultPages.SpellingResultPage">
+    <Position X="7.25" Y="6" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AACAAAAAAQAAAAJAGAAAACAAAAQAgAAAAAMBAAAQEAI=</HashCode>
+      <FileName>Pages\ResultPages\SpellingResultPage.razor.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CommonCode.Services.DataServices.BaseDataService">
+    <Position X="7.75" Y="2.75" Width="2" />
+    <TypeIdentifier />
+  </Class>
+  <Interface Name="CommonCode.Interfaces.IDataServiceFactory">
+    <Position X="7.5" Y="1" Width="2.25" />
+    <TypeIdentifier />
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

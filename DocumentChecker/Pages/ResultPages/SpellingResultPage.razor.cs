@@ -102,10 +102,15 @@ namespace DocumentChecker.Pages.ResultPages
             {
                 foreach (var err in _currentSpellingResult)
                 {
+                    var message = err.ShortMessage;
+                    if (string.IsNullOrEmpty(message))
+                    {
+                        message = err.Message;
+                    }
                     DataService.FoundErrors.Add(
                         new FoundSpellingErrorModel()
                         {
-                            Name = $"{err.ShortMessage}: {err.ErrorSentence}",
+                            Name = $"{message}: {err.ErrorSentence}",
                             Description = $"Oprava: {err.Suggestion}",
                             SpellingCheckResult = err
                         }

@@ -56,7 +56,8 @@ namespace SpelingCheckAPI.Services
                                     Suggestion = $"{newPreposition} {word.word}",
                                     Index = word.prepositionIndex,
                                     Length = word.length,
-                                    Message = $"Nesprávna predložka {preposition}"
+                                    Message = $"Nesprávna predložka {preposition}",
+                                    ShortMessage = $"Nesprávna predložka {preposition}"
                                 });
                             }
                         }
@@ -76,7 +77,8 @@ namespace SpelingCheckAPI.Services
                                     Suggestion = $"{newPreposition} {word.word}",
                                     Index = word.prepositionIndex,
                                     Length = word.length,
-                                    Message = $"Nesprávna predložka {preposition}"
+                                    Message = $"Nesprávna predložka {preposition}",
+                                    ShortMessage = $"Nesprávna predložka {preposition}"
 
                                 });
                             }
