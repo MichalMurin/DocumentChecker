@@ -39,7 +39,7 @@
         public static Dictionary<string, string> WarningMessages = new Dictionary<string, string>
         {
             { "InvalidHeadingContinuity", "Chyba sa nedá opraviť automaticky!" },
-            { "InvalidDotsComasColons", "Pri oprave chyby sa pridajú medzery za bodky v texte!" },
+            { "InvalidDotsComasColons", "Pri oprave chyby sa pridajú medzery za bodky v texte, takže sa môže nesprávne upraviť niektorý text ako URL adresa!" },
             { "InvalidListConsistency", "Chyba sa nedá opraviť automaticky!" },
             { "CaptionMissing", "Chyba sa nedá opraviť automaticky!" },
             { "InvalidParenthesis", "Chyba sa nedá opraviť automaticky!" },

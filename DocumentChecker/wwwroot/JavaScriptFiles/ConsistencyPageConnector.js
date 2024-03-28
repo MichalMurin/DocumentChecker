@@ -1,10 +1,8 @@
 ﻿var dataService = null;
 var currentParagraph = null;
 const consistencyParamsToLoad = 'text, alignment, font, style, fields, listItemOrNullObject, listOrNullObject, tableNestingLevel, inlinePictures, isLastParagraph, uniqueLocalId';
-//const dotsComasColonsSpaceRegex = [/ \./, / ,/, / :/];
-//const dotsComasColonsNoSpaceRegex = [/\.[^\s]/, /,\S/, /:\S/];
 
-const dotsComasColonsSpaceRegex = [, / ,/, / :/];
+const dotsComasColonsSpaceRegex = [/ \./, / ,/, / :/];
 const dotsComasColonsNoSpaceRegex = [/\.(?=[^\s\d])/, /\,(?=[^\s\d])/, /:\S/];
 
 const crossReferenceError = ["Error! Reference source not found.", "Chyba! Nenašiel sa žiaden zdroj odkazov."];
@@ -95,11 +93,9 @@ window.consistencyConnector = {
                 result = false;
                 return;
             }
-            //sourceParagraphText = paragraph.text;
             var textItem = paragraph.getText();
             await context.sync();
             sourceParagraphText = textItem.value.trimEnd();
-            //sourceParagraphText = paragraph.text;
             console.log("Correcting paragraph: ", sourceParagraphText);
             errorToCorrect.forEach((foundError) => {
                 switch (foundError) {

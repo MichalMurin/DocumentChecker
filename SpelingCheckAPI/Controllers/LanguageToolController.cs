@@ -1,7 +1,9 @@
 ﻿using CommonCode.CheckResults;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using SpelingCheckAPI.Interfaces;
 using SpelingCheckAPI.Services;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace SpelingCheckAPI.Controllers
 {
@@ -16,11 +18,18 @@ namespace SpelingCheckAPI.Controllers
             _languageToolService = languageToolService;
         }
 
-        [HttpGet("checkText/{text}")]
-        public async Task<ActionResult<List<SpellingCheckResult>?>> CheckTextViaLT(string text, [FromQuery] List<string>? disabledRules = null)
+        [HttpPost("checkText")]
+        public async Task<ActionResult<List<SpellingCheckResult>?>> CheckTextViaLT([FromBody] TextCheckModel model)
         {
-            var result = await _languageToolService.RunGrammarCheck(text, disabledRules);
+            var result = await _languageToolService.RunGrammarCheck(model.Text, model.DisabledRules);
             return result;
         }
+
+    }
+
+    public class TextCheckModel
+    {
+        public string Text { get; set; } = string.Empty;
+        public List<string>? DisabledRules { get; set; }
     }
 }

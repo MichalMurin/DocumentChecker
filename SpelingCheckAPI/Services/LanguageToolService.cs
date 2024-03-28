@@ -2,8 +2,10 @@
 using CommonCode.CheckResults;
 using SpelingCheckAPI.Interfaces;
 using System.Diagnostics;
+using System.Reflection;
 using System.Text;
 using System.Text.Json;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace SpelingCheckAPI.Services
 {
@@ -59,9 +61,6 @@ namespace SpelingCheckAPI.Services
             var languageToolResult = JsonSerializer.Deserialize<LanguageToolApiResult>(jasonResult);
             return LanguageToolParser.TransformLtResultToCheckResult(languageToolResult);
         }
-
-
-
 
         ///////////////////////////
         ///

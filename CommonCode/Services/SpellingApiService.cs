@@ -20,46 +20,62 @@ namespace CommonCode.Services
             _httpClient.BaseAddress = new System.Uri(_apiBaseAddress);
         }
 
-        public async Task<List<SpellingCheckResult>?> CheckCmdLanguageTool(string text, List<string>? disabledRules = null)
+        public async Task<APIResult<List<SpellingCheckResult>?>> CheckCmdLanguageTool(string text, List<string>? disabledRules = null)
         {
+            if (string.IsNullOrEmpty(text))
+            {
+                Console.WriteLine("Cannot check empty string for prepositions error!");
+                return new APIResult<List<SpellingCheckResult>?>(null, false, "Cannot check empty string for LanguageTool errors!");
+            }
             try
             {
-                var disabledRulesQuerry = string.Empty;
-                if (disabledRules is not null && disabledRules.Count > 0)
+                var model = new { Text = text, DisabledRules = disabledRules };
+                var response = await _httpClient.PostAsJsonAsync("api/languageToolCheck/checkText", model);
+
+                if (response.IsSuccessStatusCode)
                 {
-                    disabledRulesQuerry = $"?{string.Join("&", disabledRules.Select(rule => $"disabledRules={Uri.EscapeDataString(rule)}"))}";
+                    var result = await response.Content.ReadFromJsonAsync<List<SpellingCheckResult>>();
+                    return new APIResult<List<SpellingCheckResult>?>(result, true, null);
                 }
-                var res = await _httpClient.GetFromJsonAsync<List<SpellingCheckResult>>($"api/languageToolCheck/checkText/{text}{disabledRulesQuerry}");
-                return res;
+                else
+                {
+                    Console.WriteLine($"Error occured during calling api for LanguageTool check: {response.StatusCode}");
+                    return new APIResult<List<SpellingCheckResult>?>(null, false, $"Error occured during calling api for LanguageTool check: {response.StatusCode}");
+                }
             }
             catch (HttpRequestException e)
             {
                 Console.WriteLine($"HttpRequestException was thrown during calling api for LanguageTool check: {e}");
-                return null;
+                return new APIResult<List<SpellingCheckResult>?>(null, false, e.Message);
             }
             catch (Exception e)
             {
                 Console.WriteLine($"Error occured during calling api for LanguageTool check: {e}");
-                throw;
+                return new APIResult<List<SpellingCheckResult>?>(null, false, e.Message);
             }
         }
 
-        public async Task<List<SpellingCheckResult>?> CheckPrepositions(string text)
+        public async Task<APIResult<List<SpellingCheckResult>?>> CheckPrepositions(string text)
         {
+            if (string.IsNullOrEmpty(text))
+            {
+                Console.WriteLine("Cannot check empty string for prepositions error!");
+                return new APIResult<List<SpellingCheckResult>?>(null, false, "Cannot check empty string for prepositions error!");
+            }
             try
             {
                 var res = await _httpClient.GetFromJsonAsync<List<SpellingCheckResult>>($"api/prepositionCheck/checkText/{text}");
-                return res;
+                return new APIResult<List<SpellingCheckResult>?>(res, true, null);
             }
             catch (HttpRequestException e)
             {
                 Console.WriteLine($"HttpRequestException was thrown during calling api for prepositions check: {e}");
-                return null;
+                return new APIResult<List<SpellingCheckResult>?>(null, false, e.Message);
             }
             catch (Exception e)
             {
                 Console.WriteLine($"Error occured during calling api for prepositions check: {e}");
-                return null;
+                return new APIResult<List<SpellingCheckResult>?>(null, false, e.Message);
             }
         }
 

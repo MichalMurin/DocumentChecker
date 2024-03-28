@@ -7,6 +7,7 @@ using CommonCode.Services;
 using CommonCode.Services.DataServices;
 using DocumentChecker.JsConnectors;
 using Microsoft.AspNetCore.Components;
+using System.Diagnostics;
 using System.Dynamic;
 using System.Text.RegularExpressions;
 using static CommonCode.Deffinitions.Deffinitions;
@@ -33,6 +34,7 @@ namespace DocumentChecker.Pages.ResultPages
 
         protected override async Task<ScanReturnValue> GetScanResult(bool isStart)
         {
+            HideError();
             if (isStart)
             {
                 _paragraphs = await JsConnector.GetParagrapghs();
@@ -45,6 +47,25 @@ namespace DocumentChecker.Pages.ResultPages
             return await StartCheck(_currentIndex);
         }
 
+        private async Task<bool> HandleApiSpellingCheck(List<SpellingCheckResult> resultsList, ParagraphData paragraph,
+            Func<ParagraphData, Task<APIResult<List<SpellingCheckResult>?>>> checkFunction)
+        {
+            var apiResult = await checkFunction(paragraph);
+            if (apiResult.IsSuccess)
+            {
+                var tmpList = apiResult.Result;
+                if (tmpList is not null)
+                {
+                    resultsList.AddRange(tmpList);
+                }
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         private async Task<ScanReturnValue> StartCheck(int paragraphIndex)
         {
             if (_paragraphs is not null && paragraphIndex < _paragraphs.Count)
@@ -52,23 +73,24 @@ namespace DocumentChecker.Pages.ResultPages
                 var tmpList = new List<SpellingCheckResult>();
                 for (int i = paragraphIndex; i < _paragraphs.Count; i++)
                 {
+                    if (string.IsNullOrEmpty(_paragraphs[i].Text))
+                    {
+                        // We dont have to check empty string
+                        continue;
+                    }
                     _currentSpellingResult.Clear();
-                    if (DataService.CheckPrepositions)
+                    if (DataService.CheckPrepositions && !(await HandleApiSpellingCheck(_currentSpellingResult, _paragraphs[i], CheckPrepositionInParagraph)))
                     {
-                        tmpList = await CheckPrepositionInParagraph(_paragraphs[i]);
-                        if (tmpList is not null)
-                        {
-                            _currentSpellingResult.AddRange(tmpList);
-                        }
+                        ShowApiErrorMessage();
+                        break;
                     }
-                    if (DataService.CheckLanguageTool)
+
+                    if (DataService.CheckLanguageTool && !(await HandleApiSpellingCheck(_currentSpellingResult, _paragraphs[i], CheckLanguageToolInParagraph)))
                     {
-                        tmpList = await CheckLanguageToolInParagraph(_paragraphs[i]);
-                        if (tmpList is not null)
-                        {
-                            _currentSpellingResult.AddRange(tmpList);
-                        }
+                        ShowApiErrorMessage();
+                        break;
                     }
+
                     if (DataService.Rules.Count > 0 && DataService.CheckOwnRules)
                     {
                         tmpList =  CheckOwnRules(_paragraphs[i]);
@@ -119,7 +141,7 @@ namespace DocumentChecker.Pages.ResultPages
             }
         }
 
-        private async Task<List<SpellingCheckResult>?> CheckLanguageToolInParagraph(ParagraphData paragraph)
+        private async Task<APIResult<List<SpellingCheckResult>?>> CheckLanguageToolInParagraph(ParagraphData paragraph)
         {
             if (_ltItem is null)
             {
@@ -129,23 +151,23 @@ namespace DocumentChecker.Pages.ResultPages
             var languageToolResults = _ltItem.Result;
             if (languageToolResults is null)
             {
-                _ltItem.Result = await SpellingApiService.CheckCmdLanguageTool(_ltItem.Text, DataService.LanguageToolDisabledRules);
+                var apiResult = await SpellingApiService.CheckCmdLanguageTool(_ltItem.Text, DataService.LanguageToolDisabledRules);
+                if (apiResult.IsSuccess)
+                {
+                    _ltItem.Result = apiResult.Result;
+                }
+                else
+                {
+                    return apiResult;
+                }
                 languageToolResults = _ltItem.Result ?? new List<SpellingCheckResult>();
             }
             var relevantCheckResults = languageToolResults?.Where(x => x.Index >= startIndex && x.Index <= startIndex + paragraph.Text.Length).ToList();
             if (relevantCheckResults is not null)
             {
                 relevantCheckResults.ForEach(x => x.Index -= startIndex);
-
-                foreach (var item in relevantCheckResults)
-                {
-                    Console.WriteLine($"Chyba: {item.ShortMessage}");
-                    Console.WriteLine($"Navrhovana oprava: {item.Suggestion}");
-                    Console.WriteLine($"Navrhovany index: {item.Index}");
-                    Console.WriteLine($"Index vzhladom na paragraf: {item.Index - startIndex}");
-                }
             }
-            return relevantCheckResults;
+            return new APIResult<List<SpellingCheckResult>?>(relevantCheckResults, true, null);
         }
 
         private List<SpellingCheckResult>? CheckOwnRules(ParagraphData paragraph)
@@ -180,18 +202,10 @@ namespace DocumentChecker.Pages.ResultPages
         }
 
 
-        private async Task<List<SpellingCheckResult>?> CheckPrepositionInParagraph(ParagraphData paragraph)
+        private async Task<APIResult<List<SpellingCheckResult>?>> CheckPrepositionInParagraph(ParagraphData paragraph)
         {
-            var prepositionsResult = await SpellingApiService.CheckPrepositions(text: paragraph.Text);
-            if (prepositionsResult is not null)
-            {
-                foreach (var item in prepositionsResult)
-                {
-                    Console.WriteLine($"Zla predlozka: {item.Message}");
-                    Console.WriteLine($"Navrhovana oprava: {item.Suggestion}");
-                }
-            }
-            return prepositionsResult;
+            return await SpellingApiService.CheckPrepositions(text: paragraph.Text);
+            
         }
 
         private string CorrectParagraph(string paragraph, List<SpellingCheckResult> checkResults)
@@ -240,5 +254,18 @@ namespace DocumentChecker.Pages.ResultPages
                     break;
             }
         }
+
+        private void ShowApiErrorMessage()
+        {
+            DataService.ErrorMessage = "Nastala chyba pri komunikácii s API serverom!";
+            DataService.IsError = true;
+        }
+
+        private void HideError()
+        {
+            DataService.IsError = false;
+        }
+
+
     }
 }

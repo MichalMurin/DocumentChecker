@@ -12,6 +12,8 @@ namespace CommonCode.Services.DataServices
     {
         public virtual HashSet<string> IgnoredParagraphs { get; set; } = new HashSet<string>();
         public virtual List<FoundErrorModel> FoundErrors { get; set; } = new List<FoundErrorModel>();
+        public bool IsError { get; set; } = false;
+        public string ErrorMessage { get; set; } = string.Empty;
 
         public void CopyFrom(BaseDataService source)
         {
