@@ -1,5 +1,5 @@
 ﻿using CommonCode.Extensions;
-using CommonCode.Formatting;
+using CommonCode.Deffinitions;
 using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
@@ -19,14 +19,14 @@ namespace CommonCode.Services.DataServices
         public double Heading4FontSize { get; set; } = 11;
         public double FontSize { get; set; } = 11;
         public string FontName { get; set; } = string.Empty;
-        public string AllingmentDispalyed { get; set; } = Deffinitions.AlignmentDict.Keys.FirstOrDefault() ?? string.Empty;
+        public string AllingmentDispalyed { get; set; } = Deffinitions.Deffinitions.AlignmentDict.Keys.FirstOrDefault() ?? string.Empty;
         public string Alligment
         {
             get
             {
-                if (Deffinitions.AlignmentDict.ContainsKey(AllingmentDispalyed))
+                if (Deffinitions.Deffinitions.AlignmentDict.ContainsKey(AllingmentDispalyed))
                 {
-                    return Deffinitions.AlignmentDict[AllingmentDispalyed];
+                    return Deffinitions.Deffinitions.AlignmentDict[AllingmentDispalyed];
                 }
                 else
                 {
@@ -39,7 +39,7 @@ namespace CommonCode.Services.DataServices
         {
             get
             {
-                return ((double)LineSpacing).GetLineSpacingInPoints(FontSize);
+                return ((double)LineSpacing).GetLineSpacingInPoints();
             }
         }
         public double LeftIndent { get; set; } = 0;

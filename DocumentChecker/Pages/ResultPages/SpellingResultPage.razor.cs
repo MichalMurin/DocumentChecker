@@ -9,7 +9,7 @@ using DocumentChecker.JsConnectors;
 using Microsoft.AspNetCore.Components;
 using System.Dynamic;
 using System.Text.RegularExpressions;
-using static CommonCode.Formatting.Deffinitions;
+using static CommonCode.Deffinitions.Deffinitions;
 namespace DocumentChecker.Pages.ResultPages
 {
     public partial class SpellingResultPage: BaseResultPage

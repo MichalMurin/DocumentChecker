@@ -1,4 +1,4 @@
-﻿namespace CommonCode.Formatting
+﻿namespace CommonCode.Deffinitions
 {
     public class Deffinitions
     {
@@ -39,7 +39,7 @@
         public static Dictionary<string, string> WarningMessages = new Dictionary<string, string>
         {
             { "InvalidHeadingContinuity", "Chyba sa nedá opraviť automaticky!" },
-            { "InvalidDotsComasColons", "Pri oprave chyby sa pridajú medzery aj za bodky v nadpise, URL atď!" },
+            { "InvalidDotsComasColons", "Pri oprave chyby sa pridajú medzery za bodky v texte!" },
             { "InvalidListConsistency", "Chyba sa nedá opraviť automaticky!" },
             { "CaptionMissing", "Chyba sa nedá opraviť automaticky!" },
             { "InvalidParenthesis", "Chyba sa nedá opraviť automaticky!" },

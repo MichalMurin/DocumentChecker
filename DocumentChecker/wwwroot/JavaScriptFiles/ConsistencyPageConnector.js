@@ -1,8 +1,12 @@
 ﻿var dataService = null;
 var currentParagraph = null;
 const consistencyParamsToLoad = 'text, alignment, font, style, fields, listItemOrNullObject, listOrNullObject, tableNestingLevel, inlinePictures, isLastParagraph, uniqueLocalId';
-const dotsComasColonsSpaceRegex = [/ \./, / ,/, / :/];
-const dotsComasColonsNoSpaceRegex = [/\.[^\s]/, /,\S/, /:\S/];
+//const dotsComasColonsSpaceRegex = [/ \./, / ,/, / :/];
+//const dotsComasColonsNoSpaceRegex = [/\.[^\s]/, /,\S/, /:\S/];
+
+const dotsComasColonsSpaceRegex = [, / ,/, / :/];
+const dotsComasColonsNoSpaceRegex = [/\.(?=[^\s\d])/, /\,(?=[^\s\d])/, /:\S/];
+
 const crossReferenceError = ["Error! Reference source not found.", "Chyba! Nenašiel sa žiaden zdroj odkazov."];
 const consistencyErrorTypes = {
     DOUBLE_SPACES: 'DoubleSpaces',
@@ -54,11 +58,11 @@ window.consistencyConnector = {
             foundErrors.forEach((error) => {
                 switch (error) {
                     case consistencyErrorTypes.CAPTION_MISSING:
-                        // setting ignored paragraph as ignored paragraph, so it wont be expecting any caption again
+                        // setting ignored paragraph as previous paragraph, so it wont be expecting any caption again
                         previousParagraphs[previousParagraphsKeys.PREVIOUS_PARAGRAPH] = currentParagraph;
                         break;
                     case consistencyErrorTypes.INVALID_LIST_CONSISTENCY:
-                        // setting ignored paragraph as ignored paragraph, so it wont be expecting any caption again
+                        // setting ignored paragraph as previous paragraph
                         if (!currentParagraph.listOrNullObject.isNullObject) {
                             previousList = currentParagraph.listOrNullObject;
                         }
@@ -91,7 +95,12 @@ window.consistencyConnector = {
                 result = false;
                 return;
             }
-            sourceParagraphText = paragraph.text;
+            //sourceParagraphText = paragraph.text;
+            var textItem = paragraph.getText();
+            await context.sync();
+            sourceParagraphText = textItem.value.trimEnd();
+            //sourceParagraphText = paragraph.text;
+            console.log("Correcting paragraph: ", sourceParagraphText);
             errorToCorrect.forEach((foundError) => {
                 switch (foundError) {
                     case consistencyErrorTypes.DOUBLE_SPACES:
@@ -157,9 +166,11 @@ window.consistencyConnector = {
                         dotsComasColonsNoSpaceRegex.forEach((regex) => {
                             let regexWithG = new RegExp(regex.source, 'g');
                             sourceParagraphText = sourceParagraphText.replace(regexWithG, function (match) {
-                                return match[0] + ' ' + match[1];
+                                console.log("Match: ", match);
+                                //return match[0] + ' ' + match[1];
+                                return match[0] + ' ';
                             });
-                            console.log("First correction", sourceParagraphText);
+                            console.log("First correction", regex,  sourceParagraphText);
                         });
                         sourceParagraphText = prefix + sourceParagraphText;
                         dotsComasColonsSpaceRegex.forEach((regex) => {
@@ -233,14 +244,17 @@ async function startConsistencyScan(start) {
                 console.log("Selection has changed, I cannot find any paragraph");
             }
         }
-
+        var paragraphTextItem = paragraph.getText();
+        await context.sync();
         while (paragraph !== null && !paragraph.isNullObject) {
-            currentParagraph = paragraph;
+            var paragraphText = paragraphTextItem.value.trimEnd();;
+            paragraph.text = 
+            console.log("Checking: ", paragraph);
             console.log("Checking: ", paragraph.text);
             console.log("Ignored paragraphs: ", dataService.ignoredParagraphs);
             console.log("This id", paragraph.uniqueLocalId, " is ignored: ", dataService.ignoredParagraphs.includes(paragraph.uniqueLocalId));
             if (!dataService.ignoredParagraphs.includes(paragraph.uniqueLocalId)) {
-                const styleChecks = prepareChecks(paragraph);
+                const styleChecks = prepareChecks(paragraph, paragraphText);
                 console.log("Style checks: ", styleChecks);
                 // Iterate over checks
                 styleChecks.forEach((check) => {
@@ -264,6 +278,7 @@ async function startConsistencyScan(start) {
             console.log("Moving to next paragraph");
             paragraph = paragraph.getNextOrNullObject();
             paragraph.load(consistencyParamsToLoad);
+            paragraphTextItem = paragraph.getText();
             await context.sync();
             console.log("Next paragraph is null?", paragraph.isNullObject);
         }
@@ -278,10 +293,11 @@ async function startConsistencyScan(start) {
 }
 
 function UpdatePreviousParagraph(paragraph) {
+    var isHeading = isParagraphHeading(paragraph);
     if (!dataService.ignoredParagraphs.includes(paragraph.uniqueLocalId)) {
         if (paragraph.text !== '') {
             previousParagraphsByStyle[paragraph.style] = paragraph;
-            if (isParagraphHeading(paragraph)) {
+            if (isHeading) {
                 previousParagraphs[previousParagraphsKeys.HEADING] = paragraph;
                 if (GetNumberOfHeading(paragraph) !== null) {
                     previousParagraphs[previousParagraphsKeys.NUMBERED_HEADING] = paragraph;
@@ -291,14 +307,14 @@ function UpdatePreviousParagraph(paragraph) {
                 previousParagraphs[previousParagraphsKeys.LIST_ITEM] = paragraph;
             }
         }
-        if (!paragraph.listOrNullObject.isNullObject) {
+        if (!paragraph.listOrNullObject.isNullObject && !isHeading) {
             previousList = paragraph.listOrNullObject;
         }
         previousParagraphs[previousParagraphsKeys.PREVIOUS_PARAGRAPH] = paragraph;
     }
 }
 
-function prepareChecks(paragraph) {
+function prepareChecks(paragraph, paragraphCleanText) {
     console.log("Preparing checks: ", dataService.doubleSpaces);
     var wrongHeadingContinuity = false;
     var wrongHeadingConsistency = false;
@@ -322,7 +338,7 @@ function prepareChecks(paragraph) {
         { condition: dataService.titleConsistency && wrongHeadingConsistency, errorType: consistencyErrorTypes.INVALID_HEADING_CONSISTENCY },
         { condition: dataService.documentAlignment && isDifferentFormatting(paragraph), errorType: consistencyErrorTypes.INCONSISTENT_FORMATTING },
         { condition: dataService.parenthesesValidation && !isValidParenthesis(paragraph), errorType: consistencyErrorTypes.INVALID_PARENTHESIS },
-        { condition: dataService.dotsComasColonsValidation && !checkDotsComasColons(paragraph), errorType: consistencyErrorTypes.INVALID_DOTS_COMAS_COLONS },
+        { condition: dataService.dotsComasColonsValidation && !checkDotsComasColons(paragraphCleanText), errorType: consistencyErrorTypes.INVALID_DOTS_COMAS_COLONS },
         { condition: dataService.captionValidation && !isCaptionPresent(paragraph), errorType: consistencyErrorTypes.CAPTION_MISSING },
         { condition: dataService.listValidation && !isListConsistent(paragraph), errorType: consistencyErrorTypes.INVALID_LIST_CONSISTENCY },
         // Add more checks as needed
@@ -338,7 +354,14 @@ function isParagraphHeading(paragraph) {
 function GetNumberOfHeading(paragraph) {
     if (!paragraph.listItemOrNullObject.isNullObject) {
         // if paragraph is part of a list, we consider it as a heading
-        return paragraph.listItemOrNullObject.listString;
+        var listString = paragraph.listItemOrNullObject.listString;
+        if (/^[0-9.]+$/.test(listString)) {
+            // if list string is only numbers and dots, we consider it as a number in heading
+            return listString;
+        }
+        else {
+            return null;
+        }
     }
     else if (/^\d/.test(paragraph.text)) {
         // if it is not par of a list, but it starts with a number, we consider it as a heading
@@ -440,11 +463,11 @@ function updateHeadingNumberFormat(heading) {
 function checkchHeadingConsistency(paragraph) {
     previousHeading = previousParagraphs[previousParagraphsKeys.HEADING];
     if (previousHeading !== undefined) {
-        console.log("Checking heading consistency: ", previousHeading.text, paragraph.text);
+        console.log("previous heading: ", previousHeading.text, "current heading: ", paragraph.text);
         previousHeadingFormatType = getHeadingFormatType(previousHeading.text);
         currentHeadingFormatType = getHeadingFormatType(paragraph.text);
         // Check if the previous text is all uppercase
-        if (previousHeadingFormatType !== headingFormatTypes.UNKNOWN && previousHeadingFormatType !== currentHeadingFormatType) {
+        if (previousHeadingFormatType !== currentHeadingFormatType) {
             return false;
         }
         else {
@@ -455,11 +478,17 @@ function checkchHeadingConsistency(paragraph) {
 }
 
 function getHeadingFormatType(heading) {
+    var headingWords = heading.split(/\s+/);
+    var regexToCheckFirstCapitalLetterWithDiacritics = /^[A-Z\u00C0-\u00FF\u0100-\u017F][a-z\u00C0-\u00FF\u0100-\u017F]*$/
     if (heading === heading.toUpperCase()) {
         return headingFormatTypes.UPPER_CASE;
     }
     else if (heading === heading.toLowerCase()) {
         return headingFormatTypes.LOWER_CASE;
+    }
+    else if (regexToCheckFirstCapitalLetterWithDiacritics.test(headingWords[0]))
+    {
+        return headingFormatTypes.FIRST_UPPER_CASE;
     }
     else {
         return headingFormatTypes.UNKNOWN;
@@ -472,6 +501,8 @@ function updateHeadingFormatType(heading, type) {
             return heading.toLowerCase();
         case headingFormatTypes.UPPER_CASE:
             return heading.toUpperCase();
+        case headingFormatTypes.FIRST_UPPER_CASE:
+            return heading.charAt(0).toUpperCase() + heading.slice(1).toLowerCase();
         default:
             return heading;
     }
@@ -480,13 +511,12 @@ function updateHeadingFormatType(heading, type) {
 function isValidParenthesis(paragraph) {
     const text = paragraph.text;
     const stack = [];
-
     for (let i = 0; i < text.length; i++) {
         const char = text[i];
-        if (char === '(' || char === '[' || char === '{' || char === '“' || char === '„') {
+        if (char === '(' || char === '[' || char === '{' || char === '„') {
             stack.push(char);
             console.log("Pushed: ", char, "Stack: ", stack)
-        } else if (char === ')' || char === ']' || char === '}' || char === '”') {
+        } else if (char === ')' || char === ']' || char === '}' || char === '“') {
             if (stack.length === 0) {
                 return false;
             }
@@ -496,7 +526,7 @@ function isValidParenthesis(paragraph) {
                 (char === ')' && top !== '(') ||
                 (char === ']' && top !== '[') ||
                 (char === '}' && top !== '{') ||
-                (char === '”' && (top !== '„' && top !== '“'))
+                (char === '“' && (top !== '„'))
             ) {
                 return false;
             }
@@ -505,8 +535,9 @@ function isValidParenthesis(paragraph) {
     return stack.length === 0;
 }
 
-function checkDotsComasColons(paragraph) {
-    var text = paragraph.text;
+function checkDotsComasColons(paragraphCleanText) {
+    var text = paragraphCleanText;
+    console.log("Checking dots, comas, colons: ", text);
     if (isParagraphHeading(paragraph)) {
         var headingNumber = GetNumberOfHeading(paragraph)
         if (headingNumber !== null) {
@@ -517,12 +548,14 @@ function checkDotsComasColons(paragraph) {
         // testing every regex
         return !regex.test(text);
     });
+    console.log("First test result: ", result);
     if (result) {
         // if first test passed, testign second array of regex
         result = dotsComasColonsNoSpaceRegex.every((regex) => {
             return !regex.test(text);
         });
     }
+    console.log("Second test result: ", result);
     return result;
 }
 
@@ -534,7 +567,7 @@ function GetNextPossibleNumbers(previousNumber) {
 
     // Increment each part from the end
     for (var i = parts.length - 1; i >= 0; i--) {
-        var newParts = parts.slice();
+        var newParts = parts.slice(0, i + 1);
         newParts[i] = parseInt(newParts[i]) + 1;
         results.push(newParts.join('.'));
     }
@@ -557,7 +590,7 @@ function isDifferentFormatting(paragraph) {
     var previousPara = previousParagraphsByStyle[paragraph.style];
     if (previousPara !== undefined) {
         // checking formatting with previous paragraph with same style
-        console.log("Checking formatting: ", paragraph, previousPara);
+        console.log("Checking formatting: ", paragraph, "previousPara: ", previousPara);
         return paragraph.alignment !== previousPara.alignment ||
             paragraph.font.name !== previousPara.font.name ||
             paragraph.font.size !== previousPara.font.size;
@@ -583,7 +616,8 @@ function isCaptionPresent(currentParagraph) {
 
 function isListConsistent(currentParagraph) {
     console.log("Checking list consistency: ", previousList, currentParagraph.listOrNullObject);
-    if (previousList !== undefined && !currentParagraph.listOrNullObject.isNullObject && previousList.id !== currentParagraph.listOrNullObject.id) {
+    if (previousList !== undefined && !currentParagraph.listOrNullObject.isNullObject &&
+        previousList.id !== currentParagraph.listOrNullObject.id && !isParagraphHeading(currentParagraph)) {
         console.log("This is list, checking level types");
         for (var i = 0; i < previousList.levelTypes.length; i++) {
             let level = currentParagraph.listOrNullObject.levelTypes[i];

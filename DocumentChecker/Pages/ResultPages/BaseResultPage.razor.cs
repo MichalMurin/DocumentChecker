@@ -4,7 +4,7 @@ using CommonCode.ReturnValues;
 using CommonCode.Services.DataServices;
 using Microsoft.AspNetCore.Components;
 using System.Runtime.CompilerServices;
-using static CommonCode.Formatting.Deffinitions;
+using static CommonCode.Deffinitions.Deffinitions;
 
 namespace DocumentChecker.Pages.ResultPages
 {
@@ -35,9 +35,9 @@ namespace DocumentChecker.Pages.ResultPages
             if (CurrentScan is not null)
             {
                 Console.WriteLine($"Ignoring paragraph: {CurrentScan.ParagraphId}");
+                SetDisplayedTexts(CheckState.START);
                 DataService.IgnoredParagraphs.Add(CurrentScan.ParagraphId);
                 await HandleIgnoredParagraph();
-                SetDisplayedTexts(CheckState.START);
                 await ScanDocument();
             }
             else

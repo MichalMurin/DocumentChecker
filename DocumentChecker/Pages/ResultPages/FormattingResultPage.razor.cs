@@ -6,7 +6,7 @@ using DocumentChecker.JsConnectors;
 using CommonCode.ReturnValues;
 using CommonCode.Services.DataServices;
 using CommonCode.Models;
-using static CommonCode.Formatting.Deffinitions;
+using static CommonCode.Deffinitions.Deffinitions;
 
 namespace DocumentChecker.Pages.ResultPages
 {

@@ -9,6 +9,7 @@ namespace CommonCode.Extensions
 {
     public static class DoubleExtensions
     {
+        private const double LINE_SPACING_CONSTANT = 12.0; 
         public static double ConvertCmToPoints(this double cm)
         {
             double points = cm * 28.3464567;
@@ -21,9 +22,9 @@ namespace CommonCode.Extensions
             return Math.Round(cm, 2);
         }
 
-        public static double GetLineSpacingInPoints(this double lineSpacing, double fontSize)
+        public static double GetLineSpacingInPoints(this double lineSpacing)
         {
-            return lineSpacing * fontSize;
+            return lineSpacing * LINE_SPACING_CONSTANT;
         }
     }
 }

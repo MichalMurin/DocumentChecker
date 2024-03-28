@@ -5,7 +5,7 @@ using CommonCode.Services.DataServices;
 using DocumentChecker.JsConnectors;
 using Microsoft.AspNetCore.Components;
 using System.Diagnostics;
-using static CommonCode.Formatting.Deffinitions;
+using static CommonCode.Deffinitions.Deffinitions;
 
 namespace DocumentChecker.Pages.ResultPages
 {
@@ -54,7 +54,8 @@ namespace DocumentChecker.Pages.ResultPages
             {
                 case CheckState.FOUND_ERROR:
                     Header = "Našla sa chyba!";
-                    TextResult = $"Boli zistené chyby v konzistencii dokumentu. Aby bola oprava úspešná, prosím, nechajte odstavec označený";
+                    TextResult = $"Boli zistené chyby v konzistencii dokumentu. Aby bola oprava úspešná, prosím, nechajte odsek označený. " +
+                        $"Automatická oprava nahradí text v odseku, preto sa môže stať, že odstráni komentár pre pôvodný text.";
                     break;
                 case CheckState.FINISHED:
                     Header = "Kontrola dokončená!";

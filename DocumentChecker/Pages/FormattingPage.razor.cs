@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.JSInterop;
 using DocumentChecker.JsConnectors;
 using CommonCode.Services.DataServices;
-using CommonCode.Formatting;
+using CommonCode.Deffinitions;
 using System.Text.Json;
 
 namespace DocumentChecker.Pages
