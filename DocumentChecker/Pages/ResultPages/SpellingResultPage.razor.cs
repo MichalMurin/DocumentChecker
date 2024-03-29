@@ -221,7 +221,7 @@ namespace DocumentChecker.Pages.ResultPages
                 if (err.Index + err.Length > paragraph.Length)
                 {
                     err.Length = paragraph.Length - err.Index;
-                    err.Suggestion = err.Suggestion.Substring(0, err.Length);
+                    err.Suggestion = err.Suggestion[..err.Length];
                 }
                 result = result.Remove(err.Index, err.Length).Insert(err.Index, err.Suggestion);
             }
