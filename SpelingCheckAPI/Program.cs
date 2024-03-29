@@ -1,5 +1,5 @@
 using Microsoft.Extensions.ML;
-using PrepositionChecker;
+using ML_DigramsDatabase;
 using SpelingCheckAPI.Interfaces;
 using SpelingCheckAPI.Services;
 
@@ -29,8 +29,8 @@ namespace SpelingCheckAPI
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            builder.Services.AddPredictionEnginePool<PrepositionChecker_ML.ModelInput, PrepositionChecker_ML.ModelOutput>()
-                .FromFile("PrepositionChecker_ML.mlnet");
+            builder.Services.AddPredictionEnginePool<MLModel_DigramDb.ModelInput, MLModel_DigramDb.ModelOutput>()
+                .FromFile("MLPrepositionChecker\\MLModel_DigramDb_10h.mlnet");
             builder.Services.AddSingleton<IPrepositionCheckService, PrepositionCheckService>();
             builder.Services.AddSingleton<ILanguageToolService, LanguageToolService>();
             builder.Services.AddControllers();

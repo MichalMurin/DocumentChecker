@@ -1,6 +1,6 @@
 ﻿using static System.Net.Mime.MediaTypeNames;
 using System.Text.RegularExpressions;
-using PrepositionChecker;
+using ML_DigramsDatabase;
 using SpelingCheckAPI.Interfaces;
 using Microsoft.Extensions.ML;
 using CommonCode.CheckResults;
@@ -9,16 +9,16 @@ namespace SpelingCheckAPI.Services
 {
     public class PrepositionCheckService : IPrepositionCheckService
     {
-        private readonly PredictionEnginePool<PrepositionChecker_ML.ModelInput, PrepositionChecker_ML.ModelOutput> _predictionEnginePool;
+        private readonly PredictionEnginePool<MLModel_DigramDb.ModelInput, MLModel_DigramDb.ModelOutput> _predictionEnginePool;
         private readonly string[] _prepositions = { "s", "so", "z", "zo" };
 
-        public PrepositionCheckService(PredictionEnginePool<PrepositionChecker_ML.ModelInput, PrepositionChecker_ML.ModelOutput> predictionEnginePool)
+        public PrepositionCheckService(PredictionEnginePool<MLModel_DigramDb.ModelInput, MLModel_DigramDb.ModelOutput> predictionEnginePool)
         {
             _predictionEnginePool = predictionEnginePool;
         }
         public async Task<bool> IsInstrumental(string word)
         {
-            var sampleData = new PrepositionChecker_ML.ModelInput()
+            var sampleData = new MLModel_DigramDb.ModelInput()
             {
                 Word = word
             };

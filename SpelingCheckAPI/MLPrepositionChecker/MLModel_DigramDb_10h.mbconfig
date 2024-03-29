@@ -1,0 +1,273 @@
+﻿{
+  "Scenario": "Classification",
+  "DataSource": {
+    "Version": 3,
+    "EscapeCharacter": "\"",
+    "ReadMultiLines": false,
+    "KeepDiacritics": false,
+    "KeepPunctuations": false,
+    "AllowQuoting": true,
+    "Type": "TabularFile",
+    "FilePath": "C:\\Users\\murin\\Desktop\\ML_Tests\\Data\\padyDiGramy.csv",
+    "Delimiter": ";",
+    "DecimalMarker": ".",
+    "HasHeader": true,
+    "ColumnProperties": [
+      {
+        "ColumnName": "word",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "String",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "isInstrumental",
+        "ColumnPurpose": "Label",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": true,
+        "Type": "Column",
+        "Version": 5
+      }
+    ]
+  },
+  "Environment": {
+    "Type": "LocalCPU",
+    "Version": 1
+  },
+  "RunHistory": {
+    "Version": 3,
+    "Type": "Result",
+    "Trials": [
+      {
+        "Version": 1,
+        "Type": "Trial",
+        "TrainerName": "FastTreeOva",
+        "Score": 0.93016975170808225,
+        "RuntimeInSeconds": 22.5,
+        "Parameter": {
+          "_SCHEMA_": "e0 * e1 * e2 * e3 * e9",
+          "e0": {
+            "InputColumnName": "word",
+            "OutputColumnName": "word"
+          },
+          "e1": {
+            "InputColumnNames": [
+              "word"
+            ],
+            "OutputColumnName": "Features"
+          },
+          "e2": {
+            "OutputColumnName": "isInstrumental",
+            "InputColumnName": "isInstrumental",
+            "AddKeyValueAnnotationsAsText": false
+          },
+          "e3": {
+            "NumberOfLeaves": 18,
+            "MinimumExampleCountPerLeaf": 34,
+            "NumberOfTrees": 106,
+            "MaximumBinCountPerFeature": 113,
+            "FeatureFraction": 0.892727204673639,
+            "LearningRate": 0.11987561679773188,
+            "LabelColumnName": "isInstrumental",
+            "FeatureColumnName": "Features",
+            "DiskTranspose": false
+          },
+          "e9": {
+            "OutputColumnName": "PredictedLabel",
+            "InputColumnName": "PredictedLabel"
+          }
+        }
+      },
+      {
+        "Version": 1,
+        "Type": "Trial",
+        "TrainerName": "FastTreeOva",
+        "Score": 0.93013682664552455,
+        "RuntimeInSeconds": 22.19,
+        "Parameter": {
+          "_SCHEMA_": "e0 * e1 * e2 * e3 * e9",
+          "e0": {
+            "InputColumnName": "word",
+            "OutputColumnName": "word"
+          },
+          "e1": {
+            "InputColumnNames": [
+              "word"
+            ],
+            "OutputColumnName": "Features"
+          },
+          "e2": {
+            "OutputColumnName": "isInstrumental",
+            "InputColumnName": "isInstrumental",
+            "AddKeyValueAnnotationsAsText": false
+          },
+          "e3": {
+            "NumberOfLeaves": 18,
+            "MinimumExampleCountPerLeaf": 34,
+            "NumberOfTrees": 104,
+            "MaximumBinCountPerFeature": 112,
+            "FeatureFraction": 0.89270583610143717,
+            "LearningRate": 0.12103365483346451,
+            "LabelColumnName": "isInstrumental",
+            "FeatureColumnName": "Features",
+            "DiskTranspose": false
+          },
+          "e9": {
+            "OutputColumnName": "PredictedLabel",
+            "InputColumnName": "PredictedLabel"
+          }
+        }
+      },
+      {
+        "Version": 1,
+        "Type": "Trial",
+        "TrainerName": "FastTreeOva",
+        "Score": 0.93013440900829136,
+        "RuntimeInSeconds": 23.629,
+        "Parameter": {
+          "_SCHEMA_": "e0 * e1 * e2 * e3 * e9",
+          "e0": {
+            "InputColumnName": "word",
+            "OutputColumnName": "word"
+          },
+          "e1": {
+            "InputColumnNames": [
+              "word"
+            ],
+            "OutputColumnName": "Features"
+          },
+          "e2": {
+            "OutputColumnName": "isInstrumental",
+            "InputColumnName": "isInstrumental",
+            "AddKeyValueAnnotationsAsText": false
+          },
+          "e3": {
+            "NumberOfLeaves": 19,
+            "MinimumExampleCountPerLeaf": 35,
+            "NumberOfTrees": 110,
+            "MaximumBinCountPerFeature": 113,
+            "FeatureFraction": 0.892692114969028,
+            "LearningRate": 0.11922026335989104,
+            "LabelColumnName": "isInstrumental",
+            "FeatureColumnName": "Features",
+            "DiskTranspose": false
+          },
+          "e9": {
+            "OutputColumnName": "PredictedLabel",
+            "InputColumnName": "PredictedLabel"
+          }
+        }
+      },
+      {
+        "Version": 1,
+        "Type": "Trial",
+        "TrainerName": "FastTreeOva",
+        "Score": 0.93010631922020015,
+        "RuntimeInSeconds": 21.843,
+        "Parameter": {
+          "_SCHEMA_": "e0 * e1 * e2 * e3 * e9",
+          "e0": {
+            "InputColumnName": "word",
+            "OutputColumnName": "word"
+          },
+          "e1": {
+            "InputColumnNames": [
+              "word"
+            ],
+            "OutputColumnName": "Features"
+          },
+          "e2": {
+            "OutputColumnName": "isInstrumental",
+            "InputColumnName": "isInstrumental",
+            "AddKeyValueAnnotationsAsText": false
+          },
+          "e3": {
+            "NumberOfLeaves": 17,
+            "MinimumExampleCountPerLeaf": 34,
+            "NumberOfTrees": 106,
+            "MaximumBinCountPerFeature": 112,
+            "FeatureFraction": 0.89287941205226229,
+            "LearningRate": 0.11971072998499764,
+            "LabelColumnName": "isInstrumental",
+            "FeatureColumnName": "Features",
+            "DiskTranspose": false
+          },
+          "e9": {
+            "OutputColumnName": "PredictedLabel",
+            "InputColumnName": "PredictedLabel"
+          }
+        }
+      },
+      {
+        "Version": 1,
+        "Type": "Trial",
+        "TrainerName": "FastTreeOva",
+        "Score": 0.93009095969107158,
+        "RuntimeInSeconds": 23.613,
+        "Parameter": {
+          "_SCHEMA_": "e0 * e1 * e2 * e3 * e9",
+          "e0": {
+            "InputColumnName": "word",
+            "OutputColumnName": "word"
+          },
+          "e1": {
+            "InputColumnNames": [
+              "word"
+            ],
+            "OutputColumnName": "Features"
+          },
+          "e2": {
+            "OutputColumnName": "isInstrumental",
+            "InputColumnName": "isInstrumental",
+            "AddKeyValueAnnotationsAsText": false
+          },
+          "e3": {
+            "NumberOfLeaves": 19,
+            "MinimumExampleCountPerLeaf": 35,
+            "NumberOfTrees": 111,
+            "MaximumBinCountPerFeature": 113,
+            "FeatureFraction": 0.89128959583949219,
+            "LearningRate": 0.12582534709106535,
+            "LabelColumnName": "isInstrumental",
+            "FeatureColumnName": "Features",
+            "DiskTranspose": false
+          },
+          "e9": {
+            "OutputColumnName": "PredictedLabel",
+            "InputColumnName": "PredictedLabel"
+          }
+        }
+      }
+    ],
+    "Estimators": {
+      "e0": "FeaturizeText",
+      "e1": "Concatenate",
+      "e2": "MapValueToKey",
+      "e3": "FastTreeOva",
+      "e4": "FastForestOva",
+      "e5": "LbfgsLogisticRegressionOva",
+      "e6": "LbfgsMaximumEntropyMulti",
+      "e7": "SdcaMaximumEntropyMulti",
+      "e8": "SdcaLogisticRegressionOva",
+      "e9": "MapKeyToValue"
+    },
+    "Schema": "e0 * e1 * e2 * (e3 + e4 + e5 + e6 + e7 + e8) * e9",
+    "MetricName": "MacroAccuracy",
+    "ModelFilePath": "C:\\Users\\murin\\Desktop\\ML_Tests\\ML_DigramsDatabase\\MLModel_DigramDb.mlnet"
+  },
+  "Type": "TrainingConfig",
+  "Version": 5,
+  "TrainingOption": {
+    "Version": 2,
+    "Subsampling": false,
+    "Type": "ClassificationTrainingOption",
+    "TrainingTime": 36000,
+    "LabelColumn": "isInstrumental",
+    "ValidationOption": {
+      "Version": 0,
+      "Type": "TrainValidateSplitValidationOption",
+      "SplitRatio": 0.2
+    }
+  }
+}
