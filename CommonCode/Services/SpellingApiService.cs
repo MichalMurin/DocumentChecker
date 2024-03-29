@@ -19,8 +19,17 @@ namespace CommonCode.Services
             _httpClient = new HttpClient();
             _httpClient.BaseAddress = new System.Uri(_apiBaseAddress);
         }
+        private async Task<APIResult<List<SpellingCheckResult>?>> ProcessSuccessfulRepsonse(HttpResponseMessage response, int priority)
+        {
+            var result = await response.Content.ReadFromJsonAsync<List<SpellingCheckResult>>();
+            if (result is not null)
+            {
+                result.ForEach(item => item.Priority = priority);
+            }
+            return new APIResult<List<SpellingCheckResult>?>(result, true, null);
+        }
 
-        public async Task<APIResult<List<SpellingCheckResult>?>> CheckCmdLanguageTool(string text, List<string>? disabledRules = null)
+        public async Task<APIResult<List<SpellingCheckResult>?>> CheckCmdLanguageTool(string text, int priority, List<string>? disabledRules = null)
         {
             if (string.IsNullOrEmpty(text))
             {
@@ -34,8 +43,7 @@ namespace CommonCode.Services
 
                 if (response.IsSuccessStatusCode)
                 {
-                    var result = await response.Content.ReadFromJsonAsync<List<SpellingCheckResult>>();
-                    return new APIResult<List<SpellingCheckResult>?>(result, true, null);
+                    return await ProcessSuccessfulRepsonse(response, priority);
                 }
                 else
                 {
@@ -55,7 +63,7 @@ namespace CommonCode.Services
             }
         }
 
-        public async Task<APIResult<List<SpellingCheckResult>?>> CheckPrepositions(string text)
+        public async Task<APIResult<List<SpellingCheckResult>?>> CheckPrepositions(string text, int priority)
         {
             if (string.IsNullOrEmpty(text))
             {
@@ -64,8 +72,18 @@ namespace CommonCode.Services
             }
             try
             {
-                var res = await _httpClient.GetFromJsonAsync<List<SpellingCheckResult>>($"api/prepositionCheck/checkText/{text}");
-                return new APIResult<List<SpellingCheckResult>?>(res, true, null);
+                var model = new { Text = text };
+                var response = await _httpClient.PostAsJsonAsync("api/prepositionCheck/checkText", model);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return await ProcessSuccessfulRepsonse(response, priority);
+                }
+                else
+                {
+                    Console.WriteLine($"Error occured during calling api for Prepositions check: {response.StatusCode}");
+                    return new APIResult<List<SpellingCheckResult>?>(null, false, $"Error occured during calling api for Preopsitions check: {response.StatusCode}");
+                }
             }
             catch (HttpRequestException e)
             {

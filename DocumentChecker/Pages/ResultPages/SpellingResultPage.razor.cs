@@ -151,7 +151,7 @@ namespace DocumentChecker.Pages.ResultPages
             var languageToolResults = _ltItem.Result;
             if (languageToolResults is null)
             {
-                var apiResult = await SpellingApiService.CheckCmdLanguageTool(_ltItem.Text, DataService.LanguageToolDisabledRules);
+                var apiResult = await SpellingApiService.CheckCmdLanguageTool(_ltItem.Text, DataService.LanguageToolPriority, DataService.LanguageToolDisabledRules);
                 if (apiResult.IsSuccess)
                 {
                     _ltItem.Result = apiResult.Result;
@@ -186,6 +186,7 @@ namespace DocumentChecker.Pages.ResultPages
                             Console.WriteLine($"Nasla sa zhoda: {match.Value}");
                             var ownRuleCheckResult = new SpellingCheckResult
                             {
+                                Priority = DataService.OwnRulesPriority,
                                 Message = rule.Description,
                                 ShortMessage = rule.Description,
                                 Suggestion = rule.Correction,
@@ -204,20 +205,28 @@ namespace DocumentChecker.Pages.ResultPages
 
         private async Task<APIResult<List<SpellingCheckResult>?>> CheckPrepositionInParagraph(ParagraphData paragraph)
         {
-            return await SpellingApiService.CheckPrepositions(text: paragraph.Text);
-            
+            return await SpellingApiService.CheckPrepositions(text: paragraph.Text, DataService.PrepositionCheckPriority);            
         }
 
         private string CorrectParagraph(string paragraph, List<SpellingCheckResult> checkResults)
         {
             string result = paragraph;
-            foreach (var err in checkResults.OrderByDescending(x => x.Index))
+            // Group errors by index and sort groups by index in descending order
+            var groupedErrors = checkResults.GroupBy(e => e.Index).OrderByDescending(g => g.Key);
+            foreach (var group in groupedErrors)
             {
+                // Sort errors in each group by priority and correct only error with heighest priority
+                var errors = group.OrderBy(e => e.Priority);
+                var err = errors.First();
+                if (err.Index + err.Length > paragraph.Length)
+                {
+                    err.Length = paragraph.Length - err.Index;
+                    err.Suggestion = err.Suggestion.Substring(0, err.Length);
+                }
                 result = result.Remove(err.Index, err.Length).Insert(err.Index, err.Suggestion);
-                //result = result.Replace(err.ErrorSentence, err.Suggestion);
             }
             return result;
-        }   
+        }
 
         protected override async Task<bool> TryToCorrectParagraph()
         {

@@ -16,12 +16,23 @@ namespace SpelingCheckAPI.Controllers
             _prepositionCheckService = service;
         }
 
-        [HttpGet("checkText/{text}")]
-        public async Task<ActionResult<List<SpellingCheckResult>>> CheckPrepositionsInText(string text)
+        //[HttpGet("checkText/{text}")]
+        //public async Task<ActionResult<List<SpellingCheckResult>>> CheckPrepositionsInText(string text)
+        //{
+        //    var result = await _prepositionCheckService.CheckPrepositionsInText(text);
+        //    return result;
+        //}
+
+        [HttpPost("checkText")]
+        public async Task<ActionResult<List<SpellingCheckResult>>> CheckPrepositionsInText([FromBody] PrepositionTextCheckModel model)
         {
-            var result = await _prepositionCheckService.CheckPrepositionsInText(text);
+            var result = await _prepositionCheckService.CheckPrepositionsInText(model.Text);
             return result;
         }
 
+    }
+    public class PrepositionTextCheckModel
+    {
+        public string Text { get; set; } = string.Empty;
     }
 }

@@ -28,10 +28,6 @@ namespace DocumentChecker.JsConnectors
         {
             await _jsRuntime.InvokeVoidAsync("InsertText", text);
         }
-        public async Task ShowAlert(string text)
-        {
-            await _jsRuntime.InvokeVoidAsync("ShowAlert", text);
-        }
 
     }
 }

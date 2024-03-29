@@ -19,7 +19,7 @@ namespace SpelingCheckAPI.Controllers
         }
 
         [HttpPost("checkText")]
-        public async Task<ActionResult<List<SpellingCheckResult>?>> CheckTextViaLT([FromBody] TextCheckModel model)
+        public async Task<ActionResult<List<SpellingCheckResult>?>> CheckTextViaLT([FromBody] LTTextCheckModel model)
         {
             var result = await _languageToolService.RunGrammarCheck(model.Text, model.DisabledRules);
             return result;
@@ -27,7 +27,7 @@ namespace SpelingCheckAPI.Controllers
 
     }
 
-    public class TextCheckModel
+    public class LTTextCheckModel
     {
         public string Text { get; set; } = string.Empty;
         public List<string>? DisabledRules { get; set; }

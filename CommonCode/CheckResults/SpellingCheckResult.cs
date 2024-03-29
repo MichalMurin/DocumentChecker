@@ -8,6 +8,7 @@ namespace CommonCode.CheckResults
 {
     public class SpellingCheckResult
     {
+        public int Priority { get; set; }
         public string ErrorSentence { get; set; } = string.Empty;
         public string Suggestion { get; set; } = string.Empty;
         public int Index { get; set; }

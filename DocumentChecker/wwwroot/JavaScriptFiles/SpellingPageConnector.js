@@ -1,4 +1,4 @@
-﻿var PARAGRAPHS = [];
+﻿//var PARAGRAPHS = [];
 
 
 
@@ -7,18 +7,18 @@ window.spellingConnector = {
         let resultList = [];
         await Word.run(async (context) => {
             const paragraphs = context.document.body.paragraphs;
-            paragraphs.load('uniqueLocalId, text');
+            paragraphs.load('uniqueLocalId');
             await context.sync();
-            GLOBAL_PARAGRAPHS = paragraphs;
-            paragraphs.items.forEach((paragraph, index) => {
+            for (let [index, paragraph] of paragraphs.items.entries()) {
+                var paraTextItem = paragraph.getText();
+                await context.sync();
                 let paragraphData = {
                     index: index,
                     id: paragraph.uniqueLocalId,
-                    text: paragraph.text
+                    text: paraTextItem.value.trimEnd()
                 };
-                PARAGRAPHS.push(paragraph);
                 resultList.push(paragraphData);
-            });
+            }
         });     
         console.log('Returning paragraphs');
         console.log(JSON.stringify(resultList));

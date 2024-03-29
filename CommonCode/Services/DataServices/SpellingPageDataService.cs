@@ -15,5 +15,8 @@ namespace CommonCode.Services.DataServices
         public bool CheckPrepositions { get; set; } = true;
         public bool CheckLanguageTool { get; set; } = true;
         public bool CheckOwnRules { get; set; } = true;
+        public int LanguageToolPriority { get; set; } = 3;
+        public int PrepositionCheckPriority { get; set; } = 2;
+        public int OwnRulesPriority { get; set; } = 1;
     }
 }
