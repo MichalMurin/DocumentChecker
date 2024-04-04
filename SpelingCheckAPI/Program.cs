@@ -1,4 +1,5 @@
 using Microsoft.Extensions.ML;
+using Microsoft.OpenApi.Models;
 using ML_DigramsDatabase;
 using SpelingCheckAPI.Interfaces;
 using SpelingCheckAPI.Services;
@@ -27,7 +28,10 @@ namespace SpelingCheckAPI
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Spelling Check API", Version = "v1" });
+            });
 
             builder.Services.AddPredictionEnginePool<MLModel_DigramDb.ModelInput, MLModel_DigramDb.ModelOutput>()
                 .FromFile("MLPrepositionChecker\\MLModel_DigramDb_10h.mlnet");
@@ -37,11 +41,11 @@ namespace SpelingCheckAPI
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
             {
-                app.UseSwagger();
-                app.UseSwaggerUI();
-            }
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Spelling Check API v1");
+            });
             app.MapControllers();
 
             app.UseHttpsRedirection();
