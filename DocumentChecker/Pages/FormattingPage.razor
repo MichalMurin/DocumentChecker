@@ -13,7 +13,7 @@
     </div>
     @if (IsError) 
     {
-        <MyAlert ErrorText="@ErrorMessage" Header="Error" />
+        <MyAlert ErrorText="@ErrorMessage" Header="Chyba" />
     }
     <MyInput Text="Veľkosť nadpisu 1. úrovne" InputType="number" Placeholder=16 @bind-Value="@FormattingPageDataService.Heading1FontSize" T="double" />
     <MyInput Text="Veľkosť nadpisu 2. úrovne" InputType="number" Placeholder=14 @bind-Value="@FormattingPageDataService.Heading2FontSize" T="double" />

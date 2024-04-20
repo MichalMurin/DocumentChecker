@@ -10,9 +10,6 @@ using static CommonCode.Deffinitions.Deffinitions;
 
 namespace DocumentChecker.Pages.ResultPages
 {
-    // TODO: Dorobit kontrolu hlaviciek a paticiek
-    // TODO: Umoznit opravit cely dokument naraz??
-    // TODO: Dorobit Import a export nastaveni
     public partial class FormattingResultPage: BaseResultPage
     {
         [Inject]

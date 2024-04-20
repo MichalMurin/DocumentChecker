@@ -5,7 +5,7 @@
     <MyTextBox Header=@Header Description=@TextResult Path="#" />
     @if (DataService.IsError)
     {
-        <MyAlert ErrorText="@DataService.ErrorMessage" Header="Error" />
+        <MyAlert ErrorText="@DataService.ErrorMessage" Header="Chyba" />
     }
     @if (DataService.FoundErrors.Count > 0)
     {

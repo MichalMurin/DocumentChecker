@@ -3,6 +3,7 @@ using CommonCode.CheckResults;
 using CommonCode.Interfaces;
 using CommonCode.ReturnValues;
 using System.Net.Http.Json;
+using System.Text;
 
 namespace CommonCode.Services
 {
@@ -96,17 +97,16 @@ namespace CommonCode.Services
                 return new APIResult<List<SpellingCheckResult>?>(null, false, e.Message);
             }
         }
-
         public LanguageToolItem CreateLanguageToolItem(List<ParagraphData> paragraphs)
         {
-            string tmpText = string.Empty;
+            var stringBuilder = new StringBuilder();
             var ltItem = new LanguageToolItem();
             foreach (var para in paragraphs)
             {
-                ltItem.StartIndexes[para.Id] = tmpText.Length;
-                tmpText += para.Text;
+                ltItem.StartIndexes[para.Id] = stringBuilder.Length;
+                stringBuilder.Append(para.Text);
             }
-            ltItem.Text = tmpText;
+            ltItem.Text = stringBuilder.ToString();
             ltItem.NumberOfParagraphs = paragraphs.Count;
             return ltItem;
         }
