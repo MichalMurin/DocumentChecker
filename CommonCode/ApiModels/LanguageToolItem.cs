@@ -1,9 +1,4 @@
 ﻿using CommonCode.CheckResults;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CommonCode.ApiModels
 {
@@ -12,9 +7,24 @@ namespace CommonCode.ApiModels
     /// </summary>
     public class LanguageToolItem
     {
+        /// <summary>
+        /// Gets or sets the text of the paragraphs.
+        /// </summary>
         public string Text { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the number of paragraphs.
+        /// </summary>
         public int NumberOfParagraphs { get; set; } = 0;
+
+        /// <summary>
+        /// Gets or sets the list of spelling check results.
+        /// </summary>
         public List<SpellingCheckResult>? Result { get; set; }
-        public Dictionary<string,int> StartIndexes { get; set; } = new Dictionary<string, int>();
+
+        /// <summary>
+        /// Gets or sets the dictionary of start indexes for each paragraph. key = paragraph ID, value = start index in text
+        /// </summary>
+        public Dictionary<string, int> StartIndexes { get; set; } = new Dictionary<string, int>();
     }
 }

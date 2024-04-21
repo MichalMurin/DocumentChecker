@@ -7,19 +7,32 @@ using System.Text;
 
 namespace CommonCode.Services
 {
-    public class SpellingApiService: ISpellingApiService
+    /// <summary>
+    /// Service for interacting with the Spelling API.
+    /// </summary>
+    public class SpellingApiService : ISpellingApiService
     {
         /// <summary>
-        /// Http klient pre posielanie API requestov
+        /// Http client for sending API requests.
         /// </summary>
         private readonly HttpClient _httpClient;
         private readonly string _apiBaseAddress = "https://localhost:7200";
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SpellingApiService"/> class.
+        /// </summary>
         public SpellingApiService()
         {
             _httpClient = new HttpClient();
             _httpClient.BaseAddress = new System.Uri(_apiBaseAddress);
         }
+
+        /// <summary>
+        /// Processes a successful API response.
+        /// </summary>
+        /// <param name="response">The HTTP response message.</param>
+        /// <param name="priority">The priority of the spelling check.</param>
+        /// <returns>The API result containing the spelling check results.</returns>
         private async Task<APIResult<List<SpellingCheckResult>?>> ProcessSuccessfulRepsonse(HttpResponseMessage response, int priority)
         {
             var result = await response.Content.ReadFromJsonAsync<List<SpellingCheckResult>>();
@@ -30,6 +43,13 @@ namespace CommonCode.Services
             return new APIResult<List<SpellingCheckResult>?>(result, true, null);
         }
 
+        /// <summary>
+        /// Checks the given text using the LanguageTool API.
+        /// </summary>
+        /// <param name="text">The text to check.</param>
+        /// <param name="priority">The priority of the spelling check.</param>
+        /// <param name="disabledRules">The list of disabled rules.</param>
+        /// <returns>The API result containing the spelling check results.</returns>
         public async Task<APIResult<List<SpellingCheckResult>?>> CheckCmdLanguageTool(string text, int priority, List<string>? disabledRules = null)
         {
             if (string.IsNullOrEmpty(text))
@@ -64,6 +84,12 @@ namespace CommonCode.Services
             }
         }
 
+        /// <summary>
+        /// Checks the given text for prepositions.
+        /// </summary>
+        /// <param name="text">The text to check.</param>
+        /// <param name="priority">The priority of the spelling check.</param>
+        /// <returns>The API result containing the spelling check results.</returns>
         public async Task<APIResult<List<SpellingCheckResult>?>> CheckPrepositions(string text, int priority)
         {
             if (string.IsNullOrEmpty(text))
@@ -97,6 +123,12 @@ namespace CommonCode.Services
                 return new APIResult<List<SpellingCheckResult>?>(null, false, e.Message);
             }
         }
+
+        /// <summary>
+        /// Creates a LanguageTool item from the given paragraphs.
+        /// </summary>
+        /// <param name="paragraphs">The list of paragraphs.</param>
+        /// <returns>The created LanguageTool item.</returns>
         public LanguageToolItem CreateLanguageToolItem(List<ParagraphData> paragraphs)
         {
             var stringBuilder = new StringBuilder();

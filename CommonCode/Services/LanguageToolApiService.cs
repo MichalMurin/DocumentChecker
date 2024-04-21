@@ -2,58 +2,46 @@
 using CommonCode.CheckResults;
 using CommonCode.Interfaces;
 using CommonCode.ReturnValues;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http.Json;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 using LanguageToolParagraph = (int startIndex, CommonCode.ApiModels.LanguageToolItem ltItem);
 
 namespace CommonCode.Services
 {
+    /// <summary>
+    /// Represents a service for interacting with the LanguageTool API.
+    /// </summary>
     public class LanguageToolApiService : ILanguageToolApiService
     {
         private readonly HttpClient _httpClient;
         private readonly string _apiBaseAddress = "https://api.languagetoolplus.com/v2/check";
         private const int MAX_NUMBER_OF_REQUEST_PER_MINUTE = 20;
         private const int MAX_NUMBER_OF_CHARACTERS_PER_MINUTE = 75_000;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LanguageToolApiService"/> class.
+        /// </summary>
         public LanguageToolApiService()
         {
             _httpClient = new HttpClient();
-            //_httpClient.BaseAddress = new System.Uri(_apiBaseAddress);
         }
+
+        /// <summary>
+        /// Checks the specified text using the LanguageTool API.
+        /// </summary>
+        /// <param name="text">The text to be checked.</param>
+        /// <returns>A list of spelling check results, or null if an error occurred.</returns>
         public async Task<List<SpellingCheckResult>?> CheckTextViaLanguageTool(string text)
         {
-            //try
-            //{
-            //    var res = await _httpClient.GetFromJsonAsync<List<LanguageToolCheckResult>>($"api/languageToolCheck/checkText/{text}");
-            //    return res;
-            //}
-            //catch (HttpRequestException e)
-            //{
-            //    Console.WriteLine($"HttpRequestException was thrown during calling api for LanguageTool check: {e}");
-            //    return null;
-            //}
-            //catch (Exception e)
-            //{
-            //    Console.WriteLine($"Error occured during calling api for LanguageTool check: {e}");
-            //    throw;
-            //}
-
-
-
             string jsonResult = string.Empty;
             try
             {
                 // Prepare form data
                 var formData = new Dictionary<string, string>
-                {
-                    { "text", text },
-                    { "language", "sk-SK" },
-                    { "enabledOnly", "false" }
-                };
+                    {
+                        { "text", text },
+                        { "language", "sk-SK" },
+                        { "enabledOnly", "false" }
+                    };
 
                 // Create form content
                 var formContent = new FormUrlEncodedContent(formData);
@@ -79,11 +67,15 @@ namespace CommonCode.Services
             {
                 Console.WriteLine($"Exception: {ex.Message}");
             }
-            var ltResult =  JsonSerializer.Deserialize<LanguageToolApiResult>(jsonResult);
+            var ltResult = JsonSerializer.Deserialize<LanguageToolApiResult>(jsonResult);
             return LanguageToolParser.TransformLtResultToCheckResult(ltResult);
-
         }
 
+        /// <summary>
+        /// Creates LanguageTool items for the specified paragraphs.
+        /// </summary>
+        /// <param name="paragraphs">The list of paragraphs.</param>
+        /// <returns>A dictionary containing LanguageTool paragraphs.</returns>
         public Dictionary<string, LanguageToolParagraph> CreateLanguageToolItems(List<ParagraphData> paragraphs)
         {
             var lTItems = new Dictionary<string, LanguageToolParagraph>();
