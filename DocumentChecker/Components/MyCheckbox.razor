@@ -64,26 +64,17 @@
     /// <summary>
     /// The disabled state of the checkbox.
     /// </summary>
-    private bool _disabled = false;
-
-    /// <summary>
-    /// Gets or sets the disabled state of the checkbox.
-    /// </summary>
     [Parameter]
-    public bool Disabled 
-    { 
-        get => _disabled;
-        set
-        {
-            if (value)
-            {
-                color = "bg-pallette-disabled-black";
-            }
-            else
-            {
-                color = "bg-pallette-secondary-black";
-            }
-            _disabled = value;
-        }
+    public bool Disabled { get; set; }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        UpdateColor();
+    }
+
+    private void UpdateColor()
+    {
+        color = Disabled ? "bg-pallette-disabled-black" : "bg-pallette-secondary-black";
     }
 }
