@@ -1,10 +1,15 @@
 ﻿using Microsoft.AspNetCore.Components;
-using Microsoft.JSInterop;
 
 namespace DocumentChecker.Pages
 {
-    public abstract class BaseJsPage: ComponentBase
+    /// <summary>
+    /// Represents a base class for pages.
+    /// </summary>
+    public abstract class BaseJsPage : ComponentBase
     {
+        /// <summary>
+        /// Called when the start button is clicked.
+        /// </summary>
         public abstract void OnStartClick();
     }
 }

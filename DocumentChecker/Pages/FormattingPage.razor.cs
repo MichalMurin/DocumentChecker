@@ -1,7 +1,5 @@
-﻿using CommonCode.ReturnValues;
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.JSInterop;
 using DocumentChecker.JsConnectors;
 using CommonCode.Services.DataServices;
 using CommonCode.Deffinitions;
@@ -9,16 +7,34 @@ using System.Text.Json;
 
 namespace DocumentChecker.Pages
 {
+    /// <summary>
+    /// Represents the formatting page of the document checker.
+    /// </summary>
     public partial class FormattingPage
     {
         [Inject]
         private FormattingPageDataService FormattingPageDataService { get; set; } = default!;
         [Inject]
         public CommonJsConnectorService JsConnector { get; set; } = default!;
+
+        /// <summary>
+        /// The placeholder for the font name.
+        /// </summary>
         private const string FORNT_NAME_PLACE_HOLDER = "Arial";
+
+        /// <summary>
+        /// Gets or sets a value indicating whether there is an error.
+        /// </summary>
         public bool IsError { get; set; } = false;
+
+        /// <summary>
+        /// Gets or sets the error message.
+        /// </summary>
         public string ErrorMessage { get; set; } = string.Empty;
 
+        /// <summary>
+        /// Handles the click event when the import button is clicked.
+        /// </summary>
         private async Task OnImportClick()
         {
             var x = Deffinitions.AlignmentDict.Values;
@@ -26,6 +42,11 @@ namespace DocumentChecker.Pages
             Console.WriteLine("Import clicked - triggering file import");
             await JsConnector.TriggerImport("filePicker");
         }
+
+        /// <summary>
+        /// Handles the file import event.
+        /// </summary>
+        /// <param name="e">The event arguments containing the imported file.</param>
         private async Task ImportFile(InputFileChangeEventArgs e)
         {
             var file = e.File;
@@ -39,6 +60,10 @@ namespace DocumentChecker.Pages
                 FormattingPageDataService.CopyFrom(NewDataService);
             }
         }
+
+        /// <summary>
+        /// Handles the click event when the export button is clicked.
+        /// </summary>
         public async Task OnExportClick()
         {
             var memoryStream = new MemoryStream();
@@ -54,6 +79,10 @@ namespace DocumentChecker.Pages
             var filename = "formatovanie.json";
             await JsConnector.SaveFile(url, filename);
         }
+
+        /// <summary>
+        /// Handles the click event when the start button is clicked.
+        /// </summary>
         public override void OnStartClick()
         {
             // skontrolovat paragrafy
@@ -63,6 +92,12 @@ namespace DocumentChecker.Pages
             }
         }
 
+        /// <summary>
+        /// Validates the formatting page data.
+        /// </summary>
+        /// <param name="data">The formatting page data to validate.</param>
+        /// <param name="errorMessage">The error message to display if validation fails.</param>
+        /// <returns>True if the data is valid; otherwise, false.</returns>
         private bool ValidateData(FormattingPageDataService data, string errorMessage)
         {
             IsError = false;
@@ -85,6 +120,10 @@ namespace DocumentChecker.Pages
             }
         }
 
+        /// <summary>
+        /// Shows an error message.
+        /// </summary>
+        /// <param name="message">The error message to display.</param>
         private void ShowError(string message)
         {
             IsError = true;

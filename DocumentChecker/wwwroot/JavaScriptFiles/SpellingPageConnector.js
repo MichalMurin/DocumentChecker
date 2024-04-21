@@ -1,8 +1,11 @@
-﻿//var PARAGRAPHS = [];
-
-
-
+﻿/**
+ * Represents the spelling connector object.
+ */
 window.spellingConnector = {
+    /**
+     * Collects all paragraphs in the document.
+     * @returns {Array} The list of paragraphs.
+     */
     collectAllParagraphs: async () => {
         let resultList = [];
         await Word.run(async (context) => {
@@ -24,9 +27,19 @@ window.spellingConnector = {
         console.log(JSON.stringify(resultList));
         return resultList;
     },
+
+    /**
+     * Selects a paragraph at the specified index.
+     * @param {number} index - The index of the paragraph to select.
+     */
     selectParagraphAtIndex: async (index) => {
         await selectParagraph(index);
     },
+
+    /**
+     * Replaces the selected text with the specified text.
+     * @param {string} text - The text to replace with.
+     */
     replaceSelectedText: async (text) => {
         console.log('Starting text replacement');
         await Word.run(async (context) => {

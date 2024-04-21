@@ -3,22 +3,26 @@ using CommonCode.CheckResults;
 using CommonCode.Interfaces;
 using CommonCode.Models;
 using CommonCode.ReturnValues;
-using CommonCode.Services;
 using CommonCode.Services.DataServices;
 using DocumentChecker.JsConnectors;
 using Microsoft.AspNetCore.Components;
-using System.Diagnostics;
-using System.Dynamic;
 using System.Text.RegularExpressions;
 using static CommonCode.Deffinitions.Deffinitions;
 namespace DocumentChecker.Pages.ResultPages
 {
-    public partial class SpellingResultPage: BaseResultPage
+    /// <summary>
+    /// Represents the spelling result page.
+    /// </summary>
+    public partial class SpellingResultPage : BaseResultPage
     {
         [Inject]
         public SpellingPageConnectorService JsConnector { get; set; } = default!;
         [Inject]
         public ISpellingApiService SpellingApiService { get; set; } = default!;
+
+        /// <summary>
+        /// Gets or sets the data service for the spelling page.
+        /// </summary>
         protected override SpellingPageDataService DataService
         {
             get
@@ -32,6 +36,11 @@ namespace DocumentChecker.Pages.ResultPages
         private int _currentIndex = 0;
         private List<SpellingCheckResult> _currentSpellingResult = new List<SpellingCheckResult>();
 
+        /// <summary>
+        /// Gets the scan result for the spelling page.
+        /// </summary>
+        /// <param name="isStart">Indicates if the scan is starting.</param>
+        /// <returns>The scan result.</returns>
         protected override async Task<ScanReturnValue> GetScanResult(bool isStart)
         {
             HideError();
@@ -47,6 +56,13 @@ namespace DocumentChecker.Pages.ResultPages
             return await StartCheck(_currentIndex);
         }
 
+        /// <summary>
+        /// Handles the API spelling check for a paragraph.
+        /// </summary>
+        /// <param name="resultsList">The list to store the spelling check results.</param>
+        /// <param name="paragraph">The paragraph to check.</param>
+        /// <param name="checkFunction">The function to perform the spelling check.</param>
+        /// <returns>True if the spelling check is successful, false otherwise.</returns>
         private async Task<bool> HandleApiSpellingCheck(List<SpellingCheckResult> resultsList, ParagraphData paragraph,
             Func<ParagraphData, Task<APIResult<List<SpellingCheckResult>?>>> checkFunction)
         {
@@ -66,6 +82,11 @@ namespace DocumentChecker.Pages.ResultPages
             }
         }
 
+        /// <summary>
+        /// Starts the spelling check for a paragraph.
+        /// </summary>
+        /// <param name="paragraphIndex">The index of the paragraph to start the check.</param>
+        /// <returns>The scan result.</returns>
         private async Task<ScanReturnValue> StartCheck(int paragraphIndex)
         {
             if (_paragraphs is not null && paragraphIndex < _paragraphs.Count)
@@ -93,7 +114,7 @@ namespace DocumentChecker.Pages.ResultPages
 
                     if (DataService.Rules.Count > 0 && DataService.CheckOwnRules)
                     {
-                        tmpList =  CheckOwnRules(_paragraphs[i]);
+                        tmpList = CheckOwnRules(_paragraphs[i]);
                         if (tmpList is not null)
                         {
                             _currentSpellingResult.AddRange(tmpList);
@@ -118,6 +139,9 @@ namespace DocumentChecker.Pages.ResultPages
             };
         }
 
+        /// <summary>
+        /// Fills the errors in the data service.
+        /// </summary>
         protected override void FillErrors()
         {
             if (_currentSpellingResult.Count > 0)
@@ -141,6 +165,11 @@ namespace DocumentChecker.Pages.ResultPages
             }
         }
 
+        /// <summary>
+        /// Checks the language tool in a paragraph.
+        /// </summary>
+        /// <param name="paragraph">The paragraph to check.</param>
+        /// <returns>The API result of the language tool check.</returns>
         private async Task<APIResult<List<SpellingCheckResult>?>> CheckLanguageToolInParagraph(ParagraphData paragraph)
         {
             if (_ltItem is null)
@@ -170,6 +199,11 @@ namespace DocumentChecker.Pages.ResultPages
             return new APIResult<List<SpellingCheckResult>?>(relevantCheckResults, true, null);
         }
 
+        /// <summary>
+        /// Checks the own rules in a paragraph.
+        /// </summary>
+        /// <param name="paragraph">The paragraph to check.</param>
+        /// <returns>The list of spelling check results.</returns>
         private List<SpellingCheckResult>? CheckOwnRules(ParagraphData paragraph)
         {
             if (DataService.Rules.Count > 0)
@@ -202,12 +236,22 @@ namespace DocumentChecker.Pages.ResultPages
             return null;
         }
 
-
+        /// <summary>
+        /// Checks the prepositions in a paragraph.
+        /// </summary>
+        /// <param name="paragraph">The paragraph to check.</param>
+        /// <returns>The API result of the preposition check.</returns>
         private async Task<APIResult<List<SpellingCheckResult>?>> CheckPrepositionInParagraph(ParagraphData paragraph)
         {
-            return await SpellingApiService.CheckPrepositions(text: paragraph.Text, DataService.PrepositionCheckPriority);            
+            return await SpellingApiService.CheckPrepositions(text: paragraph.Text, DataService.PrepositionCheckPriority);
         }
 
+        /// <summary>
+        /// Corrects the paragraph based on the spelling check results.
+        /// </summary>
+        /// <param name="paragraph">The paragraph to correct.</param>
+        /// <param name="checkResults">The spelling check results.</param>
+        /// <returns>The corrected paragraph.</returns>
         private string CorrectParagraph(string paragraph, List<SpellingCheckResult> checkResults)
         {
             string result = paragraph;
@@ -215,7 +259,7 @@ namespace DocumentChecker.Pages.ResultPages
             var groupedErrors = checkResults.GroupBy(e => e.Index).OrderByDescending(g => g.Key);
             foreach (var group in groupedErrors)
             {
-                // Sort errors in each group by priority and correct only error with heighest priority
+                // Sort errors in each group by priority and correct only error with highest priority
                 var errors = group.OrderBy(e => e.Priority);
                 var err = errors.First();
                 if (err.Index + err.Length > paragraph.Length)
@@ -228,6 +272,10 @@ namespace DocumentChecker.Pages.ResultPages
             return result;
         }
 
+        /// <summary>
+        /// Tries to correct the paragraph based on the found errors.
+        /// </summary>
+        /// <returns>True if the paragraph is corrected, false otherwise.</returns>
         protected override async Task<bool> TryToCorrectParagraph()
         {
             if (_paragraphs is not null)
@@ -237,7 +285,7 @@ namespace DocumentChecker.Pages.ResultPages
                 {
                     await JsConnector.ReplaceSelectedText(CorrectParagraph(_paragraphs[_currentIndex].Text, errorsToCorect));
                 }
-                // retruning true even there was no error to correct
+                // returning true even if there was no error to correct
                 return true;
             }
             else
@@ -246,6 +294,10 @@ namespace DocumentChecker.Pages.ResultPages
             }
         }
 
+        /// <summary>
+        /// Sets the displayed texts based on the check state.
+        /// </summary>
+        /// <param name="state">The check state.</param>
         protected override void SetDisplayedTexts(CheckState state)
         {
             switch (state)
@@ -264,17 +316,21 @@ namespace DocumentChecker.Pages.ResultPages
             }
         }
 
+        /// <summary>
+        /// Shows the API error message.
+        /// </summary>
         private void ShowApiErrorMessage()
         {
             DataService.ErrorMessage = "Nastala chyba pri komunikácii s API serverom!";
             DataService.IsError = true;
         }
 
+        /// <summary>
+        /// Hides the error message.
+        /// </summary>
         private void HideError()
         {
             DataService.IsError = false;
         }
-
-
     }
 }

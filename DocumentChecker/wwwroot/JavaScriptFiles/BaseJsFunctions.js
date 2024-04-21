@@ -1,5 +1,8 @@
-﻿
-
+﻿/**
+ * Saves a file with the given URI and filename.
+ * @param {string} uri - The URI of the file to be saved.
+ * @param {string} filename - The desired filename for the saved file.
+ */
 window.saveAsFile = (uri, filename) => {
     var link = document.createElement('a');
     link.href = uri;
@@ -9,10 +12,18 @@ window.saveAsFile = (uri, filename) => {
     document.body.removeChild(link);
 }
 
+/**
+ * Triggers the import action for the element with the specified ID.
+ * @param {string} elemntId - The ID of the element to trigger the import action.
+ */
 window.TriggerImport = (elemntId) => {
     document.getElementById(elemntId).click();
 }
 
+/**
+ * Inserts the specified text at the end of the document body.
+ * @param {string} text - The text to be inserted.
+ */
 window.InsertText = async (text) => {
     await Word.run(async (context) => {
         // Create a proxy object for the document body.
@@ -23,7 +34,7 @@ window.InsertText = async (text) => {
         // Synchronize the document state by executing the queued commands,
         // and return a promise to indicate task completion.
         await context.sync();
-        console.log('Inserted text ');
+        console.log('Inserted text');
     })
         .catch(function (error) {
             console.log('Error: ' + JSON.stringify(error));
@@ -33,6 +44,10 @@ window.InsertText = async (text) => {
         });
 }
 
+/**
+ * Selects the paragraph at the specified index.
+ * @param {number} index - The index of the paragraph to be selected.
+ */
 async function selectParagraph(index) {
     console.log("Selecting paragraph at index " + index);
     await Word.run(async (context) => {
@@ -43,4 +58,3 @@ async function selectParagraph(index) {
         await context.sync();
     });
 }
-

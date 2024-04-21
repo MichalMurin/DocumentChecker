@@ -10,15 +10,37 @@
 
 
 @code {
+    /// <summary>
+    /// The color of the checkbox.
+    /// </summary>
     private string color = "bg-pallette-secondary-black";
+
+    /// <summary>
+    /// The description of the checkbox.
+    /// </summary>
     [Parameter]
     public string Description { get; set; } = "Description";
+
+    /// <summary>
+    /// The text of the checkbox.
+    /// </summary>
     [Parameter]
     public string Text { get; set; } = "Text";
+
+    /// <summary>
+    /// The ID of the checkbox.
+    /// </summary>
     [Parameter]
     public string Id { get; set; } = "checkbox";
 
+    /// <summary>
+    /// The checked state of the checkbox.
+    /// </summary>
     private bool _checked = true;
+
+    /// <summary>
+    /// Gets or sets the checked state of the checkbox.
+    /// </summary>
     [Parameter]
     public bool Checked
     {
@@ -33,14 +55,24 @@
         }
     }
 
+    /// <summary>
+    /// The event that is triggered when the checked state of the checkbox changes.
+    /// </summary>
     [Parameter]
     public EventCallback<bool> CheckedChanged { get; set; }
 
+    /// <summary>
+    /// The disabled state of the checkbox.
+    /// </summary>
     private bool _disabled = false;
 
+    /// <summary>
+    /// Gets or sets the disabled state of the checkbox.
+    /// </summary>
     [Parameter]
     public bool Disabled 
-    { get => _disabled;
+    { 
+        get => _disabled;
         set
         {
             if (value)

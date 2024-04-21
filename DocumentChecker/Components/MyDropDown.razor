@@ -12,14 +12,27 @@
 
 @code {
 
+    /// <summary>
+    /// Gets or sets the text to display above the drop-down.
+    /// </summary>
     [Parameter]
     public string Text { get; set; } = "Text";
 
+    /// <summary>
+    /// Gets or sets the items to display in the drop-down.
+    /// </summary>
     [Parameter]
     public IEnumerable<T> Items { get; set; } = default!;
 
+    /// <summary>
+    /// Gets or sets the selected item in the drop-down.
+    /// </summary>
     [Parameter]
     public T SelectedItem { get; set; } = default!;
+
+    /// <summary>
+    /// Gets or sets the event callback for when the selected item changes.
+    /// </summary>
     [Parameter]
     public EventCallback<T> SelectedItemChanged { get; set; }
 

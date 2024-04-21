@@ -8,11 +8,21 @@
 </li>
 
 @code {
+    /// <summary>
+    /// Gets or sets the icon for the navigation menu item.
+    /// </summary>
     [Parameter]
     public string Icon { get; set; } = "fa-solid fa-house-chimney";
+
+    /// <summary>
+    /// Gets or sets the text for the navigation menu item.
+    /// </summary>
     [Parameter]
     public string Text { get; set; } = "Domov";
+
+    /// <summary>
+    /// Gets or sets the link for the navigation menu item.
+    /// </summary>
     [Parameter]
     public string Link { get; set; } = "/";
-
 }

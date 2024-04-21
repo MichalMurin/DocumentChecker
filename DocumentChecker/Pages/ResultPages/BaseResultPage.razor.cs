@@ -3,23 +3,55 @@ using CommonCode.Models;
 using CommonCode.ReturnValues;
 using CommonCode.Services.DataServices;
 using Microsoft.AspNetCore.Components;
-using System.Runtime.CompilerServices;
 using static CommonCode.Deffinitions.Deffinitions;
 
 namespace DocumentChecker.Pages.ResultPages
 {
-    public abstract partial class BaseResultPage: ComponentBase
+    /// <summary>
+    /// Base class for result pages.
+    /// </summary>
+    public abstract partial class BaseResultPage : ComponentBase
     {
+        /// <summary>
+        /// Gets or sets a value indicating whether to start the scan.
+        /// </summary>
         [Parameter]
         public bool StartScan { get; set; } = false;
+
+        /// <summary>
+        /// Gets or sets the data service factory.
+        /// </summary>
         [Inject]
         protected IDataServiceFactory DataServiceFactory { get; set; } = default!;
+
+        /// <summary>
+        /// Gets the data service.
+        /// </summary>
         protected abstract BaseDataService DataService { get; }
+
+        /// <summary>
+        /// Gets or sets the current scan result.
+        /// </summary>
         protected ScanReturnValue? CurrentScan { get; set; }
+
+        /// <summary>
+        /// Gets or sets the header text.
+        /// </summary>
         public string Header { get; set; } = "Kontrola";
+
+        /// <summary>
+        /// Gets or sets the text result.
+        /// </summary>
         public string TextResult { get; set; } = "Kontroluje sa dokument...";
+
+        /// <summary>
+        /// Gets or sets the error name.
+        /// </summary>
         protected virtual string Errorname { get; set; } = "Chyba!";
 
+        /// <summary>
+        /// Initializes the component asynchronously.
+        /// </summary>
         protected async override Task OnInitializedAsync()
         {
             await base.OnInitializedAsync();
@@ -30,6 +62,10 @@ namespace DocumentChecker.Pages.ResultPages
                 await ScanDocument(true);
             }
         }
+
+        /// <summary>
+        /// Handles the click event when the ignore button is clicked.
+        /// </summary>
         public virtual async Task OnIgnoreClick()
         {
             if (CurrentScan is not null)
@@ -45,6 +81,10 @@ namespace DocumentChecker.Pages.ResultPages
                 SetDisplayedTexts(CheckState.UNEXPECTED_ERROR);
             }
         }
+
+        /// <summary>
+        /// Handles the click event when the correct button is clicked.
+        /// </summary>
         public virtual async Task OnCorrectClick()
         {
             // perform a correction on a paragraph and run a scan again
@@ -63,10 +103,19 @@ namespace DocumentChecker.Pages.ResultPages
                 }
             }
         }
+
+        /// <summary>
+        /// Handles the ignored paragraph.
+        /// </summary>
         protected virtual async Task HandleIgnoredParagraph()
         {
             await Task.CompletedTask;
         }
+
+        /// <summary>
+        /// Scans the document.
+        /// </summary>
+        /// <param name="start">Indicates whether to start a new scan.</param>
         protected virtual async Task ScanDocument(bool start = false)
         {
             DataService.FoundErrors.Clear();
@@ -82,6 +131,10 @@ namespace DocumentChecker.Pages.ResultPages
                 SetDisplayedTexts(CheckState.FINISHED);
             }
         }
+
+        /// <summary>
+        /// Fills the errors found during the scan.
+        /// </summary>
         protected virtual void FillErrors()
         {
             if (CurrentScan is not null)
@@ -100,6 +153,11 @@ namespace DocumentChecker.Pages.ResultPages
                 }
             }
         }
+
+        /// <summary>
+        /// Sets the displayed texts based on the check state.
+        /// </summary>
+        /// <param name="state">The check state.</param>
         protected virtual void SetDisplayedTexts(CheckState state)
         {
             switch (state)
@@ -126,10 +184,22 @@ namespace DocumentChecker.Pages.ResultPages
                     break;
             }
         }
+
+        /// <summary>
+        /// Gets the error string for the specified error type.
+        /// </summary>
+        /// <param name="errorType">The error type.</param>
+        /// <returns>The error string.</returns>
         protected virtual string GetErrorString(string errorType)
         {
             return "Neznáma chyba";
         }
+
+        /// <summary>
+        /// Gets the warning message for the specified error type.
+        /// </summary>
+        /// <param name="errorType">The error type.</param>
+        /// <returns>The warning message.</returns>
         protected virtual string GetWarningMessageForError(string errorType)
         {
             if (WarningMessages.ContainsKey(errorType))
@@ -138,7 +208,18 @@ namespace DocumentChecker.Pages.ResultPages
             }
             return string.Empty;
         }
+
+        /// <summary>
+        /// Tries to correct the current paragraph.
+        /// </summary>
+        /// <returns>A task representing the asynchronous operation.</returns>
         protected abstract Task<bool> TryToCorrectParagraph();
+
+        /// <summary>
+        /// Gets the scan result.
+        /// </summary>
+        /// <param name="isStart">Indicates whether to start a new scan.</param>
+        /// <returns>The scan result.</returns>
         protected abstract Task<ScanReturnValue> GetScanResult(bool isStart);
     }
 }

@@ -1,5 +1,4 @@
-﻿
-<button class=" rounded-lg text-white hover:bg-pallette-hover-black bg-black transition duration-300 text-white text-center px-4 py-2 @Classes" @onclick=OnClick disabled=@Disabled>
+﻿<button class=" rounded-lg text-white hover:bg-pallette-hover-black bg-black transition duration-300 text-white text-center px-4 py-2 @Classes" @onclick=OnClick disabled=@Disabled>
     <div class="flex flex-row items-center justify-center py-2 px-1 gap-4">
         <span class="text-2xl">@ButtonContent</span>
         <i class="text-2xl @Icon"></i>
@@ -7,18 +6,33 @@
 </button>
 
 @code {
+    /// <summary>
+    /// Gets or sets the content of the button.
+    /// </summary>
     [Parameter]
     public string ButtonContent { get; set; } = "Button";
 
+    /// <summary>
+    /// Gets or sets the icon of the button.
+    /// </summary>
     [Parameter]
     public string Icon { get; set; } = "fa-brands fa-fonticons-fi";    
 
+    /// <summary>
+    /// Gets or sets the additional classes for the button.
+    /// </summary>
     [Parameter]
     public string Classes { get; set; } = string.Empty;
 
+    /// <summary>
+    /// Gets or sets the event callback for the button click.
+    /// </summary>
     [Parameter]
     public EventCallback OnClick { get; set; }
 
+    /// <summary>
+    /// Gets or sets a value indicating whether the button is disabled.
+    /// </summary>
     [Parameter]
     public bool Disabled { get; set; } = false;
 }

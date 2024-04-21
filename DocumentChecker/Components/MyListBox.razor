@@ -12,7 +12,7 @@
                         <span class="mx-2">
                             @item!.Name
                         </span>
-                    }                    
+                    }
                     @if (!string.IsNullOrEmpty(item!.WarningMessage))
                     {
                         <span class="mx-2 text-red-400">
@@ -25,8 +25,7 @@
                             @item!.Description
                         </span>
                     }
-                </div>
-                
+                </div>                
                 @if (item!.CanBeDeleted)
                 {
                     <button class="text-white text-center px-4" @onclick="() => Items.Remove(item)">
@@ -41,8 +40,15 @@
 
 @code
 {
+    /// <summary>
+    /// The list of items.
+    /// </summary>
     [Parameter]
     public List<TItem> Items { get; set; } = default!;
+    
+    /// <summary>
+    /// The header text.
+    /// </summary>
     [Parameter]
     public string Header { get; set; } = "Nadpis";
 }
