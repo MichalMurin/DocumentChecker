@@ -2,15 +2,21 @@
 using CommonCode.CheckResults;
 using SpelingCheckAPI.Interfaces;
 using System.Diagnostics;
-using System.Reflection;
 using System.Text;
 using System.Text.Json;
-using static System.Net.Mime.MediaTypeNames;
-
 namespace SpelingCheckAPI.Services
 {
-    public class LanguageToolService: ILanguageToolService
+    /// <summary>
+    /// Service class for running grammar checks using LanguageTool.
+    /// </summary>
+    public class LanguageToolService : ILanguageToolService
     {
+        /// <summary>
+        /// Runs a grammar check on the given text.
+        /// </summary>
+        /// <param name="text">The text to be checked.</param>
+        /// <param name="disabledRules">Optional list of disabled rules.</param>
+        /// <returns>A list of spelling check results.</returns>
         public async Task<List<SpellingCheckResult>?> RunGrammarCheck(string text, List<string>? disabledRules = null)
         {
             string jasonResult;
@@ -61,53 +67,5 @@ namespace SpelingCheckAPI.Services
             var languageToolResult = JsonSerializer.Deserialize<LanguageToolApiResult>(jasonResult);
             return LanguageToolParser.TransformLtResultToCheckResult(languageToolResult);
         }
-
-        ///////////////////////////
-        ///
-        //public async Task<LanguageToolResult?> RunGrammarCheckViaAPi(string text)
-        //{
-        //    // API endpoint
-        //    string apiUrl = "https://api.languagetoolplus.com/v2/check";
-        //    string result = string.Empty;
-        //    // Create an instance of HttpClient
-        //    using (HttpClient client = new HttpClient())
-        //    {
-        //        try
-        //        {
-        //            // Prepare form data
-        //            var formData = new Dictionary<string, string>
-        //        {
-        //            { "text", text },
-        //            { "language", "sk-SK" },
-        //            { "enabledOnly", "false" }
-        //        };
-
-        //            // Create form content
-        //            var formContent = new FormUrlEncodedContent(formData);
-
-        //            // Make a POST request
-        //            HttpResponseMessage response = await client.PostAsync(apiUrl, formContent);
-
-        //            // Check if the request was successful (status code 200-299)
-        //            if (response.IsSuccessStatusCode)
-        //            {
-        //                // Read the response content as a string
-        //                string apiResponse = await response.Content.ReadAsStringAsync();
-        //                result = apiResponse;
-        //                // Process the API response
-        //                Console.WriteLine(apiResponse);
-        //            }
-        //            else
-        //            {
-        //                Console.WriteLine($"Error: {response.StatusCode} - {response.ReasonPhrase}");
-        //            }
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            Console.WriteLine($"Exception: {ex.Message}");
-        //        }
-        //        return JsonSerializer.Deserialize<LanguageToolResult>(result);
-        //    }
-        //}
     }
 }

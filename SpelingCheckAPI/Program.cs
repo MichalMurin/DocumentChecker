@@ -47,9 +47,7 @@ namespace SpelingCheckAPI
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Spelling Check API v1");
             });
             app.MapControllers();
-
             app.UseHttpsRedirection();
-
             app.UseAuthorization();
             app.UseCors(AllowAllOrigins);
             app.Run();
