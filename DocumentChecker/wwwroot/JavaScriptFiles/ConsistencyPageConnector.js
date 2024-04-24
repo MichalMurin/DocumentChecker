@@ -6,7 +6,7 @@ var dataService = null;
 /**
  * Represents the current paragraph.
  */
-var currentParagraph = null;
+var currentParagraphGlobal = null;
 
 /**
  * Represents the consistency parameters to load.
@@ -117,22 +117,32 @@ window.consistencyConnector = {
       "Handling ingored paragraph " + ignoredId + " with errors: ",
       foundErrors
     );
+    console.log("Current paragraph: ", currentParagraphGlobal);
     if (
-      currentParagraph !== null &&
-      ignoredId === currentParagraph.uniqueLocalId
+      currentParagraphGlobal !== null &&
+      ignoredId === currentParagraphGlobal.uniqueLocalId
     ) {
       // handling ignored paragraph if the previous one was
       foundErrors.forEach((error) => {
         switch (error) {
           case consistencyErrorTypes.CAPTION_MISSING:
+            console.log("Handling caption missing - ignored");
+            console.log(
+              "previous: ",
+              previousParagraphs[previousParagraphsKeys.PREVIOUS_PARAGRAPH]
+            );
             // setting ignored paragraph as previous paragraph, so it wont be expecting any caption again
             previousParagraphs[previousParagraphsKeys.PREVIOUS_PARAGRAPH] =
-              currentParagraph;
+              currentParagraphGlobal;
+            console.log(
+              "previous: ",
+              previousParagraphs[previousParagraphsKeys.PREVIOUS_PARAGRAPH]
+            );
             break;
           case consistencyErrorTypes.INVALID_LIST_CONSISTENCY:
             // setting ignored paragraph as previous paragraph
-            if (!currentParagraph.listOrNullObject.isNullObject) {
-              previousList = currentParagraph.listOrNullObject;
+            if (!currentParagraphGlobal.listOrNullObject.isNullObject) {
+              previousList = currentParagraphGlobal.listOrNullObject;
             }
             break;
           case consistencyErrorTypes.INVALID_HEADING_CONSISTENCY:
@@ -141,10 +151,10 @@ window.consistencyConnector = {
               !foundErrors.includes(
                 consistencyErrorTypes.INVALID_HEADING_CONTINUITY
               ) &&
-              GetNumberOfHeading(currentParagraph) !== null
+              GetNumberOfHeading(currentParagraphGlobal) !== null
             ) {
               previousParagraphs[previousParagraphsKeys.NUMBERED_HEADING] =
-                currentParagraph;
+                currentParagraphGlobal;
             }
             break;
           default:
@@ -334,7 +344,7 @@ function resetAtrributes() {
   previousList = undefined;
   previousParagraphsByStyle = {};
   previousParagraphs = {};
-  currentParagraph = null;
+  currentParagraphGlobal = null;
 }
 
 /**
@@ -369,6 +379,7 @@ async function startConsistencyScan(start) {
     let paragraphTextItem = paragraph.getText();
     await context.sync();
     while (paragraph !== null && !paragraph.isNullObject) {
+      currentParagraphGlobal = paragraph;
       let paragraphText = paragraphTextItem.value.trimEnd();
       paragraph.text = console.log("Checking: ", paragraph);
       console.log("Checking: ", paragraph.text);
