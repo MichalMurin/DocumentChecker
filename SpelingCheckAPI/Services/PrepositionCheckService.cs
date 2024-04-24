@@ -9,19 +9,14 @@ namespace SpelingCheckAPI.Services
     /// <summary>
     /// Service for checking prepositions in text.
     /// </summary>
-    public class PrepositionCheckService : IPrepositionCheckService
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="PrepositionCheckService"/> class.
+    /// </remarks>
+    /// <param name="predictionEnginePool">The prediction engine pool.</param>
+    public partial class PrepositionCheckService(PredictionEnginePool<MLModel_DigramDb.ModelInput, MLModel_DigramDb.ModelOutput> predictionEnginePool) : IPrepositionCheckService
     {
-        private readonly PredictionEnginePool<MLModel_DigramDb.ModelInput, MLModel_DigramDb.ModelOutput> _predictionEnginePool;
-        private readonly string[] _prepositions = { "s", "so", "z", "zo" };
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PrepositionCheckService"/> class.
-        /// </summary>
-        /// <param name="predictionEnginePool">The prediction engine pool.</param>
-        public PrepositionCheckService(PredictionEnginePool<MLModel_DigramDb.ModelInput, MLModel_DigramDb.ModelOutput> predictionEnginePool)
-        {
-            _predictionEnginePool = predictionEnginePool;
-        }
+        private readonly PredictionEnginePool<MLModel_DigramDb.ModelInput, MLModel_DigramDb.ModelOutput> _predictionEnginePool = predictionEnginePool;
+        private readonly string[] _prepositions = ["s", "so", "z", "zo"];
 
         /// <summary>
         /// Checks if a word is instrumental.
@@ -119,24 +114,26 @@ namespace SpelingCheckAPI.Services
             string pattern = $@"\b({string.Join("|", prepositions)})\b\s+(\w+)";
             MatchCollection matches = Regex.Matches(text, pattern, RegexOptions.IgnoreCase);
             var words = new Dictionary<string, List<(string word, int prepositionIndex, int length)>>();
-            foreach (Match match in matches)
+            foreach (Match match in matches.Cast<Match>())
             {
                 string preposition = match.Groups[1].Value;
                 string word = match.Groups[2].Value;
-                if (!words.ContainsKey(preposition))
+                if (!words.TryGetValue(preposition, out List<(string word, int prepositionIndex, int length)>? value))
                 {
-                    words[preposition] = new List<(string word, int prepositionIndex, int length)>();
+                    value = [];
+                    words[preposition] = value;
                 }
                 if (char.IsDigit(word[0]))
                 {
-                    string subText = text.Substring(match.Index + match.Length);
-                    var subMatch = Regex.Match(subText, @"\b\w+\b", RegexOptions.IgnoreCase);
+                    string subText = text[(match.Index + match.Length)..];
+                    var subMatch = RegexToGetSingleWords().Match(subText);
                     if (subMatch.Success)
                     {
                         word = subMatch.Captures[0].Value;
                     }
                 }
-                words[preposition].Add((word, match.Index, match.Length));
+
+                value.Add((word, match.Index, match.Length));
             }
             return words;
         }
@@ -146,21 +143,22 @@ namespace SpelingCheckAPI.Services
         /// </summary>
         /// <param name="preposition">The preposition to change.</param>
         /// <returns>The changed preposition.</returns>
-        private string ChangePreposition(string preposition)
+        private static string ChangePreposition(string preposition)
         {
-            switch (preposition[0])
+            return preposition[0] switch
             {
-                case 's':
-                    return 'z' + preposition.Substring(1);
-                case 'S':
-                    return 'Z' + preposition.Substring(1);
-                case 'z':
-                    return 's' + preposition.Substring(1);
-                case 'Z':
-                    return 'S' + preposition.Substring(1);
-                default:
-                    return preposition;
-            }
+                's' => string.Concat("z", preposition.AsSpan(1)),
+                'S' => string.Concat("Z", preposition.AsSpan(1)),
+                'z' => string.Concat("s", preposition.AsSpan(1)),
+                'Z' => string.Concat("S", preposition.AsSpan(1)),
+                _ => preposition,
+            };
         }
+
+        /// <summary>
+        /// Regular expression to match single words.
+        /// </summary>
+        [GeneratedRegex(@"\b\w+\b", RegexOptions.IgnoreCase, "en-US")]
+        private static partial Regex RegexToGetSingleWords();
     }
 }

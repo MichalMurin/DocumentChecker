@@ -43,16 +43,14 @@ namespace SpelingCheckAPI.Services
                     StandardErrorEncoding = Encoding.UTF8
                 };
 
-                using (var process = new Process { StartInfo = processInfo })
-                {
-                    process.Start();
+                using var process = new Process { StartInfo = processInfo };
+                process.Start();
 
-                    // Read the output
-                    string result = await process.StandardOutput.ReadToEndAsync();
+                // Read the output
+                string result = await process.StandardOutput.ReadToEndAsync();
 
-                    // Optionally, you can handle result and error as needed
-                    jasonResult = result;
-                }
+                // Optionally, you can handle result and error as needed
+                jasonResult = result;
             }
             catch (Exception ex)
             {

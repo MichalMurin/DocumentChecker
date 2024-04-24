@@ -7,20 +7,15 @@ namespace SpelingCheckAPI.Controllers
     /// <summary>
     /// Controller for checking prepositions in text.
     /// </summary>
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="PrepositionCheckController"/> class.
+    /// </remarks>
+    /// <param name="service">The preposition check service.</param>
     [Route("api/prepositionCheck")]
     [ApiController]
-    public class PrepositionCheckController
+    public class PrepositionCheckController(IPrepositionCheckService service)
     {
-        private readonly IPrepositionCheckService _prepositionCheckService;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PrepositionCheckController"/> class.
-        /// </summary>
-        /// <param name="service">The preposition check service.</param>
-        public PrepositionCheckController(IPrepositionCheckService service)
-        {
-            _prepositionCheckService = service;
-        }
+        private readonly IPrepositionCheckService _prepositionCheckService = service;
 
         /// <summary>
         /// Checks prepositions in the given text.

@@ -8,20 +8,15 @@ namespace SpelingCheckAPI.Controllers
     /// <summary>
     /// Controller for performing language tool checks.
     /// </summary>
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="LanguageToolController"/> class.
+    /// </remarks>
+    /// <param name="languageToolService">The language tool service.</param>
     [Route("api/languageToolCheck")]
     [ApiController]
-    public class LanguageToolController
+    public class LanguageToolController(ILanguageToolService languageToolService)
     {
-        private readonly ILanguageToolService _languageToolService;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LanguageToolController"/> class.
-        /// </summary>
-        /// <param name="languageToolService">The language tool service.</param>
-        public LanguageToolController(ILanguageToolService languageToolService)
-        {
-            _languageToolService = languageToolService;
-        }
+        private readonly ILanguageToolService _languageToolService = languageToolService;
 
         /// <summary>
         /// Checks the text using LanguageTool.
