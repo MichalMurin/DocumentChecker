@@ -10,7 +10,7 @@ namespace CommonCode.Services.DataServices
         /// <summary>
         /// Gets or sets the list of own rule models.
         /// </summary>
-        public List<OwnRuleModel> Rules { get; set; } = new List<OwnRuleModel>();
+        public List<OwnRuleModel> Rules { get; set; } = [];
 
         /// <summary>
         /// Gets or sets the list of disabled LanguageTool rules.
@@ -18,7 +18,7 @@ namespace CommonCode.Services.DataServices
         /// <remarks>
         /// The "MORFOLOGIK_RULE_SK_SK" rule is disabled because it is already checked by the Word application itself.
         /// </remarks>
-        public List<string> LanguageToolDisabledRules { get; set; } = new List<string>() { "MORFOLOGIK_RULE_SK_SK" };
+        public List<string> LanguageToolDisabledRules { get; set; } = ["MORFOLOGIK_RULE_SK_SK"];
 
         /// <summary>
         /// Gets or sets a value indicating whether to check prepositions.

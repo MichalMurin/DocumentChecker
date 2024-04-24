@@ -19,6 +19,6 @@ namespace CommonCode.ReturnValues
         /// <summary>
         /// Gets or sets the list of error types found during the scan.
         /// </summary>
-        public List<string> ErrorTypes { get; set; } = new List<string>();
+        public List<string> ErrorTypes { get; set; } = [];
     }
 }

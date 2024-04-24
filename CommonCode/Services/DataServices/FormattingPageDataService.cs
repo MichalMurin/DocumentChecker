@@ -49,9 +49,9 @@ namespace CommonCode.Services.DataServices
         {
             get
             {
-                if (Deffinitions.Deffinitions.AlignmentDict.ContainsKey(AllingmentDispalyed))
+                if (Deffinitions.Deffinitions.AlignmentDict.TryGetValue(AllingmentDispalyed, out string? value))
                 {
-                    return Deffinitions.Deffinitions.AlignmentDict[AllingmentDispalyed];
+                    return value;
                 }
                 else
                 {

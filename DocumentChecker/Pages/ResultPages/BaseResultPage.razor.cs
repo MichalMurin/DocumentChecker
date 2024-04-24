@@ -202,9 +202,9 @@ namespace DocumentChecker.Pages.ResultPages
         /// <returns>The warning message.</returns>
         protected virtual string GetWarningMessageForError(string errorType)
         {
-            if (WarningMessages.ContainsKey(errorType))
+            if (WarningMessages.TryGetValue(errorType, out string? value))
             {
-                return WarningMessages[errorType];
+                return value;
             }
             return string.Empty;
         }

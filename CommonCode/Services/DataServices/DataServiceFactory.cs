@@ -6,18 +6,13 @@ namespace CommonCode.Services.DataServices
     /// <summary>
     /// Represents a factory for creating data services.
     /// </summary>
-    public class DataServiceFactory : IDataServiceFactory
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="DataServiceFactory"/> class.
+    /// </remarks>
+    /// <param name="serviceProvider">The service provider.</param>
+    public class DataServiceFactory(IServiceProvider serviceProvider) : IDataServiceFactory
     {
-        private readonly IServiceProvider _serviceProvider;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DataServiceFactory"/> class.
-        /// </summary>
-        /// <param name="serviceProvider">The service provider.</param>
-        public DataServiceFactory(IServiceProvider serviceProvider)
-        {
-            _serviceProvider = serviceProvider;
-        }
+        private readonly IServiceProvider _serviceProvider = serviceProvider;
 
         /// <summary>
         /// Gets the consistency data service.

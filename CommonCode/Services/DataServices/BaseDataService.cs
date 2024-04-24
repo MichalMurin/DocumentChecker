@@ -10,12 +10,12 @@ namespace CommonCode.Services.DataServices
         /// <summary>
         /// Gets or sets the ignored paragraphs.
         /// </summary>
-        public virtual HashSet<string> IgnoredParagraphs { get; set; } = new HashSet<string>();
+        public virtual HashSet<string> IgnoredParagraphs { get; set; } = [];
 
         /// <summary>
         /// Gets or sets the found errors.
         /// </summary>
-        public virtual List<FoundErrorModel> FoundErrors { get; set; } = new List<FoundErrorModel>();
+        public virtual List<FoundErrorModel> FoundErrors { get; set; } = [];
 
         /// <summary>
         /// Gets or sets a value indicating whether there is an error.

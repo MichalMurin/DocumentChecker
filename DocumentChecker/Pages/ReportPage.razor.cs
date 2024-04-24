@@ -10,7 +10,7 @@
         /// </summary>
         public override void OnStartClick()
         {
-            throw new NotImplementedException();
+            Console.WriteLine("Start button clicked for report.");
         }
     }
 }

@@ -25,6 +25,6 @@ namespace CommonCode.ApiModels
         /// <summary>
         /// Gets or sets the dictionary of start indexes for each paragraph. key = paragraph ID, value = start index in text
         /// </summary>
-        public Dictionary<string, int> StartIndexes { get; set; } = new Dictionary<string, int>();
+        public Dictionary<string, int> StartIndexes { get; set; } = [];
     }
 }

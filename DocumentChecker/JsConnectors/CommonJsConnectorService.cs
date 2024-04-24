@@ -5,18 +5,13 @@ namespace DocumentChecker.JsConnectors
     /// <summary>
     /// Provides common JavaScript interop functionality for the application.
     /// </summary>
-    public class CommonJsConnectorService
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="CommonJsConnectorService"/> class.
+    /// </remarks>
+    /// <param name="jsRuntime">The JavaScript runtime.</param>
+    public class CommonJsConnectorService(IJSRuntime jsRuntime)
     {
-        private readonly IJSRuntime _jsRuntime;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CommonJsConnectorService"/> class.
-        /// </summary>
-        /// <param name="jsRuntime">The JavaScript runtime.</param>
-        public CommonJsConnectorService(IJSRuntime jsRuntime)
-        {
-            _jsRuntime = jsRuntime;
-        }
+        private readonly IJSRuntime _jsRuntime = jsRuntime;
 
         /// <summary>
         /// Saves a file from the specified URL with the given filename.

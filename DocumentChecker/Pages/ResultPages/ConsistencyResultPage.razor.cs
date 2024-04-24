@@ -98,9 +98,9 @@ namespace DocumentChecker.Pages.ResultPages
         /// <returns>The error string.</returns>
         protected override string GetErrorString(string errorType)
         {
-            if (ConsistencyErrors.ContainsKey(errorType))
+            if (ConsistencyErrors.TryGetValue(errorType, out string? value))
             {
-                return ConsistencyErrors[errorType];
+                return value;
             }
             else
             {

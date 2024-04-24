@@ -5,18 +5,13 @@ namespace DocumentChecker.JsConnectors
     /// <summary>
     /// Represents a service for interacting with the spelling page connector.
     /// </summary>
-    public class SpellingPageConnectorService
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="SpellingPageConnectorService"/> class.
+    /// </remarks>
+    /// <param name="jsRuntime">The JS runtime.</param>
+    public class SpellingPageConnectorService(IJSRuntime jsRuntime)
     {
-        private readonly IJSRuntime _jsRuntime;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SpellingPageConnectorService"/> class.
-        /// </summary>
-        /// <param name="jsRuntime">The JS runtime.</param>
-        public SpellingPageConnectorService(IJSRuntime jsRuntime)
-        {
-            _jsRuntime = jsRuntime;
-        }
+        private readonly IJSRuntime _jsRuntime = jsRuntime;
 
         /// <summary>
         /// Retrieves all paragraphs from the spelling connector.

@@ -86,9 +86,9 @@ namespace DocumentChecker.Pages.ResultPages
         /// <returns>The error string.</returns>
         protected override string GetErrorString(string errorType)
         {
-            if (FormattingErrors.ContainsKey(errorType))
+            if (FormattingErrors.TryGetValue(errorType, out string? value))
             {
-                return FormattingErrors[errorType];
+                return value;
             }
             else
             {

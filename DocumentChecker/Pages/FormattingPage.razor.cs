@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Components.Forms;
 using DocumentChecker.JsConnectors;
 using CommonCode.Services.DataServices;
-using CommonCode.Deffinitions;
 using System.Text.Json;
 
 namespace DocumentChecker.Pages
@@ -37,7 +36,6 @@ namespace DocumentChecker.Pages
         /// </summary>
         private async Task OnImportClick()
         {
-            var x = Deffinitions.AlignmentDict.Values;
             Console.WriteLine(FormattingPageDataService.AllingmentDispalyed);
             Console.WriteLine("Import clicked - triggering file import");
             await JsConnector.TriggerImport("filePicker");

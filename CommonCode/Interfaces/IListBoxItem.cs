@@ -9,7 +9,7 @@ namespace CommonCode.Interfaces
         /// <summary>
         /// Gets or sets the name of the list box item.
         /// </summary>
-        public string Name { get; set; }
+        public string Name { get; }
 
         /// <summary>
         /// Gets or sets the description of the list box item.

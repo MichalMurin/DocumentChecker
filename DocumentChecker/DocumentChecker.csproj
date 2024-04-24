@@ -6,6 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <TargetOfficeVersion>15.0</TargetOfficeVersion>
     <BlazorWebAssemblyLoadAllGlobalizationData>true</BlazorWebAssemblyLoadAllGlobalizationData>
+	<NoWarn>BL0007</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

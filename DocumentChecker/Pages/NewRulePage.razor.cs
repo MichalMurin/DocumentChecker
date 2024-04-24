@@ -80,7 +80,7 @@ namespace DocumentChecker.Pages
         /// </summary>
         /// <param name="pattern">The pattern to check.</param>
         /// <returns><c>true</c> if the pattern is a valid regular expression; otherwise, <c>false</c>.</returns>
-        private bool IsValidRegex(string pattern)
+        private static bool IsValidRegex(string pattern)
         {
             try
             {

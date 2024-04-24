@@ -8,8 +8,8 @@
         /// <summary>
         /// Dictionary mapping alignment options in the source language to alignment options in the target language.
         /// </summary>
-        public static Dictionary<string, string> AlignmentDict = new Dictionary<string, string>
-            {
+        public static readonly Dictionary<string, string> AlignmentDict = new()
+        {
                 { "Na stred", "Centered" },
                 { "Do bloku", "Justified" },
                 { "Vľavo", "Left" },
@@ -19,21 +19,21 @@
         /// <summary>
         /// Dictionary mapping formatting error codes to their corresponding error messages.
         /// </summary>
-        public static Dictionary<string, string> FormattingErrors = new Dictionary<string, string>
-            {
+        public static readonly Dictionary<string, string> FormattingErrors = new()
+        {
                 { "IncorrectFontName", "Nesprávny font" },
                 { "IncorrectFontSize", "Nesprávna veľkosť písma" },
                 { "IncorrectAlignment", "Nesprávne zarovnanie textu" },
                 { "IncorrectLineSpacing", "Nesprávne riadkovanie" },
                 { "IncorrectLeftIndent", "Nesprávny ľavý okraj" },
-                { "IncorrectRightIndent", "Nesprávn pravý okraj" }
+                { "IncorrectRightIndent", "Nesprávny pravý okraj" }
             };
 
         /// <summary>
         /// Dictionary mapping consistency error codes to their corresponding error messages.
         /// </summary>
-        public static Dictionary<string, string> ConsistencyErrors = new Dictionary<string, string>
-            {
+        public static readonly Dictionary<string, string> ConsistencyErrors = new()
+        {
                 { "DoubleSpaces", "Dvojité medzery" },
                 { "EmptyLines", "Prázdne riadky" },
                 { "InvalidCrossRef", "Neplatný krížový odkaz" },
@@ -50,8 +50,8 @@
         /// <summary>
         /// Dictionary mapping warning codes to their corresponding warning messages.
         /// </summary>
-        public static Dictionary<string, string> WarningMessages = new Dictionary<string, string>
-            {
+        public static readonly Dictionary<string, string> WarningMessages = new()
+        {
                 { "InvalidHeadingContinuity", "Chyba sa nedá opraviť automaticky!" },
                 { "InvalidDotsComasColons", "Pri oprave chyby sa pridajú medzery za bodky v texte, takže sa môže nesprávne upraviť niektorý text ako URL adresa!" },
                 { "InvalidListConsistency", "Chyba sa nedá opraviť automaticky!" },

@@ -41,10 +41,6 @@ namespace CommonCode.Models
             {
                 return RegexRule;
             }
-            set
-            {
-                Name = value;
-            }
         }
 
         /// <summary>

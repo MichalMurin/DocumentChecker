@@ -23,8 +23,10 @@ namespace CommonCode.Services
         /// </summary>
         public SpellingApiService()
         {
-            _httpClient = new HttpClient();
-            _httpClient.BaseAddress = new System.Uri(_apiBaseAddress);
+            _httpClient = new HttpClient
+            {
+                BaseAddress = new System.Uri(_apiBaseAddress)
+            };
         }
 
         /// <summary>
@@ -33,13 +35,10 @@ namespace CommonCode.Services
         /// <param name="response">The HTTP response message.</param>
         /// <param name="priority">The priority of the spelling check.</param>
         /// <returns>The API result containing the spelling check results.</returns>
-        private async Task<APIResult<List<SpellingCheckResult>?>> ProcessSuccessfulRepsonse(HttpResponseMessage response, int priority)
+        private static async Task<APIResult<List<SpellingCheckResult>?>> ProcessSuccessfulRepsonse(HttpResponseMessage response, int priority)
         {
             var result = await response.Content.ReadFromJsonAsync<List<SpellingCheckResult>>();
-            if (result is not null)
-            {
-                result.ForEach(item => item.Priority = priority);
-            }
+            result?.ForEach(item => item.Priority = priority);
             return new APIResult<List<SpellingCheckResult>?>(result, true, null);
         }
 

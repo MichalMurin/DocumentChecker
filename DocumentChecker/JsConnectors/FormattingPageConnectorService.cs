@@ -7,18 +7,13 @@ namespace DocumentChecker.JsConnectors
     /// <summary>
     /// Represents a service for connecting with the JavaScript formatting page.
     /// </summary>
-    public class FormattingPageConnectorService
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="FormattingPageConnectorService"/> class.
+    /// </remarks>
+    /// <param name="jsRuntime">The JS runtime.</param>
+    public class FormattingPageConnectorService(IJSRuntime jsRuntime)
     {
-        private readonly IJSRuntime _jsRuntime;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FormattingPageConnectorService"/> class.
-        /// </summary>
-        /// <param name="jsRuntime">The JS runtime.</param>
-        public FormattingPageConnectorService(IJSRuntime jsRuntime)
-        {
-            _jsRuntime = jsRuntime;
-        }
+        private readonly IJSRuntime _jsRuntime = jsRuntime;
 
         /// <summary>
         /// Checks the paragraphs for formatting issues.

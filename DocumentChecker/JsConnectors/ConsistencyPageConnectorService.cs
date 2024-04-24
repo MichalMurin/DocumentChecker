@@ -7,18 +7,13 @@ namespace DocumentChecker.JsConnectors
     /// <summary>
     /// Represents a service for connecting with the JavaScript functions related to document consistency.
     /// </summary>
-    public class ConsistencyPageConnectorService
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="ConsistencyPageConnectorService"/> class.
+    /// </remarks>
+    /// <param name="jsRuntime">The JS runtime instance.</param>
+    public class ConsistencyPageConnectorService(IJSRuntime jsRuntime)
     {
-        private readonly IJSRuntime _jsRuntime;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ConsistencyPageConnectorService"/> class.
-        /// </summary>
-        /// <param name="jsRuntime">The JS runtime instance.</param>
-        public ConsistencyPageConnectorService(IJSRuntime jsRuntime)
-        {
-            _jsRuntime = jsRuntime;
-        }
+        private readonly IJSRuntime _jsRuntime = jsRuntime;
 
         /// <summary>
         /// Scans the document consistency.

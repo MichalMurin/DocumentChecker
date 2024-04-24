@@ -5,7 +5,6 @@ using DocumentChecker.JsConnectors;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using System.Globalization;
-using System.Text.RegularExpressions;
 namespace DocumentChecker
 {
     public class Program

@@ -34,7 +34,7 @@ namespace DocumentChecker.Pages.ResultPages
         private List<ParagraphData>? _paragraphs;
         private LanguageToolItem? _ltItem;
         private int _currentIndex = 0;
-        private List<SpellingCheckResult> _currentSpellingResult = new List<SpellingCheckResult>();
+        private readonly List<SpellingCheckResult> _currentSpellingResult = [];
 
         /// <summary>
         /// Gets the scan result for the spelling page.
@@ -63,7 +63,7 @@ namespace DocumentChecker.Pages.ResultPages
         /// <param name="paragraph">The paragraph to check.</param>
         /// <param name="checkFunction">The function to perform the spelling check.</param>
         /// <returns>True if the spelling check is successful, false otherwise.</returns>
-        private async Task<bool> HandleApiSpellingCheck(List<SpellingCheckResult> resultsList, ParagraphData paragraph,
+        private static async Task<bool> HandleApiSpellingCheck(List<SpellingCheckResult> resultsList, ParagraphData paragraph,
             Func<ParagraphData, Task<APIResult<List<SpellingCheckResult>?>>> checkFunction)
         {
             var apiResult = await checkFunction(paragraph);
@@ -172,10 +172,7 @@ namespace DocumentChecker.Pages.ResultPages
         /// <returns>The API result of the language tool check.</returns>
         private async Task<APIResult<List<SpellingCheckResult>?>> CheckLanguageToolInParagraph(ParagraphData paragraph)
         {
-            if (_ltItem is null)
-            {
-                _ltItem = SpellingApiService.CreateLanguageToolItem(_paragraphs!);
-            }
+            _ltItem ??= SpellingApiService.CreateLanguageToolItem(_paragraphs!);
             var startIndex = _ltItem.StartIndexes[paragraph.Id];
             var languageToolResults = _ltItem.Result;
             if (languageToolResults is null)
@@ -189,13 +186,10 @@ namespace DocumentChecker.Pages.ResultPages
                 {
                     return apiResult;
                 }
-                languageToolResults = _ltItem.Result ?? new List<SpellingCheckResult>();
+                languageToolResults = _ltItem.Result ?? [];
             }
             var relevantCheckResults = languageToolResults?.Where(x => x.Index >= startIndex && x.Index <= startIndex + paragraph.Text.Length).ToList();
-            if (relevantCheckResults is not null)
-            {
-                relevantCheckResults.ForEach(x => x.Index -= startIndex);
-            }
+            relevantCheckResults?.ForEach(x => x.Index -= startIndex);
             return new APIResult<List<SpellingCheckResult>?>(relevantCheckResults, true, null);
         }
 
@@ -215,7 +209,7 @@ namespace DocumentChecker.Pages.ResultPages
                     var matches = Regex.Matches(paragraph.Text, regex);
                     if (matches.Count > 0)
                     {
-                        foreach (System.Text.RegularExpressions.Match match in matches)
+                        foreach (System.Text.RegularExpressions.Match match in matches.Cast<System.Text.RegularExpressions.Match>())
                         {
                             Console.WriteLine($"Nasla sa zhoda: {match.Value}");
                             var ownRuleCheckResult = new SpellingCheckResult
@@ -252,7 +246,7 @@ namespace DocumentChecker.Pages.ResultPages
         /// <param name="paragraph">The paragraph to correct.</param>
         /// <param name="checkResults">The spelling check results.</param>
         /// <returns>The corrected paragraph.</returns>
-        private string CorrectParagraph(string paragraph, List<SpellingCheckResult> checkResults)
+        private static string CorrectParagraph(string paragraph, List<SpellingCheckResult> checkResults)
         {
             string result = paragraph;
             // Group errors by index and sort groups by index in descending order
