@@ -16,7 +16,7 @@ namespace CommonCode.Services
         /// Http client for sending API requests.
         /// </summary>
         private readonly HttpClient _httpClient;
-        private readonly string _apiBaseAddress = "https://localhost:7200";
+        private readonly string _apiBaseAddress = "https://slovakspeliingapi.azurewebsites.net/";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SpellingApiService"/> class.

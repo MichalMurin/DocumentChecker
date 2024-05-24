@@ -21,7 +21,7 @@ namespace SpelingCheckAPI.Services
         {
             string jasonResult;
             string tempFilePath = Path.GetTempFileName();
-
+            string languatoolAppPath = Path.Combine("LanguageTool", "languagetool-commandline.jar");
             try
             {
                 // Write the input text to the temporary file
@@ -34,7 +34,7 @@ namespace SpelingCheckAPI.Services
                 var processInfo = new ProcessStartInfo
                 {
                     FileName = "java",
-                    Arguments = $"-jar LanguageTool\\languagetool-commandline.jar -l sk-SK --encoding utf-8 {disableRuleCommand} --json {tempFilePath}",
+                    Arguments = $"-jar {languatoolAppPath} -l sk-SK --encoding utf-8 {disableRuleCommand} --json {tempFilePath}",
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
                     UseShellExecute = false,
@@ -48,13 +48,12 @@ namespace SpelingCheckAPI.Services
 
                 // Read the output
                 string result = await process.StandardOutput.ReadToEndAsync();
-
                 // Optionally, you can handle result and error as needed
                 jasonResult = result;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Exception: {ex.Message}");
+                Console.WriteLine($"Exception during calling java LanguageTool app: {ex.Message}");
                 return null;
             }
             finally
@@ -62,8 +61,17 @@ namespace SpelingCheckAPI.Services
                 // Delete the temporary file
                 File.Delete(tempFilePath);
             }
-            var languageToolResult = JsonSerializer.Deserialize<LanguageToolApiResult>(jasonResult);
-            return LanguageToolParser.TransformLtResultToCheckResult(languageToolResult);
+
+            try
+            {
+                var languageToolResult = JsonSerializer.Deserialize<LanguageToolApiResult>(jasonResult);
+                return LanguageToolParser.TransformLtResultToCheckResult(languageToolResult);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception during deserializing result from java application of LanguageTool: {ex.Message}");
+                return null;
+            }
         }
     }
 }

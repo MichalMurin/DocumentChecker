@@ -32,9 +32,9 @@ namespace SpelingCheckAPI
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Spelling Check API", Version = "v1" });
             });
-
+            string mlModelPath = Path.Combine("MLPrepositionChecker", "MLModel_DigramDb_10h.mlnet");
             builder.Services.AddPredictionEnginePool<MLModel_DigramDb.ModelInput, MLModel_DigramDb.ModelOutput>()
-                .FromFile("MLPrepositionChecker\\MLModel_DigramDb_10h.mlnet");
+                .FromFile(mlModelPath);
             builder.Services.AddSingleton<IPrepositionCheckService, PrepositionCheckService>();
             builder.Services.AddSingleton<ILanguageToolService, LanguageToolService>();
             builder.Services.AddControllers();
