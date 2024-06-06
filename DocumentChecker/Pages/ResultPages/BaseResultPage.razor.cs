@@ -172,7 +172,7 @@ namespace DocumentChecker.Pages.ResultPages
                     break;
                 case CheckState.CORRECTION_FAULT:
                     Header = "Nastala chyba";
-                    TextResult = "Počas opravy nastala chyba, uistite sa, že je označený správny odstavec.";
+                    TextResult = "Počas opravy nastala chyba, uistite sa, že je označený správny odstavec. Ak chyba pretrváva, odstavec prosím ignorujte.";
                     break;
                 case CheckState.UNEXPECTED_ERROR:
                     Header = "Nastala chyba";

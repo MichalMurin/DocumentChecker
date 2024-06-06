@@ -55,30 +55,35 @@ window.formattingConnector = {
       }
       console.log("Paragraph = ", paragraph);
       console.log("Setting paragraph formatting", dataService);
-      errors.forEach((error) => {
-        switch (error) {
-          case formattingErrorTypes.INCORRECT_FONT_NAME:
-            paragraph.font.name = dataService.fontName;
-            break;
-          case formattingErrorTypes.INCORRECT_FONT_SIZE:
-            paragraph.font.size = GetExpectedFontSize(paragraph);
-            break;
-          case formattingErrorTypes.INCORRECT_ALIGNMENT:
-            paragraph.alignment = dataService.alligment;
-            break;
-          case formattingErrorTypes.INCORRECT_LINE_SPACING:
-            paragraph.lineSpacing = dataService.lineSpacingInPoints;
-            break;
-          case formattingErrorTypes.INCORRECT_LEFT_INDENT:
-            paragraph.leftIndent = dataService.leftIndentInPoints;
-            break;
-          case formattingErrorTypes.INCORRECT_RIGHT_INDENT:
-            paragraph.rightIndent = dataService.rightIndentInPoints;
-            break;
-          default:
-            break;
-        }
-      });
+      try {
+        errors.forEach((error) => {
+          switch (error) {
+            case formattingErrorTypes.INCORRECT_FONT_NAME:
+              paragraph.font.name = dataService.fontName;
+              break;
+            case formattingErrorTypes.INCORRECT_FONT_SIZE:
+              paragraph.font.size = GetExpectedFontSize(paragraph);
+              break;
+            case formattingErrorTypes.INCORRECT_ALIGNMENT:
+              paragraph.alignment = dataService.alligment;
+              break;
+            case formattingErrorTypes.INCORRECT_LINE_SPACING:
+              paragraph.lineSpacing = dataService.lineSpacingInPoints;
+              break;
+            case formattingErrorTypes.INCORRECT_LEFT_INDENT:
+              paragraph.leftIndent = dataService.leftIndentInPoints;
+              break;
+            case formattingErrorTypes.INCORRECT_RIGHT_INDENT:
+              paragraph.rightIndent = dataService.rightIndentInPoints;
+              break;
+            default:
+              break;
+          }
+        });
+      } catch (error) {
+        console.log("Error while setting formatting: ", error);
+        return false;
+      }
       console.log("Setting formatting done, selecting paragraph again");
       paragraph.select();
       await context.sync();

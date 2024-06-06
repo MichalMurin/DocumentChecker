@@ -197,138 +197,143 @@ window.consistencyConnector = {
       await context.sync();
       let sourceParagraphText = textItem.value.trimEnd();
       console.log("Correcting paragraph: ", sourceParagraphText);
-      errorToCorrect.forEach((foundError) => {
-        switch (foundError) {
-          case consistencyErrorTypes.DOUBLE_SPACES:
-            sourceParagraphText = sourceParagraphText.replace(/ {2,}/g, " ");
-            paragraph.insertText(sourceParagraphText, "Replace");
-            break;
-          case consistencyErrorTypes.EMPTY_LINES:
-            console.log("Correcting empty lines");
-            // We are checking empty line only on not last paragraphs -> there will be always next paragraph
-            var nextParagraph = paragraph.getNext();
-            paragraph.delete();
-            paragraph = nextParagraph;
-            break;
-          case consistencyErrorTypes.INVALID_CROSS_REFERENCE:
-            // Code for INVALID_CROSS_REFERENCE error type
-            console.log(
-              "Correcting invalid cross reference",
-              sourceParagraphText
-            );
-            var newText = paragraph.text;
-            crossReferenceError.forEach((error) => {
-              let regex = new RegExp(error, "g");
-              newText = newText.replace(regex, "");
-            });
-            newText = newText.replace(/ {2,}/g, " ");
-            console.log("Corrected text in paragraph: ", newText);
-            paragraph.insertText(newText, "Replace");
+      try {
+        errorToCorrect.forEach((foundError) => {
+          switch (foundError) {
+            case consistencyErrorTypes.DOUBLE_SPACES:
+              sourceParagraphText = sourceParagraphText.replace(/ {2,}/g, " ");
+              paragraph.insertText(sourceParagraphText, "Replace");
+              break;
+            case consistencyErrorTypes.EMPTY_LINES:
+              console.log("Correcting empty lines");
+              // We are checking empty line only on not last paragraphs -> there will be always next paragraph
+              var nextParagraph = paragraph.getNext();
+              paragraph.delete();
+              paragraph = nextParagraph;
+              break;
+            case consistencyErrorTypes.INVALID_CROSS_REFERENCE:
+              // Code for INVALID_CROSS_REFERENCE error type
+              console.log(
+                "Correcting invalid cross reference",
+                sourceParagraphText
+              );
+              var newText = paragraph.text;
+              crossReferenceError.forEach((error) => {
+                let regex = new RegExp(error, "g");
+                newText = newText.replace(regex, "");
+              });
+              newText = newText.replace(/ {2,}/g, " ");
+              console.log("Corrected text in paragraph: ", newText);
+              paragraph.insertText(newText, "Replace");
 
-            // Cannot fix this issue automaticaly
-            break;
-          case consistencyErrorTypes.INVALID_HEADING_CONSISTENCY:
-            // Code for INVALID_HEADING_CONSISTENCY error type
-            var previousHeading =
-              previousParagraphs[previousParagraphsKeys.HEADING];
-            var previousHeadingFormatType = getHeadingFormatType(
-              previousHeading.text
-            );
-            sourceParagraphText = updateHeadingFormatType(
-              sourceParagraphText,
-              previousHeadingFormatType
-            );
-            paragraph.insertText(sourceParagraphText, "Replace");
-            // TODO - fix the heading + update previous heading
-            break;
-          case consistencyErrorTypes.INVALID_HEADING_NUMBER_CONSISTENCY:
-            // Code for INVALID_HEADING_CONSISTENCY error type
-            console.log(
-              "Correcting heading number consistency",
-              sourceParagraphText
-            );
-            sourceParagraphText =
-              updateHeadingNumberFormat(sourceParagraphText);
-            console.log("Corrected text in paragraph: ", sourceParagraphText);
-            paragraph.insertText(sourceParagraphText, "Replace");
-            break;
-          case consistencyErrorTypes.INCONSISTENT_FORMATTING:
-            // Code for INCONSISTENT_FORMATTING error type
-            var previousPara = previousParagraphsByStyle[paragraph.style];
-            if (previousPara !== undefined) {
-              // checking formatting with previous paragraph with same style
-              console.log("Correcting formatting: ", paragraph, previousPara);
-              paragraph.alignment = previousPara.alignment;
-              paragraph.font.name = previousPara.font.name;
-              paragraph.font.size = previousPara.font.size;
-            }
-            break;
-          case consistencyErrorTypes.INVALID_DOTS_COMAS_COLONS:
-            console.log(
-              "Correcting invalid dots, comas, colons",
-              sourceParagraphText
-            );
-            // Code for INVALID_DOTS_COMAS_COLONS error type
-            var prefix = "";
-            if (isParagraphHeading(paragraph) && /^\d/.test(paragraph.text)) {
-              prefix = GetNumberOfHeading(paragraph);
-              sourceParagraphText = sourceParagraphText.slice(prefix.length);
-              // paragraph is heading and it starts with number -> do not correct dots in the number of heading
-            }
-            dotsComasColonsNoSpaceRegex.forEach((regex) => {
-              var regexWithG = new RegExp(regex.source, "g");
-              sourceParagraphText = sourceParagraphText.replace(
-                regexWithG,
-                function (match) {
-                  console.log("Match: ", match);
-                  //return match[0] + ' ' + match[1];
-                  return match[0] + " ";
-                }
+              // Cannot fix this issue automaticaly
+              break;
+            case consistencyErrorTypes.INVALID_HEADING_CONSISTENCY:
+              // Code for INVALID_HEADING_CONSISTENCY error type
+              var previousHeading =
+                previousParagraphs[previousParagraphsKeys.HEADING];
+              var previousHeadingFormatType = getHeadingFormatType(
+                previousHeading.text
               );
-              console.log("First correction", regex, sourceParagraphText);
-            });
-            sourceParagraphText = prefix + sourceParagraphText;
-            dotsComasColonsSpaceRegex.forEach((regex) => {
-              var regexWithG = new RegExp(regex.source, "g");
-              sourceParagraphText = sourceParagraphText.replace(
-                regexWithG,
-                function (match) {
-                  return match.trim();
-                }
+              sourceParagraphText = updateHeadingFormatType(
+                sourceParagraphText,
+                previousHeadingFormatType
               );
-              console.log("Second correction", sourceParagraphText);
-            });
-            paragraph.insertText(sourceParagraphText, "Replace");
-            break;
-          case consistencyErrorTypes.INVALID_LIST_CONSISTENCY:
-            // Code for INVALID_PARENTHESIS error type
-            console.log(
-              "Correcting list inconsistency - THIS ERROR CANNOT BE CORRECTED AUTOMATICALLY"
-            );
-            break;
-          case consistencyErrorTypes.INVALID_PARENTHESIS:
-            // Code for INVALID_PARENTHESIS error type
-            console.log(
-              "Correcting invalid parenthesis - THIS ERROR CANNOT BE CORRECTED AUTOMATICALLY"
-            );
-            break;
-          case consistencyErrorTypes.CAPTION_MISSING:
-            // Code for INVALID_PARENTHESIS error type
-            console.log(
-              "Correcting caption missing - THIS ERROR CANNOT BE CORRECTED AUTOMATICALLY"
-            );
-            break;
-          case consistencyErrorTypes.INVALID_HEADING_CONTINUITY:
-            // Code for INVALID_HEADING_CONTINUITY error type
-            console.log(
-              "Correcting heading continuity - THIS ERROR CANNOT BE CORRECTED AUTOMATICALLY"
-            );
-            break;
-          default:
-            // Code for default case
-            break;
-        }
-      });
+              paragraph.insertText(sourceParagraphText, "Replace");
+              // TODO - fix the heading + update previous heading
+              break;
+            case consistencyErrorTypes.INVALID_HEADING_NUMBER_CONSISTENCY:
+              // Code for INVALID_HEADING_CONSISTENCY error type
+              console.log(
+                "Correcting heading number consistency",
+                sourceParagraphText
+              );
+              sourceParagraphText =
+                updateHeadingNumberFormat(sourceParagraphText);
+              console.log("Corrected text in paragraph: ", sourceParagraphText);
+              paragraph.insertText(sourceParagraphText, "Replace");
+              break;
+            case consistencyErrorTypes.INCONSISTENT_FORMATTING:
+              // Code for INCONSISTENT_FORMATTING error type
+              var previousPara = previousParagraphsByStyle[paragraph.style];
+              if (previousPara !== undefined) {
+                // checking formatting with previous paragraph with same style
+                console.log("Correcting formatting: ", paragraph, previousPara);
+                paragraph.alignment = previousPara.alignment;
+                paragraph.font.name = previousPara.font.name;
+                paragraph.font.size = previousPara.font.size;
+              }
+              break;
+            case consistencyErrorTypes.INVALID_DOTS_COMAS_COLONS:
+              console.log(
+                "Correcting invalid dots, comas, colons",
+                sourceParagraphText
+              );
+              // Code for INVALID_DOTS_COMAS_COLONS error type
+              var prefix = "";
+              if (isParagraphHeading(paragraph) && /^\d/.test(paragraph.text)) {
+                prefix = GetNumberOfHeading(paragraph);
+                sourceParagraphText = sourceParagraphText.slice(prefix.length);
+                // paragraph is heading and it starts with number -> do not correct dots in the number of heading
+              }
+              dotsComasColonsNoSpaceRegex.forEach((regex) => {
+                var regexWithG = new RegExp(regex.source, "g");
+                sourceParagraphText = sourceParagraphText.replace(
+                  regexWithG,
+                  function (match) {
+                    console.log("Match: ", match);
+                    //return match[0] + ' ' + match[1];
+                    return match[0] + " ";
+                  }
+                );
+                console.log("First correction", regex, sourceParagraphText);
+              });
+              sourceParagraphText = prefix + sourceParagraphText;
+              dotsComasColonsSpaceRegex.forEach((regex) => {
+                var regexWithG = new RegExp(regex.source, "g");
+                sourceParagraphText = sourceParagraphText.replace(
+                  regexWithG,
+                  function (match) {
+                    return match.trim();
+                  }
+                );
+                console.log("Second correction", sourceParagraphText);
+              });
+              paragraph.insertText(sourceParagraphText, "Replace");
+              break;
+            case consistencyErrorTypes.INVALID_LIST_CONSISTENCY:
+              // Code for INVALID_PARENTHESIS error type
+              console.log(
+                "Correcting list inconsistency - THIS ERROR CANNOT BE CORRECTED AUTOMATICALLY"
+              );
+              break;
+            case consistencyErrorTypes.INVALID_PARENTHESIS:
+              // Code for INVALID_PARENTHESIS error type
+              console.log(
+                "Correcting invalid parenthesis - THIS ERROR CANNOT BE CORRECTED AUTOMATICALLY"
+              );
+              break;
+            case consistencyErrorTypes.CAPTION_MISSING:
+              // Code for INVALID_PARENTHESIS error type
+              console.log(
+                "Correcting caption missing - THIS ERROR CANNOT BE CORRECTED AUTOMATICALLY"
+              );
+              break;
+            case consistencyErrorTypes.INVALID_HEADING_CONTINUITY:
+              // Code for INVALID_HEADING_CONTINUITY error type
+              console.log(
+                "Correcting heading continuity - THIS ERROR CANNOT BE CORRECTED AUTOMATICALLY"
+              );
+              break;
+            default:
+              // Code for default case
+              break;
+          }
+        });
+      } catch (error) {
+        console.log("Error while correcting paragraph: ", error);
+        return false;
+      }
       paragraph.select();
       await context.sync();
       result = true;
@@ -459,6 +464,16 @@ function UpdatePreviousParagraph(paragraph) {
 }
 
 function prepareChecks(paragraph, paragraphCleanText) {
+  if (paragraph.text === "") {
+    let styleChecks = [
+      {
+        condition: dataService.emptyLines && isEmptyLine(paragraph),
+        errorType: consistencyErrorTypes.EMPTY_LINES,
+      },
+    ];
+    return styleChecks;
+  }
+
   console.log("Preparing checks: ", dataService.doubleSpaces);
   let wrongHeadingContinuity = false;
   let wrongHeadingConsistency = false;
@@ -478,10 +493,6 @@ function prepareChecks(paragraph, paragraphCleanText) {
     {
       condition: dataService.doubleSpaces && checkDoubleSpaces(paragraph),
       errorType: consistencyErrorTypes.DOUBLE_SPACES,
-    },
-    {
-      condition: dataService.emptyLines && isEmptyLine(paragraph),
-      errorType: consistencyErrorTypes.EMPTY_LINES,
     },
     {
       condition:
